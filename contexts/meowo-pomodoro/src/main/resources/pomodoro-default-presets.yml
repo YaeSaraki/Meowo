@@ -1,0 +1,17 @@
+presets:
+  standard:
+    name: "Standard"
+    icon: "CLOCK"
+    enchanted: false
+    work: 25
+    break: 5
+    long-break: 15
+    sessions: 4
+  class:
+    name: "A Class"
+    icon: "BOOK"
+    enchanted: false
+    work: 40
+    break: 10
+    long-break: 20
+    sessions: 2
