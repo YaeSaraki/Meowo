@@ -1,0 +1,156 @@
+{
+  "verified_at": "2026-10-05T17:35:30.103710+08:00",
+  "tests": 144,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "com.meowo.core.MeowoRuntimeTest",
+      "tests": 76,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.platform.HatPolicyTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.platform.LocaleResolverTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.shared.EventBusTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.shared.ContextManagerTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.teleport.RequestBookTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.teleport.BiomePaletteTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.teleport.TeleportGeometryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.sit.SeatPlacementTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.SettlementRepositoryTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.EconomyApplicationServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.SqliteWalletRepositoryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.render.RenderServiceTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.domain.EconomyPolicyTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.domain.WalletTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.economy.domain.MoneyTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "coverage": {
+    "total_percent": 90.59,
+    "economy_domain_percent": 94.74
+  },
+  "artifact": "core/build/libs/Meowo-1.0.0.jar",
+  "installed": ".run/server/plugins/Meowo.jar",
+  "sha256": "90cd62e7a68e2afb7cc974574abd6223f298e9e63ae252a9cb440dbbe3cb8ba4",
+  "backup": ".run/backups/before-rune-circle-20261005-173530",
+  "server_restarted": false,
+  "visuals": {
+    "white_rune_chain_radius_blocks": 0.52,
+    "chain_update_ticks": 2,
+    "chain_orbit_seconds": 1.745,
+    "landing_circle_diameter_blocks": 1.72,
+    "landing_emission_ticks": 60,
+    "landing_rotation_degrees": 30.94,
+    "palette": "muted biome hue with a lighter companion outline"
+  },
+  "effects": {
+    "nausea_and_darkness_ticks": "countdownSeconds * 20 + 20",
+    "default_duration_seconds": 4,
+    "slowness_ticks": "countdownSeconds * 20, minimum 1",
+    "existing_effects": "preserve longer/infinite effects, extend shorter effects without lowering amplifier or changing display flags"
+  },
+  "checks": [
+    "all tests, architecture and coverage gates",
+    "white chain radius and motion",
+    "six distinct star vertices at foot level and slow rotation",
+    "muted biome families and overlapping biome names",
+    "actual landing biome capture with fixed position and palette",
+    "effects active during extended countdown and after arrival",
+    "stronger existing nausea preserved",
+    "free camera and movement refund regressions"
+  ],
+  "related_test_maintenance": "The seat height integration test now uses explicit height and forward configuration instead of an outdated positive-default assumption."
+}

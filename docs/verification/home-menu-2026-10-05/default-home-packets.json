@@ -1,0 +1,83 @@
+[
+  {
+    "packet": "tracked_waypoint",
+    "data": {
+      "operation": "track",
+      "waypoint": {
+        "hasUUID": true,
+        "uuid": "b198c8aa-645e-35b2-81b6-dd48ad4b680f",
+        "icon": {
+          "style": "minecraft:bowtie",
+          "color": {
+            "red": 227,
+            "green": 167,
+            "blue": 188
+          }
+        },
+        "type": "vec3i",
+        "data": {
+          "x": 0,
+          "y": 64,
+          "z": 0
+        }
+      }
+    }
+  },
+  {
+    "packet": "open_window",
+    "data": {
+      "windowId": 1,
+      "inventoryType": 5,
+      "windowTitle": {
+        "type": "string",
+        "value": "Meowo · 总菜单"
+      }
+    }
+  },
+  {
+    "packet": "open_window",
+    "data": {
+      "windowId": 2,
+      "inventoryType": 2,
+      "windowTitle": {
+        "type": "string",
+        "value": "确认家园操作"
+      }
+    }
+  },
+  {
+    "packet": "tracked_waypoint",
+    "data": {
+      "operation": "track",
+      "waypoint": {
+        "hasUUID": true,
+        "uuid": "6211b64c-c263-3034-bf23-d735f7bee7d3",
+        "icon": {
+          "style": "minecraft:bowtie",
+          "color": {
+            "red": 230,
+            "green": 164,
+            "blue": 95
+          }
+        },
+        "type": "vec3i",
+        "data": {
+          "x": 0,
+          "y": 64,
+          "z": 0
+        }
+      }
+    }
+  },
+  {
+    "packet": "open_window",
+    "data": {
+      "windowId": 3,
+      "inventoryType": 3,
+      "windowTitle": {
+        "type": "string",
+        "value": "编辑 #2 · 家 2"
+      }
+    }
+  }
+]

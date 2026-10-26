@@ -1,0 +1,47 @@
+{
+  "verified_at": "2026-10-05T17:10:34.547992+08:00",
+  "checks": [
+    "all core runtime tests",
+    "all teleport module tests",
+    "core plugin build",
+    "architecture verification"
+  ],
+  "suites": [
+    {
+      "name": "com.meowo.core.MeowoRuntimeTest",
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.teleport.RequestBookTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "com.meowo.teleport.TeleportGeometryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "tests": 73,
+  "failures": 0,
+  "skipped": 0,
+  "position_tolerance_blocks": 0.0625,
+  "changes": [
+    "ignore camera-only move events",
+    "measure accumulated displacement from fixed countdown origin",
+    "ignore small position corrections in both move events and final countdown check"
+  ],
+  "full_suite_note": "Full-project verification was interrupted by concurrent sit diagnostic probe development; this successful run covers core and teleport tests.",
+  "artifact": "core/build/libs/Meowo-1.0.0.jar",
+  "installed": ".run/server/plugins/Meowo.jar",
+  "sha256": "cbcad6563caf117bef9ed92e6ff2b01316867f57e9ad43c12e135ad3e49dd555",
+  "backup": ".run/backups/before-tpa-look-20261005-171034",
+  "server_restarted": false
+}

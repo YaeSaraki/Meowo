@@ -1,0 +1,101 @@
+[20:17:05] [ServerMain/INFO]: [bootstrap] Running Java 25 (OpenJDK 64-Bit Server VM 25.0.2+10-jvmci-b01; GraalVM Community GraalVM CE 25.0.2+10.1) on Mac OS X 27.2 (aarch64)
+[20:17:05] [ServerMain/INFO]: [bootstrap] Loading Paper 26.2-129-ver/26.2@9240f58 (2026-09-23T18:49:01Z) for Minecraft 26.2
+[20:17:05] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[20:17:05] [ServerMain/INFO]: [PluginInitializerManager] Initialized 2 plugins
+[20:17:05] [ServerMain/INFO]: [PluginInitializerManager] Bukkit plugins (2):
+ - Meowo (1.0.0), packetevents (2.14.0)
+[20:17:06] [CrashReport preload thread/WARN]: [oshi.software.os.mac.MacOperatingSystem] Unable to parse version 27.2 to a codename.
+[20:17:09] [DataConverter MCTypeRegistry init thread/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Initialising converters for DataConverter...
+[20:17:09] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[20:17:10] [DataConverter MCTypeRegistry init thread/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Finished initialising converters for DataConverter in 634.1ms
+[20:17:11] [ServerMain/INFO]: Loaded 1585 recipes
+[20:17:11] [ServerMain/INFO]: Loaded 1688 advancements
+[20:17:11] [Server thread/INFO]: Starting minecraft server version 26.2
+[20:17:11] [Server thread/INFO]: Loading properties
+[20:17:11] [Server thread/INFO]: This server is running Paper version 26.2-129-ver/26.2@9240f58 (2026-09-23T18:49:01Z) (Implementing API version 26.2.build.129-stable)
+[20:17:11] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[20:17:11] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[20:17:11] [Server thread/INFO]: Using 4 threads for Netty based IO
+[20:17:12] [Server thread/INFO]: [MoonriseCommon] Paper is using 2 worker threads, 1 I/O threads
+[20:17:12] [Server thread/INFO]: Default game type: SURVIVAL
+[20:17:12] [Server thread/INFO]: Generating keypair
+[20:17:12] [Server thread/INFO]: Starting Minecraft server on 127.0.0.1:25565
+[20:17:12] [Server thread/INFO]: Paper: Using libdeflate (macOS ARM64 / Apple Silicon) compression from Velocity.
+[20:17:12] [Server thread/INFO]: Paper: Using native (macOS ARM64 / Apple Silicon) cipher from Velocity.
+[20:17:13] [Server thread/INFO]: [packetevents] Loading server plugin packetevents v2.14.0
+[20:17:13] [Server thread/INFO]: [packetevents] Loading packetevents...
+[20:17:14] [Server thread/INFO]: [packetevents] Loading block mappings for V_26_3/23...
+[20:17:15] [Server thread/INFO]: [packetevents] Finished loading block mappings for V_26_3/23 in 450.500958ms
+[20:17:15] [Server thread/INFO]: [packetevents] Loaded packetevents v2.14.0
+[20:17:15] [Server thread/INFO]: [Meowo] Loading server plugin Meowo v1.0.0
+[20:17:15] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[20:17:15] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[20:17:15] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[20:17:15] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[20:17:15] [Server thread/INFO]: Preparing level "world"
+[20:17:15] [Server thread/INFO]: Loading 0 persistent chunks for level 'minecraft:overworld'...
+[20:17:15] [Server thread/INFO]: Prepared spawn area in 0 ms
+[20:17:15] [Server thread/INFO]: Loading 0 persistent chunks for level 'minecraft:the_nether'...
+[20:17:15] [Server thread/INFO]: Prepared spawn area in 0 ms
+[20:17:15] [Server thread/INFO]: Loading 0 persistent chunks for level 'minecraft:the_end'...
+[20:17:15] [Server thread/INFO]: Prepared spawn area in 0 ms
+[20:17:15] [Server thread/INFO]: Done preparing level "world" (0.184s)
+[20:17:15] [Server thread/INFO]: [packetevents] Enabling packetevents v2.14.0
+[20:17:15] [packetevents-update-check-thread/INFO]: [packetevents] Checking for updates, please wait...
+[20:17:15] [Server thread/INFO]: [Meowo] Enabling Meowo v1.0.0
+[20:17:15] [Server thread/INFO]: [Meowo] Meowo ready; contexts=[economy, menu, render]
+[20:17:15] [Server thread/INFO]: [spark] Starting background profiler...
+[20:17:16] [packetevents-update-check-thread/INFO]: [packetevents] You are running the latest release: 2.14.0
+[20:17:17] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[20:17:17] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[20:17:17] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[20:17:17] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[20:17:17] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[20:17:17] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[20:17:17] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[20:17:17] [Server thread/INFO]: Running delayed init tasks
+[20:17:17] [Server thread/INFO]: Done (13.077s)! For help, type "help"
+[20:17:56] [Server thread/INFO]: Meowo 1.0.0 | Enabled contexts: economy, menu, render | Subscriptions: 2
+[20:17:56] [Server thread/INFO]: Balance of 00000000-0000-0000-0000-000000000001: 79.50
+[20:20:34] [Server thread/INFO]: Configuration reloaded.
+[20:20:34] [Server thread/INFO]: Meowo 1.0.0 | Enabled contexts: economy, menu, render | Subscriptions: 2
+[20:20:55] [Server thread/INFO]: Configuration reloaded.
+[20:20:55] [Server thread/INFO]: Meowo 1.0.0 | Enabled contexts: menu | Subscriptions: 1
+[20:20:55] [Server thread/INFO]: Unknown command or disabled context. Use /meowo help.
+[20:21:29] [Server thread/INFO]: 配置已重载。
+[20:21:29] [Server thread/INFO]: Meowo 1.0.0 | 已启用模块：economy, menu, render | 事件订阅：2
+[20:21:29] [Server thread/INFO]: Stopping the server
+[20:21:29] [Server thread/INFO]: Stopping server
+[20:21:29] [Server thread/INFO]: [Meowo] Disabling Meowo v1.0.0
+[20:21:29] [Server thread/INFO]: [packetevents] Disabling packetevents v2.14.0
+[20:21:29] [Server thread/INFO]: Saving players
+[20:21:29] [Server thread/INFO]: Saving worlds
+[20:21:29] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'minecraft:overworld'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'minecraft:overworld'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'minecraft:overworld'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'minecraft:overworld' in 0.00s
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'minecraft:overworld'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'minecraft:overworld'
+[20:21:29] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'minecraft:the_nether'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'minecraft:the_nether'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'minecraft:the_nether'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'minecraft:the_nether' in 0.00s
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'minecraft:the_nether'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'minecraft:the_nether'
+[20:21:29] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'minecraft:the_end'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'minecraft:the_end'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'minecraft:the_end'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'minecraft:the_end' in 0.00s
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'minecraft:the_end'
+[20:21:29] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'minecraft:the_end'
+[20:21:29] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[20:21:29] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[20:21:29] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[20:21:29] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[20:21:29] [Server thread/INFO]: Waiting for all RegionFile I/O tasks to complete...
+[20:21:29] [Server thread/INFO]: All RegionFile I/O tasks to complete
+[20:21:29] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of worker pool for up to 60s...
+[20:21:29] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of I/O pool for up to 60s...

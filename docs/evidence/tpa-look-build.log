@@ -1,0 +1,129 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon JVM discovery is an incubating feature.
+Daemon will be stopped at the end of the build 
+
+> Configure project :core
+Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'io.izzel.taboolib'
+Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'io.izzel.taboolib'
+
+> Task :contexts:meowo-economy:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :platform:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-hat:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-render:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-sit:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-economy:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-spawn:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-menu:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-teleport:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-economy:processResources NO-SOURCE
+> Task :contexts:meowo-render:processResources NO-SOURCE
+> Task :contexts:meowo-menu:processResources NO-SOURCE
+> Task :platform:processResources NO-SOURCE
+> Task :contexts:meowo-hat:processResources NO-SOURCE
+> Task :contexts:meowo-teleport:processResources NO-SOURCE
+> Task :contexts:meowo-spawn:processResources NO-SOURCE
+> Task :contexts:meowo-sit:processResources NO-SOURCE
+> Task :contexts:meowo-economy:domain:processResources NO-SOURCE
+> Task :contexts:meowo-teleport:processTestResources NO-SOURCE
+> Task :verifyArchitecture
+> Task :core:processResources UP-TO-DATE
+> Task :core:processTestResources NO-SOURCE
+> Task :api:compileKotlin UP-TO-DATE
+> Task :shared:compileKotlin UP-TO-DATE
+> Task :api:compileJava NO-SOURCE
+> Task :shared:compileJava NO-SOURCE
+> Task :api:processResources NO-SOURCE
+> Task :api:classes UP-TO-DATE
+> Task :shared:processResources NO-SOURCE
+> Task :shared:classes UP-TO-DATE
+> Task :api:jar UP-TO-DATE
+> Task :shared:jar UP-TO-DATE
+> Task :contexts:meowo-economy:domain:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-economy:domain:compileJava NO-SOURCE
+> Task :contexts:meowo-economy:domain:classes UP-TO-DATE
+> Task :contexts:meowo-economy:domain:jar UP-TO-DATE
+> Task :platform:compileKotlin UP-TO-DATE
+> Task :platform:compileJava NO-SOURCE
+> Task :platform:classes UP-TO-DATE
+> Task :platform:jar UP-TO-DATE
+> Task :contexts:meowo-spawn:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-spawn:compileJava NO-SOURCE
+> Task :contexts:meowo-spawn:classes UP-TO-DATE
+> Task :contexts:meowo-sit:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-sit:compileJava NO-SOURCE
+> Task :contexts:meowo-sit:classes UP-TO-DATE
+> Task :contexts:meowo-spawn:jar UP-TO-DATE
+> Task :contexts:meowo-sit:jar UP-TO-DATE
+> Task :contexts:meowo-teleport:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-teleport:compileJava NO-SOURCE
+> Task :contexts:meowo-teleport:classes UP-TO-DATE
+> Task :contexts:meowo-teleport:jar UP-TO-DATE
+> Task :contexts:meowo-economy:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-economy:compileJava NO-SOURCE
+> Task :contexts:meowo-economy:classes UP-TO-DATE
+> Task :contexts:meowo-menu:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-menu:compileJava NO-SOURCE
+> Task :contexts:meowo-menu:classes UP-TO-DATE
+> Task :contexts:meowo-economy:jar UP-TO-DATE
+> Task :contexts:meowo-menu:jar UP-TO-DATE
+> Task :contexts:meowo-teleport:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-teleport:compileTestJava NO-SOURCE
+> Task :contexts:meowo-teleport:testClasses UP-TO-DATE
+> Task :contexts:meowo-render:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-render:compileJava NO-SOURCE
+> Task :contexts:meowo-render:classes UP-TO-DATE
+> Task :contexts:meowo-render:jar UP-TO-DATE
+> Task :contexts:meowo-teleport:test UP-TO-DATE
+> Task :contexts:meowo-teleport:jacocoTestReport UP-TO-DATE
+> Task :contexts:meowo-hat:compileKotlin
+> Task :contexts:meowo-hat:compileJava NO-SOURCE
+> Task :contexts:meowo-hat:classes UP-TO-DATE
+> Task :core:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-hat:jar
+> Task :core:compileJava NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar
+
+> Task :core:taboolibMainTask
+[taboolibMainTask] 1251 classes, 204 resources | ASM: 3425ms (8 threads), Write: 3313ms, Total: 6802ms
+
+> Task :core:assemble
+
+> Task :core:compileTestKotlin
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:53:16 'val description: PluginDescriptionFile' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:106:41 'var title: String' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:119:41 'var title: String' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:122:41 'var title: String' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:646:44 'constructor(p0: Entity, p1: EntityDamageEvent.DamageCause, p2: Double): EntityDamageEvent' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:929:16 'fun simulateSneak(p0: Boolean): PlayerToggleSneakEvent' is deprecated. Deprecated in Java.
+w: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:1105:83 'var customName: String?' is deprecated. Deprecated in Java.
+
+> Task :core:compileTestJava NO-SOURCE
+> Task :core:testClasses UP-TO-DATE
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :core:test
+> Task :core:check
+> Task :core:build
+> Task :core:jacocoTestReport
+
+[Incubating] Problems report is available at: file:///private/var/folders/_2/bmn00jkx1wq_lt0c53h3_nhh0000gn/T/meowo-tpa-verify-gfk3xz9q/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 52s
+33 actionable tasks: 8 executed, 25 up-to-date

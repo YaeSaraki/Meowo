@@ -1,0 +1,120 @@
+{
+  "verified_at": "2026-10-05T16:48:05.355066+08:00",
+  "tests": 109,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "coverage": {
+    "total_percent": 90.87,
+    "economy_domain_percent": 94.74
+  },
+  "suites": [
+    {
+      "suite": "com.meowo.economy.EconomyApplicationServiceTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.economy.SettlementRepositoryTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.economy.SqliteWalletRepositoryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.economy.domain.EconomyPolicyTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.economy.domain.MoneyTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.economy.domain.WalletTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.render.RenderServiceTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.teleport.RequestBookTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.teleport.TeleportGeometryTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.core.MeowoRuntimeTest",
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.platform.LocaleResolverTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.shared.ContextManagerTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "com.meowo.shared.EventBusTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "artifact": "core/build/libs/Meowo-1.0.0.jar",
+  "sha256": "f534e3a51b60e7329d4231e651710ad6e66dc4f5ca1e7d73664015f2da2259f4",
+  "installed": ".run/server/plugins/Meowo.jar",
+  "backup": ".run/backups/before-white-runes-ride-20261005-164805",
+  "server_restarted": false,
+  "checks": [
+    "white falling arrival runes at fixed landing location",
+    "free yaw and pitch through the countdown",
+    "position movement cancellation and escrow refund regressions",
+    "nearby 3x3 player-only ride completion and execution",
+    "legal occupied player stack without cycles",
+    "permission rejection and invalid passenger chains",
+    "range configuration reload and legacy cap",
+    "matching language keys",
+    "architecture and coverage gates"
+  ]
+}

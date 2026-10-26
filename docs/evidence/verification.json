@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-04",
+  "tests": [
+    {
+      "name": "com.meowo.economy.EconomyApplicationServiceTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.economy.SqliteWalletRepositoryTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.economy.domain.MoneyTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.economy.domain.WalletTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.render.RenderServiceTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.core.MeowoRuntimeTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.shared.ContextManagerTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.meowo.shared.EventBusTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 28,
+  "line_coverage": {
+    "type": "LINE",
+    "missed": "67",
+    "covered": "350"
+  },
+  "domain_line_coverage": "100%",
+  "jar_sha256": "97e0544452b24a7c4788d951c514ad98dca5150678085fddf2a9473fe1774247"
+}
