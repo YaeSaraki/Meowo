@@ -1,0 +1,841 @@
+# Meowo 玩家消息 · 简体中文
+#
+# 约定：
+#   § 开头为 Minecraft 传统颜色码，仅对玩家渲染；控制台/RCON/命令方块会自动去除。
+#   纯文本（不含 §）同样可用，颜色只是修饰。
+#   \n 换行会拆成多条聊天消息，Paper 原生支持。
+#   占位符为 {0} {1}，按顺序替换；不使用 %s 或 String.format。
+#   颜色语义：§a 成功 §c 错误 §e 数值/强调 §7 次要说明 §8 弱化 §b 品牌 §f 正文
+
+# ═══════════ 发言者 ═══════════
+# 玩家看到的聊天消息会带上发言者名字，渲染为「✉ 名字 内容」。
+# 名字和正文都由我们拼好整行下发；**不要**改回 ChatType.CHAT.bind，
+# 那会让客户端用 chat.type.text 把整行套进 < > 里，删不掉（docs/minimax/09 §2）。
+# 命名规则为 <上下文>Cat；可在语言文件里改名，留空或删掉则回落到代码里的默认值。
+# 注意：这是「系统消息」而非真实玩家发言，因此没有签名与真实档案，
+# 不能私聊、@ 提及或删除，客户端可能显示「无法验证」指示条。详见 docs/minimax/09。
+speaker-system: "MeowCat"
+speaker-economy: "EconCat"
+speaker-menu: "MenuCat"
+speaker-render: "RendCat"
+speaker-spawn: "WarpCat"
+speaker-home: "NestCat"
+speaker-sit: "SitCat"
+speaker-hat: "HatCat"
+speaker-nametag: "IdleCat"
+speaker-mine: "MineCat"
+speaker-shadowbox: "ShadCat"
+speaker-teleport: "TeleCat"
+speaker-invsee: "InvCat"
+speaker-shop: "ShopCat"
+
+# ═══════════ 系统状态 ═══════════
+info: "§8[§bMeowo§8]§r §7v{0} §8│ §f{1} §8│ §7事件订阅 §f{2}§r"
+reloaded: "§8[§bMeowo§8]§r §a✔ §7配置与语言包已重载。§r"
+reload-partial: |-
+  §8[§bMeowo§8]§r §e⚠ §7配置已生效，但有模块启动失败。
+reload-failed: |-
+  §8[§bMeowo§8]§r §c✖ §7重载被拒绝：配置校验未通过，已保留当前运行状态。
+
+# ═══════════ 通用 ═══════════
+no-permission: "§c✖ §f你没有权限执行该操作。§r"
+unknown-command: |-
+  §c✖ §f未知命令，或对应模块当前未启用。
+unknown-player: |-
+  §c✖ §f无法解析该玩家。
+player-only: "§c✖ §f该命令只能由玩家执行。§r"
+internal-error: "§c✖ §7操作失败，详情请查看服务器控制台日志。§r"
+
+# ═══════════ 经济 ═══════════
+balance: "§7» §f{0} §8· §7余额 §e§l{1}§r"
+eco-usage: |-
+  §7» §f/meowo eco balance [玩家/UUID] §8— §7查询余额
+treasury: "§7» §7eco 税收池 §8│ §e§l{0}§r"
+
+pay-sent: |-
+  §a✔ §f已向 §e{0} §f转账 §e§l{1}§f
+pay-received: |-
+  §a✔ §f来自 §e{0} 的转账 §e§l{1} §f到账喵~
+
+daily-paid: |-
+  §a✔ §f今日补助 §e§l{0} §f到账喵~
+daily-empty: |-
+  §e⚠ §7今天还领不到补助喵。
+  §8税务池空了，明天再来试试喵。
+
+error-invalid_amount: |-
+  §c✖ §7金额写错啦，要在 §e§l0§7 ~ §e§l999999999999.99§7 之间、最多两位小数。
+error-insufficient_funds: "§c✖ §7余额不够，§l这次没有扣成§7喵。"
+error-limit_exceeded: |-
+  §c✖ §7这样放不下啦，上限是 §e§l999999999999.99§7。
+error-self_transfer: "§c✖ §f不能向自己转账。§r"
+error-transfer_pending: "§c✖ §f你还有一笔传送结算正在处理，请稍候。§r"
+error-unavailable: "§c✖ §7经济服务繁忙或已停用，请稍后重试。§r"
+
+# ═══════════ 钱包菜单 ═══════════
+menu-title: "Meowo §8· §e钱包"
+menu-balance: "§7余额 §e{0}"
+menu-refresh: "§8点击金币刷新"
+unavailable: "§8§o经济模块未启用"
+
+# ═══════════ 客户端渲染 ═══════════
+render-usage: |-
+  §7» §f/meowo render spawn <数量> §8— §7生成仅自己可见的假实体
+render-limit: |-
+  §c✖ §f数量无效，或将超过个人上限 §e{0}§f。
+render-spawned: "§a✔ §7已为你生成 §e{0} §7个客户端实体 §8· §7仅自己可见§r"
+render-cleared: "§a✔ §7已清除你的客户端实体。§r"
+
+# ═══════════ 传送 ═══════════
+tpa-usage: |-
+  §7» §f/tpa <玩家> §8— §7请求传送到对方（费用由你支付）
+
+tpa-sent: |-
+  §a✔ §7已向 §e{0} §7发送传送请求 §8· §f{1} §7秒内有效
+tpa-incoming: "§e✦ §e{0} §f请求传送到你身边 §8· §f{1} §7秒内有效 §8· §7费用由对方支付"
+
+tpa-accepted: "§a✔ §7已接受 §e{0} §7的请求，正在等待费用结算…"
+tpa-charged: "§a✔ §7已预扣传送税 §e§l{0}§7，§e{1} §7秒后传送。"
+tpa-charged-sponsored: "§a✔ §e{0} §7替你垫了传送税 §e§l{1}§7，§e{2} §7秒后传送。"
+tpa-sponsor-offer: "§e⚠ §f{0} §7余额不够，传送税暂时付不出。"
+tpa-sponsor-failed: "§c✖ §7你也不够替 §f{0} §7垫这笔传送税喵。"
+
+tpa-self: "§c✖ §f不能向自己发送传送请求。§r"
+tpa-busy-out: "§c✖ §f你已有待处理的请求或正在传送中，请先取消或等待完成。§r"
+tpa-busy-in: "§c✖ §7对方收到的传送请求已达上限（10 个），暂时无法再发送。§r"
+tpa-busy: "§c✖ §f你现在无法发送传送请求。§r"
+tpa-none: "§c✖ §f没有符合条件的有效传送请求。§r"
+tpa-choose: "§7» §7你有多个传送请求，请指定玩家：§f/tpaccept <玩家>§7 或 §f/tpdeny <玩家>§r"
+tpa-offline: "§c✖ §7该请求的发送者已离线，请求已作废。§r"
+tpa-cancelled: "§7» §8传送请求已取消。§r"
+tpa-countdown-cancelled: "§a✔ §7传送已取消，预扣的传送税将退回付款方钱包。§r"
+tpa-expired: "§7» §8传送请求已过期。§r"
+tpa-denied: "§7» §8传送请求已拒绝。§r"
+tpa-failed: |-
+  §c✖ §7传送未完成，未收取任何费用。
+tpa-success: "§a✔ §7到啦，传送税 §e§l{0} §7已计入 eco 税收池喵。"
+tpa-estimate: |-
+  §7» §7预计传送费用 §e{0}§7，实际金额以接受时的余额为准。
+
+# ═══════════ 可点击操作 ═══════════
+# 以下键由 platform/Messages 以 Adventure 组件渲染，仅对玩家生效。
+# 点击会以「点击者」身份执行 /tpaccept|deny <玩家>，权限校验照常生效。
+action-prefix: "§7» "
+action-separator: " §8· "
+tpa-click-accept: "§a§l[接受]"
+tpa-click-deny: "§c§l[拒绝]"
+tpa-click-accept-hint: "§7点击接受 §e{0} §7的传送请求"
+tpa-click-deny-hint: "§7点击拒绝 §e{0} §7的传送请求"
+tpa-click-sponsor: "§e§l[为他垫付]"
+tpa-click-refuse: "§8§l[放弃]"
+tpa-click-sponsor-hint: "§7点击为 §e{0} §7垫付传送税并完成这次传送"
+tpa-click-refuse-hint: "§7点击放弃 §e{0} §7的传送请求"
+
+# ═══════════ 回城 ═══════════
+spawn-usage: |-
+  §7» §f/spawn §8— §7传送回世界出生点（免费）
+spawn-warmup: "§a✔ §7§e{0} §7秒后传送回出生点，请保持不动。"
+spawn-done: "§a✔ §7已传送回出生点。"
+spawn-blocked: "§c✖ §7传送被其他插件或区域规则阻止，未成功。"
+spawn-moved: "§e⚠ §7你移动了，传送已取消。"
+spawn-damaged: "§e⚠ §7你受到了伤害，传送已取消。"
+spawn-busy: "§e⚠ §7你已有一次回城正在准备中。"
+spawn-cooldown: "§e⚠ §7还需等待 §e{0} §7秒才能再次回城。"
+spawn-unsafe: "§c✖ §7出生点附近找不到可站立的安全落点，未传送。"
+spawn-unloaded: "§c✖ §7出生点所在区块未加载，未传送（本插件不会自动生成区块）。"
+spawn-state: "§c✖ §f你现在无法传送（死亡中或观战模式）。"
+spawn-missing-world: "§c✖ §7配置里指定的世界 §e{0} §7不存在，请检查 spawn.world。"
+spawn-set: "§a✔ §7已把 §e{0} §7的世界出生点设为你的位置。"
+spawn-set-unsafe: "§e⚠ §7注意：这里不是安全落点，玩家回城时会自动搜索附近位置。"
+spawn-set-failed: "§c✖ §7设置出生点失败。"
+
+# ═══════════ 帮助 ═══════════
+help-header: |-
+  §b§lMeowo §8· §7命令帮助 §8· §7只列出你现在能用的
+help-group: "§8▌§b {0}"
+help-line: "§7▸ §f{0} §8· §7{1}"
+help-footer: |-
+  §8表情：§7` + 名字，如 §f`sad §7/ §f`sx §7/ §f`smile §8· §7反引号开头，按 §fTab §7补全
+  §8每条消息开头的 §f#编号 §8· §7输入 §f/meo replay #编号 §7可以回看这一段对话
+  §8────────────────────────────────
+help-empty: "§7你现在还不能用这里的任何命令。\n§8────────────────────────────────"
+help-usage: "§7用法：§f/meo help §7或 §f/meo help <页码> §8· §7共 {0} 页。"
+help-no-page: "§c✖ §7帮助一共 {0} 页，没有这一页喵。"
+help-nav: "§8第 §f{0}§8/§f{1}§8 页"
+help-nav-text: "§8第 §f{0}§8/§f{1}§8 页 §8· §7{2}"
+help-nav-previous: "§b« 上一页"
+help-nav-next: "§b下一页 »"
+help-nav-first: "§b« 回到开头"
+help-nav-hover: "§7点击翻到第 §f{0}§7 页 §8· §7{1}"
+help-commands: |-
+  @说话
+  msg|§7私聊玩家或发言者
+  mail|§7私信邮箱
+  who|§7列出全部发言者
+  replay|§7回看一段对话（补全部是当前会话的编号）
+  em|§7表情菜单
+  @猫记得你什么
+  known|§7看看每只猫对你的印象
+  forget|§7让猫忘掉你（要打出你自己的名字）
+  @钱
+  eco|§7余额、转账、每日补助
+  pay|§7给别的玩家转钱
+  menu|§7打开钱包菜单
+  sell|§7喵达商店回收矿石（§f/sell gui §8打开价目表）
+  @移动
+  home|§7家与传送点（§f/home gui §8打开菜单）
+  tpa|§7请求传送（§f/tpa accept §8接受、§f/tpa deny §8拒绝）
+  tpaccept|/meo tpa accept|§7接受别人的传送请求
+  back|§7回到死亡或传送之前的地方
+  spawn|§7免费回城
+  @随身与位置
+  sit|§7原地坐下（再输入一次起身）
+  ride|§7骑上另一位玩家
+  hat|§7把手上的东西戴到头上
+  pomodoro|§7番茄钟：专注计时与休息循环（§f/pomodoro gui §8打开菜单）
+  shadowbox|§7影盒随身空间
+  @形象
+  phantom|§7让夜里的幻翼不再来找你（§f/phantom on §8· §7off§8）
+  size|§7调整自己的体型（§f/size up §8· §7down §8· §7reset§8）
+  @世界
+  mine|§7矿物勘探与图鉴
+  afk|§7手动标记离开
+  @管理
+  invsee|§7查看其他玩家的背包并取走 / 交换物品
+  info|§7查看版本与实际启用的模块
+  setspawn|§7把世界出生点设在这里
+  reload|§7重载语言与模块开关
+
+tpa-moved: "§e⚠ §7你移动了，传送已取消；全部预扣费用将退回原付款方。"
+tpa-sponsor-charge-detail: "§7» §6§l申请者传送税 §e§l{0} §8· §6§l支付税 §e§l{1} §8· §6§l合计 §e§l{2}"
+eco-pay-tax: "§7» §6§l支付税 §e§l{0} §8· §6§l共扣 §e§l{1}§r"
+
+# ═══════════ SIT / RIDE ═══════════
+seat-sat: "§a✔ §7你坐下了，潜行或再次输入可起身。"
+seat-stand: "§7» §7你站了起来。"
+seat-airborne: "§c✖ §7脚下没有可坐的地面。"
+seat-occupied: "§e⚠ §7你已经在一个载具上了，先脱离再坐下。"
+seat-state: "§c✖ §7你现在无法坐下（死亡中或观战模式）。"
+seat-gone: "§e⚠ §7座位方块被破坏，你站了起来。"
+seat-failed: "§c✖ §7操作失败，请稍后再试。"
+seat-riding: "§a✔ §7你骑上了 §f{0}§7，潜行可脱离。"
+seat-dismounted: "§7» §7你已脱离。"
+seat-not-riding: "§e⚠ §7你当前没有乘坐任何载具。"
+seat-self: "§c✖ §7不能骑自己。"
+seat-already: "§e⚠ §7你已经骑在它上面了。"
+seat-no-target: "§c✖ §7附近找不到 §f{0}§7（玩家需在线，生物需在视野范围内）。"
+seat-need-any: "§c✖ §7只有管理员可以骑乘生物；骑乘其他玩家无需权限。"
+
+seat-nearby-player: "§c✖ §7附近 3×3 范围内找不到可骑乘的在线玩家 §f{0}§7。"
+
+# ═══════════ AVATAR 幻翼与体型 ═══════════
+# 「幻翼」这一格取消的是**原版**「不睡觉就刷幻翼」的机制，不是召唤一只幻翼跟着你。
+avatar-phantom-on: "§a✔ §7夜里的幻翼不会再来找你了喵。"
+avatar-phantom-off: "§7» §7夜里的幻翼会照常来找你了。"
+avatar-phantom-usage: "§c✖ §7用法：§f/phantom [on|off]"
+avatar-size-current: "§7» §7你现在的体型是 §f{0}§7 倍。"
+avatar-size-changed: "§a✔ §7体型变成 §f{0}§7 倍了喵。"
+avatar-size-reset: "§7» §7体型恢复成 §f{0}§7 倍。"
+avatar-size-usage: "§c✖ §7用法：§f/size [up|down|reset|倍数]"
+avatar-size-unavailable: "§c✖ §7这台服务器不支持调整体型。"
+seat-ride-usage: "§7» §f/ride [玩家] §8— §7只能骑乘附近 3×3 范围内的玩家；不填玩家则脱离。"
+
+seat-stack-invalid: "§c✖ §7无法继续堆叠骑乘：上层必须是附近可见的玩家，且不能形成循环。"
+
+seat-ride-state: "§c✖ §7当前状态无法骑乘：玩家死亡中或处于观战模式。"
+
+# ═══════════ HAT ═══════════
+hat-on: "§a✔ §7你把 §f{0} §7戴到了头上。"
+hat-off: "§7» §7你摘下了 §f{0}§7。"
+hat-nothing: "§e⚠ §7你手上没有东西，头上也没有帽子。"
+
+hat-refused: "§c✖ §7§f{0} §7不能戴在头上（工具类物品会被拒绝）。"
+
+# ═══════════ 潜影盒 ═══════════
+# 潜影盒是「带方块实体背包的原版容器方块物品」+ 插件标记，盒子里的东西存在物品自己的 NBT 里。
+# 因此物品改名后，旧盒子仍会以原名称显示——这是刻意的：不要让改名意外变成复制物品的手段。
+shadowbox-title: "Meowo §8· §e潜影盒"
+shadowbox-name: "§5潜影盒"
+shadowbox-lore-open: "§7背包里 §fShift + 右键 §8· §7手上 §f潜行右键"
+shadowbox-lore-command: "§7或输入 §f/shadowbox §7打开"
+shadowbox-slot-count: "§8容量 §e{0} §7格"
+shadowbox-usage: |-
+  §7» §f/shadowbox §8— §7打开主手上的潜影盒
+shadowbox-usage-open: "§7» §f/shadowbox §8— §7打开主手上的潜影盒"
+shadowbox-given: "§a✔ §7已向 §f{0} §7发放一个潜影盒。"
+shadowbox-empty-hand: "§c✖ §7主手上不是潜影盒。"
+shadowbox-busy: "§e⚠ §7你已经打开了一个潜影盒，先把它关掉。"
+shadowbox-split-first: "§e⚠ §7先把这叠盒子拆成单个，再打开——一叠盒子无法各自保存内容。"
+shadowbox-invalid: "§c✖ §7这个潜影盒无法存放物品，请联系管理员检查 §fshadowbox.material§7。"
+shadowbox-open-failed: "§c✖ §7潜影盒没能打开，请稍后再试一次。"
+
+# ═══════════ 喵达 MODACAT 商店 ═══════════
+# /sell 把矿石换成钱。价格是**一个**矿石的价，深层矿与地表同价；表在 config.yml 的 shop.prices。
+shop-title: "Meowo §8· §e喵达商店"
+# 每种矿石的名字。键是材质名的小写，所以在 shop.prices 里新加一种矿物时，
+# 补一条同名键即可；不补也能用，只是会退回显示材质常量。
+shop-item-coal_ore: "煤矿"
+shop-item-deepslate_coal_ore: "深层煤矿"
+shop-item-nether_quartz_ore: "下界石英矿"
+shop-item-iron_ore: "铁矿"
+shop-item-deepslate_iron_ore: "深层铁矿"
+shop-item-copper_ore: "铜矿"
+shop-item-deepslate_copper_ore: "深层铜矿"
+shop-item-redstone_ore: "红石矿"
+shop-item-deepslate_redstone_ore: "深层红石矿"
+shop-item-gold_ore: "金矿"
+shop-item-deepslate_gold_ore: "深层金矿"
+shop-item-diamond_ore: "钻石矿"
+shop-item-deepslate_diamond_ore: "深层钻石矿"
+shop-item-lapis_ore: "青金石矿"
+shop-item-deepslate_lapis_ore: "深层青金石矿"
+shop-item-emerald_ore: "绿宝石矿"
+shop-item-deepslate_emerald_ore: "深层绿宝石矿"
+shop-cell-name: "§f{0}"
+shop-cell-price: "§7回收价 §e{0} §7/ 个"
+shop-cell-held: "§7你背包里有 §f{0} §7个"
+shop-cell-gestures: "§8左键卖出这一种的全部 · 右键只卖主手那一叠"
+shop-sell-all: "全部卖出"
+shop-sell-all-lore: "§7卖掉背包里所有矿石。点下去还会再问一次。"
+shop-hand: "只卖主手"
+shop-hand-lore: "§7卖掉主手上那一叠，不问。"
+shop-confirm-title: "喵达要收走这些矿石"
+shop-confirm-detail: "§7卖掉背包里 §f{0} §7个矿石，换 §a{1}"
+shop-sold: "§a✔ §7喵达收走 §f{0} §7个矿石，付你 §e{1} §8· §7余额 §e{2}"
+shop-sold-line: "§8· §7{0} §8×§f{1} §8= §e{2}"
+shop-refunded: "§c✖ §7钱没付成，矿石已经原样放回你背包了喵。"
+shop-empty: "§e喵达翻了翻你的口袋：没有能回收的矿石喵。"
+shop-hand-empty: "§e主手上没有东西可卖喵。"
+shop-not-mine: "§e喵达看了看主手：§f{0} §e这个不收喵。"
+shop-none-held: "§e你背包里没有 §f{0} §e了喵。"
+shop-unknown-ore: "§c✖ §7喵达不认这种矿物。输入 §f/sell gui §7看它收什么。"
+shop-usage: "§7» §f/sell §8— §7卖掉背包里所有矿石（会先问一次）"
+shop-usage-forms: |-
+  §7» §f/sell hand §8— §7只卖主手 §8· §7» §f/sell all <矿物> §8— §7只卖这一种
+  §7» §f/sell gui §8— §7打开价目表
+
+# ═══════════ INVSEE ═══════════
+# 管理员查看他人背包。窗口只是**镜像**：每一次拿取 / 给予都立刻写进对方的真实背包，
+# 所以不存在「关窗时才发现东西没了」这种中间态。
+invsee-title: "Meowo §8· §e{0} 的背包"
+invsee-usage: "§7» §f/invsee <玩家> §8— §7查看并取走该玩家的物品"
+invsee-self: "§c✖ §7不能查看自己的背包。"
+invsee-busy: "§e⚠ §7你已经打开了一位玩家的背包，先把它关掉。"
+invsee-opened: "§7» §f{0} §7的背包已打开：左键取到手上，右键取整叠，Shift + 左键直接进自己背包。"
+invsee-open-failed: "§c✖ §7背包没能打开，请稍后再试一次。"
+invsee-gone: "§e⚠ §7该玩家已不在线，背包已关闭。"
+invsee-no-longer: "§c✖ §7权限已被收回，背包已关闭。"
+invsee-unsupported: "§e⚠ §7这里只能用左键、右键或 Shift + 左键。"
+invsee-no-drag: "§e⚠ §7请先拿起物品，再点击目标格子。"
+invsee-not-equipment: "§c✖ §7§f{0} §7不是护甲，不能放进装备槽。"
+invsee-took: "§7» §f从 §e{0} §7取走 §e{1}§7。"
+invsee-gave: "§7» §f给予 §e{0} §7§e{1}§7。"
+invsee-swapped: "§7» §f与 §e{0} §7交换：§e{1}§7。"
+seat-stairs-flipped: "§c✖ §7这是上下颠倒的楼梯，没有可以坐的台阶。"
+seat-stairs-backwards: "§c✖ §7这级台阶朝向另一边，请绕到台阶那一侧再坐下。"
+seat-too-far: "§c✖ §7离得太远了，走近一点再坐下。"
+seat-blocked: "§c✖ §7这个位置的上方被挡住了，坐不下。"
+seat-taken: "§c✖ §7这个位置已经有人坐着了。"
+
+# ═══════════ NAMETAG ═══════════
+nametag-afk-on: "§7» §7你已标记为离开，别人名称后的圆点会变暗黄。"
+nametag-away-title: "§e§l挂机中"
+nametag-away-hint: "§7下蹲、挥手、吃东西、切换物品栏或发言即可解除"
+nametag-afk-off: "§7» §7你已取消离开标记。"
+
+# Home / TabooLib UI
+home-title: "家园 · {0}/{1}"
+home-edit-title: "编辑 #{0} · {1}"
+home-default-name: "家 {0}"
+home-usage: "/home 打开 GUI；/home <编号或名称> 回家；/sethome [编号或名称]；/home edit <编号>；/home cancel；/home nav <编号|off>；/home rename <编号> <名称>；/home color <编号> <颜色或#RGB>；/home show <编号> <on|off>；/home icon <编号> <default|bowtie>"
+home-admin-usage: "管理员：/home view <玩家> 查看；/home set <玩家> [编号或名称] 设置（不收费，玩家离线也可以）。"
+home-force-usage: "强制传送：/home <编号或名称> force —— 忽略落点安全检查，直接回到保存的原坐标。"
+home-loading: "§7家园正在恢复，请稍后重试。"
+home-missing: "§c找不到这个家。"
+home-limit: "§c最多可以设置 {0} 个家。"
+home-invalid-name: "§c名称需为 1–24 个字符，不能重复或含控制/颜色字符。"
+home-invalid-color: "§c颜色需是预设色名或六位 RGB（例如 #91B7A2）。"
+home-busy: "§e你已有家园操作或传送正在处理中。"
+home-stale: "§e这个家已更新，请重新打开页面。"
+home-world-missing: "§c家的世界 {0} 未加载，未扣费。"
+home-cross-world-disabled: "§c服务器未开放跨世界回家。"
+home-unsafe: "§c落点不安全或区块不可用，操作未完成，预扣会退还。"
+home-force-disabled: "§c服务器未开放强制传送，落点不安全时回不了家。"
+home-force-height: "§c{0} 里这个家的坐标超出世界高度，强制传送也到不了。"
+home-state: "§c当前状态无法回家，请先离开骑乘、观战或死亡状态。"
+home-saved: "§a#{0} {1} 存好啦，设置税 §e§l{2} §7计入 eco 喵。"
+home-admin-unknown: "§c✖ §7服务器不认得 §f{0}§7。只处理本服见过的玩家（在线或曾登录过）。"
+home-admin-view-header: "§8[§bMeowo§8]§r §7§f{0} §7的家 §8· §f{1} §7个"
+home-admin-view-empty: "§8└ 一个都没有。"
+home-admin-view-row: "§8│ §f#{0} §b{1} §8· §7{2} §8· §7{3}, {4}, {5} §8· §7{6}"
+home-admin-view-footer: "§8└ 修改：§f/home set {玩家} [编号或名称] §8· §7不收设置税喵。"
+home-admin-set-doing: "§7把 §f{0} §7的 §f#{1} {2} §7设到你脚下……"
+home-admin-set-done: "§a已把 §f{0} §7的 §f#{1} {2} §7设到你脚下，不收设置税喵。"
+home-admin-set-told: "§e⚠ §7管理员 §f{0} §7把你的 §f#{1} {2} §7设到了他的脚下（不收费）。有问题找管理员喵。"
+home-updated: "§a外观/导航设置已保存，此操作免费。"
+home-deleted: "§7已删除家 {0}。"
+home-warmup: "§a{1} 秒后回 {0}，先扣 §e§l{2}§7。可以转头，但脚步别动喵。"
+home-arrived: "§a到 {0} 啦，费用 §e§l{1} §7已计入 eco 喵。"
+home-force-arrived: "§a已强制回到 {0} 保存的原坐标，费用 §e§l{1} §7。落点没做安全检查喵。"
+home-failed: "§c操作未完成。未结算的预扣费用会退还；若存储不可用，重启时自动恢复。"
+home-moved: "§e位置发生移动，回家已取消，预扣费用将退还。"
+home-cancelled: "§7回家已取消，预扣费用将退还。"
+home-no-travel: "§7你没有正在倒计时的回家传送。"
+home-empty-slot: "#{0} 空位"
+home-create-hint: "点击在当前位置设家（需设置税）"
+home-list-help: "左键：回家 · 右键：编辑"
+home-nav-help: "定位栏导航与家园设置"
+home-visible: "导航：显示（点击切换）"
+home-hidden: "导航：隐藏（点击切换）"
+home-icon-detail: "定位栏图标：{0}"
+home-nav-other-world: "另一世界：{0}"
+home-nav-selected: "§7已选择 {0} 的辅助导航。"
+home-name-prompt: "§7请在聊天输入新名称（不向其他玩家发送）；输入 cancel 取消，60 秒后失效。"
+home-close: "关闭"
+home-back: "返回"
+home-travel: "回到这个家"
+home-force-travel: "强制回到原坐标"
+home-force-help: "忽略落点安全检查；家被自己改坏了时的救急通道"
+home-rename: "修改名称"
+home-color: "选择颜色"
+home-free: "免费修改"
+home-bar-icon: "定位栏图标"
+home-menu-icon: "菜单物品图标"
+home-icon-limit: "原版支持圆点/蝴蝶结；更多图标需资源包"
+home-nav-select: "开启 / 关闭方向导航"
+home-relocate: "迁址到当前位置"
+home-delete: "删除这个家"
+home-set-tax-hint: "设置税 §6§l余额的 {0}%§7（§e§l{1}§7 ~ §e§l{2}§7）"
+home-confirm-title: "确认家园操作"
+home-confirm: "确认"
+home-confirm-set: "保存 {0} · 预计设置税 {1}"
+home-confirm-travel: "回 {0} · 费用 §e§l{1}"
+home-confirm-force: "强制回 {0} 的原坐标 · 费用 §e§l{1}（不检查落点）"
+home-confirm-delete: "删除 {0}（免费且不退历史税）"
+home-confirm-tax: "设置税以确认时余额为准；成功后计入 eco"
+home-style-default: "圆点（原版随距离变化）"
+home-style-bowtie: "蝴蝶结（原版样式）"
+home-color-white: "白色"
+home-color-orange: "橙色"
+home-color-magenta: "品红"
+home-color-light_blue: "浅蓝"
+home-color-yellow: "黄色"
+home-color-lime: "黄绿"
+home-color-pink: "粉红"
+home-color-gray: "灰色"
+home-color-light_gray: "浅灰"
+home-color-cyan: "青色"
+home-color-purple: "紫色"
+home-color-blue: "蓝色"
+home-color-brown: "棕色"
+home-color-green: "绿色"
+home-color-red: "红色"
+home-color-black: "黑色"
+home-item-white_bed: "白床"
+home-item-red_bed: "红床"
+home-item-blue_bed: "蓝床"
+home-item-oak_door: "木门"
+home-item-compass: "指南针"
+home-item-bell: "钟"
+home-item-lantern: "灯笼"
+home-item-campfire: "篝火"
+home-item-diamond: "钻石"
+home-item-emerald: "绿宝石"
+home-item-chest: "箱子"
+home-item-crafting_table: "工作台"
+home-item-enchanting_table: "附魔台"
+home-item-book: "书"
+home-item-wheat: "小麦"
+home-item-cherry_sapling: "樱花树苗"
+
+menu-main-title: "Meowo · 总菜单"
+
+# ═══════════ MINE ═══════════
+
+rare-diamond: "钻石"
+rare-deepslate-diamond: "深层钻石"
+rare-emerald: "绿宝石"
+rare-deepslate-emerald: "深层绿宝石"
+rare-netherite: "下界合金"
+mine-announce: "§7⛏ §f{0} §7挖到了 §e{1} §7× §e{2}"
+mine-first: "§6⛏ §e★ §f{0} §7是本服第一个挖到 §6{1} §7的人！§e共 {2} 个"
+mine-header: "§7» §f{0} §7已发现的稀有矿物："
+mine-entry: "§8· §e{0} §8· §7首挖 §f{1} §8· §7共 §e{2} §7个"
+mine-none: "§7» §f{0} §7还没有出现过稀有矿物。"
+mine-none-world: "§c✖ §7没有可用的世界。"
+
+home-confirm-chat: "§7» §f回 §e{0} §7要 §6§l{1}§7，§e{2} 秒内§7再输入一次 §f/home {0} §7就出发喵。"
+home-force-chat: "§7» §e⚠ §f强制传送 §e{0} §7到保存的原坐标（不检查落点），费用 §6§l{1}§7。§e{2} 秒内§7再输入一次 §f/home {0} force §7就出发喵。"
+home-confirm-chat-set: "§7» §f把 §e{0} §7设在家要 §6§l{1}§7，§e{2} 秒内§7再输入一次同样的 §f/home set {0} §7确认喵。"
+home-confirm-chat-delete: "§7» §c✖ §7删掉 §e{0} §7不可撤销，§e{1} 秒内§7再输入一次 §f/home delete {0} §7就真的删了喵。"
+
+# ── 菜单按钮（GUI 文案也必须走语言包，否则切语言无效）──
+menu-item-homes: "家园"
+menu-item-homes-lore: "管理家园、传送与导航"
+menu-item-shop: "喵达商店"
+menu-item-shop-lore: "§7把矿石卖给喵达，换成钱（§f/sell gui §8打开价目表）"
+menu-item-wallet: "钱包"
+menu-item-wallet-lore: "点击查看余额"
+menu-item-pomodoro: "番茄钟"
+menu-item-pomodoro-lore: "§7工作 / 休息循环计时，可自定义预设"
+# 总菜单中央的核心格：只作视觉焦点，不响应点击，所以必须写明「点了没反应」。
+menu-item-core: "§d✦ §fMeowo"
+menu-item-core-lore: "§8这里是总菜单的中心，点了不会发生什么。"
+menu-item-main-menu: "总菜单"
+menu-item-main-menu-lore: "§7回到 Meowo 总菜单。"
+# 总菜单两侧的护柱：纯装饰，和核心格一样必须说清楚它不可点。
+menu-item-pillar: "§8·"
+menu-item-pillar-lore: "§8柱殿的护柱，装饰用，点了不会发生什么。"
+# 总菜单心形的轮廓：同样是纯装饰。
+menu-item-heart: "§8·"
+menu-item-heart-lore: "§8心形的轮廓，装饰用，点了不会发生什么。"
+# 幻翼：开关。名字跟着状态走，所以「开」和「关」各有一句。
+# 这里的「幻翼」是原版那个「不睡觉就刷幻翼」的机制，开关关掉的是**它**，不是召唤一只幻翼。
+menu-item-phantom: "幻翼"
+menu-item-phantom-on: "§d✦ 幻翼 · 不会来找你"
+menu-item-phantom-off: "§8幻翼 · 会来找你"
+menu-item-phantom-lore: "§7原版里，整夜不睡会有幻翼追着你。开启后就不会了喵。"
+menu-item-phantom-hint: "§8左键开启 / 关闭"
+# 体型：左键变大、右键变小、Shift+左键归位。
+# 这一行带着当前倍数，所以它**不能**是语言键（键是查不到参数的），只能由菜单模块填好再交给 UI。
+# 因此这一行刻意不带颜色码：填好的文字走的是「字面量」那条路，那里认的是 & 而不是 §。
+menu-item-size: "§b❖ 体型"
+menu-item-size-lore: "当前体型：{0} 倍"
+menu-item-size-hint: "§8左键变大 · 右键变小 · Shift+左键归位"
+menu-item-close: "关闭"
+menu-item-close-lore: "§7只关闭这个菜单，不会影响其它正在进行的操作。"
+menu-item-page-prev: "上一页"
+menu-item-page-next: "下一页"
+menu-item-back-main: "返回总菜单"
+menu-item-back-main-lore: "§7回到主菜单，不改动任何东西。"
+menu-item-nav-off: "关闭辅助导航"
+menu-homes-entry: "#{0} {1}"
+menu-homes-title: "家园 · {0}/{1}"
+menu-homes-empty: "#{0} · 未设置"
+menu-homes-empty-lore1: "点击在当前位置创建家园"
+menu-homes-empty-lore2: "创建费用将在确认页显示"
+menu-homes-lore-coords: "{0} · {1}, {2}, {3}"
+menu-homes-lore-sameworld: "{0}m · ΔY {1}"
+menu-homes-lore-crossworld: "跨世界"
+menu-homes-visible: "显示"
+menu-homes-hidden: "隐藏"
+menu-homes-style-bowtie: "⋈ 蝴蝶结"
+menu-homes-style-default: "◆ 默认"
+menu-homes-lore-hint: "左键回家 · 右键设置"
+menu-homes-summary: "{0}/{1} 个家 · {2}/{3} 页"
+menu-homes-capacity: "容量权限：meowo.home.limit.{0}"
+
+# ═══════════ CHAT ═══════════
+chat-status: "§8[§bMeowo§8]§r §7发言者 §e{0} §8│ §7过滤规则 §e{1} §8│ §7审计容量 §e{2}"
+chat-speaker: "§8[§bMeowo§8]§r §f{0} §8· §7{1} §8· §7可私聊 §f{2}"
+chat-yes: "§a是"
+chat-no: "§8否"
+
+# 发言者职责一句话，显示在 /meowo who
+speaker-summary-system: "系统与通用提示"
+speaker-summary-economy: "余额、转账与每日补助"
+speaker-summary-menu: "钱包菜单"
+speaker-summary-render: "客户端专属实体渲染"
+speaker-summary-spawn: "免费回城与出生点"
+speaker-summary-sit: "坐下与骑乘"
+speaker-summary-hat: "把物品戴在头上"
+speaker-summary-nametag: "挂机标记与名牌状态"
+speaker-summary-mine: "矿物勘探与图鉴"
+speaker-summary-shadowbox: "影盒与随身空间"
+speaker-summary-teleport: "传送请求"
+speaker-summary-home: "家与传送点"
+speaker-summary-invsee: "管理员查看他人背包"
+speaker-summary-shop: "矿物商店与报价"
+speaker-summary-pomodoro: "番茄钟与专注计时"
+helpdesk-hello: "§7喵～有什么可以帮你的？问我「帮助」或「余额」都行。"
+helpdesk-thanks: "§7不客气喵～"
+helpdesk-help: |-
+  §7我可以：
+helpdesk-about: "§7我是 §f{0}§7，Meowo 插件的发言者之一喵。直接问我就行。"
+helpdesk-balance: "§7你的余额是 §e{0}§7。"
+helpdesk-economy-off: "§c✖ §7经济模块当前没开，查不了余额喵。"
+helpdesk-unknown: "§e⚠ §7没听懂喵。试试问「帮助」或「余额」，或者去找 §fMeowCat§7。"
+
+# —— 送达回执走 actionbar，不占聊天栏 ——
+
+# —— 邮箱（/meo msg 不带参数）——
+
+# —— 猫代转（传递消息）——
+helpdesk-relay-usage: "§e⚠ §7用法：转告 <玩家> <内容>"
+helpdesk-relay-unknown: "§c✖ §7找不到玩家 §f{0}§7。"
+helpdesk-relay-sent: "§a✔ §7已把话带到 §f{0} §7那里了。"
+helpdesk-relay-cooldown: "§e⚠ §7刚转过一句，等一下再转喵。"
+helpdesk-relay-self: "§c✖ §7不能转告给自己喵。"
+
+# —— 私信标签：只放一个符号，详情放悬停 ——
+
+# —— 私信徽记：统一放在最前面；玩家的可点，系统的不行 ——
+mail-badge: "§7✉"
+mail-mark-new: "§b✉"
+mail-mark-read: "§8✉"
+mail-mark-replied: "§8✉✓"
+
+# —— 私信：/meo msg ——
+msg-usage: "§c✖ §7用法：§f/meo msg <玩家或发言者> <内容>"
+msg-unknown: "§c✖ §7找不到 §f{0} §7对应的玩家或发言者。"
+msg-refused-self: "§c✖ §7不能给自己发私信。"
+msg-refused-rate_limit: "§e⚠ §7发太快了，等一下再试。"
+msg-refused-blocked: "§c✖ §7该内容被审核拦截，未送达。"
+chat-blocked: "§c✖ §7这条消息没发出去喵。"
+chat-muted: "§c✖ §7你被禁言了，暂时发不出消息。"
+chat-log-header: "§8[§bMeowo§8]§r §7{0} §8│ §7最近 §f{1} §7条"
+chat-log-empty: "§7最近没有 {0} 的聊天记录。"
+chat-log-offline: "§c✖ §7找不到在线玩家 §f{0}§7。"
+chat-log-head: "§8#{0} §8│ §7{1} §8│ §7{2}"
+chat-log-text: "§f{0}"
+msg-refused-empty: "§e⚠ §7光有编号没有内容，说点什么吧喵。"
+msg-refused-muted: "§c✖ §7你被禁言了，暂时发不出私信。"
+msg-refused-unknown: "§c✖ §7没送达喵。"
+msg-nobody-home: "§e⚠ §7§f{0} §7现在没人应答，等一下再试喵。"
+
+# 发送成功**不提示**：那一行私信本身已经带着 ✔ / 〇，自己就是回执。
+# 只有失败才出声，因为失败时没有行可看。
+
+# —— 邮箱：/meo mail ——
+mail-empty: "§7邮箱是空的喵。"
+mail-header: "§8[§bMeowo§8]§r §7邮箱 §8· §f{0} §7封 §8│ §7未读 §e{1}"
+mail-foot: |-
+  §8点名字 §7就能回复。
+  §8已读 §8│ §7新 §b✉ §8│ §7已回 §8✉✓
+
+# —— 表情：/meo em ——
+em-header: "§8[§bMeowo§8]§r §7表情 §8· §f{0} §7个，写消息时用 §f`名字 §7（反引号开头）"
+em-body: |-
+  §8{0}
+em-unknown: "§7没找到 §f{0}§7。用 §f/meo em §7看全部。"
+em-resolved: "§7§f{1} §8= §f{2} §8│ §7别名含 §f{0}"
+
+# —— 状态码 #k3f9：每条消息开头都有 ——
+code-hover: "§7{0} §8· §7{1}"
+code-hover-replies: "§7{0} §8· §7{1} §8│ §7{2} §8· §f点击查看"
+# ═══════════ AGENTS / 印象 ═══════════
+
+known-header: "§8[§bMeowo§8]§r §7猫对你的印象 §8· §f{0} §7条"
+known-row: "§8│ §f{0}§8: §7{1} §8（§7{2}§8）"
+known-empty: "§7还没有哪只猫对你有印象。同一只猫聊够几次之后才会有。"
+known-footer: "§8└ 这些是猫自己写的。除非你先提起，它们不会主动说。"
+known-console: "§7这个指令要给玩家自己用。"
+# ═══════════ AGENTS / 投诉 ═══════════
+# 这里的键由 ReportService 返回 —— 它没有语言文件，也不该有。
+report-console: "§7这个指令要给玩家自己用。"
+report-usage: "§7用法：§f/meo report <玩家> <negative|positive> <原因>§7"
+report-bad-sentiment: "§c✖ §7只收 §fnegative§7 或者 §fpositive§7，收到的是 §f{0}§7。"
+report-unknown-player: "§c✖ §7找不到叫 §f{0}§7 的人。"
+report-unavailable: "§c✖ §7投诉这条线现在没接上喵。告诉管理员。"
+report-refuse-self: "§c✖ §7不能评价自己。"
+report-refuse-coplay: "§c✖ §7你得先和对方一起玩过，这条才收得下。"
+report-refuse-rate: "§c✖ §7你今天已经说过他了，一天一条就够。"
+report-stored: "§8[§bMeowo§8]§r §7记下了喵。"
+report-stored-untrusted: "§8[§bMeowo§8]§r §7记下了。你们一起玩得还不算多，这条先只作参考。"
+report-stored-burst: "§8[§bMeowo§8]§r §7记下了。不过最近说他的太多了，这条先不单独算数。"
+forget-console: "§7这个指令要给玩家自己用。"
+forget-usage: "§7用法：§f/meo forget {0}§7 —— 打出你自己的名字，确认是你自己要被忘掉。"
+forget-name-mismatch: "§c✖ §7那不是你的名字。要被忘掉的是 §f{0}§7 自己的记录。"
+forget-failed: "§c✖ §7没能删干净。告诉管理员，或者过一会儿再试一次喵。"
+forget-profile-gone: "已删"
+forget-profile-none: "本来就没有"
+forget-partial: "§8[§bMeowo§8]§r §7只删掉了一部分喵。§8· §f{0}§7 条印象 §8· §f{1}§7 条你提交的投诉 §8· §7画像 {2}§8· §c聊天记录这次联系不上，所以它删没删我没法说。"
+forget-done: "§8[§bMeowo§8]§r §7忘了喵。§8· §f{0}§7 行聊天 §8· §f{1}§7 条印象 §8· §f{2}§7 条你提交的投诉 §8· §7画像 {3}"
+forget-kept: "§8└ §f{0}§7 条别人写你的投诉、§f{1}§7 条工单**没有删** —— 那是别人说的话和服务器的管理记录。"
+forget-kept-hint: "§8  它们已经退出使用（猫不再读，纪律阶梯也不会再升级），但名字还在库里。要彻底删掉请联系管理员喵。"
+
+agents-proactive: "[你刚刚看到这位玩家执行了 §f{0}§7。他没有对你说话。你可以搭一句话，也可以什么都不说 —— 这一行没有要求你开口。]"
+code-replies: "§e{0} §7条回复"
+replay-header: "§8[§bMeowo§8]§r §7消息记录 §f#{0}"
+replay-body: "§8共 §f{0} §8条"
+replay-head: "§8#{0} §8│ §7{1}"
+replay-text: "§f{0}"
+replay-gone: "§7这条记录已经不在了（只保留最近 7 天，且超出内存容量后会被挤掉）。"
+replay-usage: "§c✖ §7用法：§f/meo replay #<四位状态码>"
+
+# —— 资料卡（悬停名字时显示；必须双语，否则切语言时只有一种语言）——
+# 猫和玩家**同一套标题、同一套画法**，不因为是真人就换个说法。
+# 卡片不写「点击可私聊」这类承诺：同一行私信收发双方都看，
+# 一旦把提示写死成某个名字，其中一方点到的就一定是自己。
+profile-heading: "§b资料"
+profile-name: "名字"
+profile-uuid: "UUID"
+profile-joined: "注册"
+profile-session: "在线时长"
+profile-playtime: "累计游戏"
+profile-balance: "余额"
+profile-purpose: "职责"
+profile-unknown: "…"
+profile-copy-uuid-hint: "点击复制 UUID"
+profile-reply: "回复方式"
+# 私信末尾那个可见的回复按钮。图标和词都在语言包里，
+# 这样英文客户端看到的是 Reply 而不是塞在中文句子里的英文单词。
+
+# ── /back：回到上次死亡或传送之前的位置 ──
+back-usage: "§7» §f/back §8— §7回到上次死亡或传送之前的位置（不接受参数）。"
+back-state: "§c✖ §7你现在无法回溯（死亡中或观战模式），请稍后再试。"
+back-nowhere: "§e⚠ §7现在还没有可以回溯的地点。§8· §7先死亡或传送一次，再输入 §f/back§7。"
+back-busy: "§e⚠ §7上一次回溯还没结束，稍等一下再输入 §f/back§7。"
+back-broke: "§c✖ §7余额不够付回溯的费用，这次需要 §f{0}§7。"
+back-failed: "§c✖ §7回溯没有完成，费用已退回，可以再试一次。"
+back-moved: "§e⚠ §7你移动了，回溯已取消，预扣费用已退回。"
+back-charged: "§a✔ §7已预扣回溯费用 §f{0}§7，§e{1} §7秒后送你回去，§7请保持不动。"
+back-done: "§a✔ §7回来了，本次花了 §f{0}§7。"
+
+# ── 番茄钟 /pomodoro ──
+# 玩家看到的倒计时、状态与菜单文字；占位符按出现顺序为 {0} {1} …
+speaker-pomodoro: "PomoCat"
+pomodoro-usage: "§7» §f/pomodoro [gui|start <预设>|pause|resume|stop|next|stats|visuals bossbar|title on|off]"
+# 六种状态的显示名，BossBar / Title / 头顶文字共用。
+status-work: "工作中"
+status-work-completed: "工作完成"
+status-break: "短休息"
+status-long-break: "长休息"
+status-paused: "已暂停"
+status-stopped: "已结束"
+# 三个读数：BossBar / Title 副标题 / 头顶漂浮文字。
+pomodoro-bossbar: "§d◆ §f{0} §8┃ §f{1} §8┃ §e{2} §8┃ §7{3}/{4}"
+pomodoro-title: "§d◆ §f{0} §d◆"
+pomodoro-subtitle: "§f{0} §8┃ §e{1} §8┃ §7{2}/{3}"
+pomodoro-text-display: "§d◆ §f{0} §8┃ §f{1} §e{2}"
+pomodoro-started: "§a✔ §7开始 §f{0} §7——加油喵。"
+pomodoro-paused: "§e⚠ §7已暂停。回来时输入 §f/pomodoro resume§7。"
+pomodoro-resumed: "§a✔ §7继续！"
+pomodoro-stopped: "§7» §7这次番茄钟结束了，专注时长已经记下来了。"
+pomodoro-work-start: "§a▶ §7开始工作！"
+pomodoro-break-start: "§b▶ §7短休息时间——起来活动一下喵。"
+pomodoro-long-break: "§e▶ §7一整组做完了，长休息！"
+pomodoro-cycle-complete: "§a✔ §7这一轮完成。用 §f/pomodoro next §7进入休息。"
+pomodoro-too-far: "§e⚠ §7你离开了原位超过 {0} 格，已自动暂停。回到原位后输入 §f/pomodoro resume§7。"
+pomodoro-cannot-pause: "§e⚠ §7当前阶段不能暂停（工作完成后请用 §f/pomodoro next§7）。"
+pomodoro-not-paused: "§e⚠ §7现在没有暂停中的番茄钟。"
+pomodoro-not-active: "§e⚠ §7你没有进行中的番茄钟。"
+pomodoro-cannot-next: "§e⚠ §7只有「工作完成」阶段才能进入下一段。"
+pomodoro-preset-not-found: "§c✖ §7找不到预设 §f{0}§7。输入 §f/pomodoro §7看可选列表。"
+pomodoro-stats: "§7累计专注 §f{0} §7分钟 §f{1} §7秒。"
+pomodoro-visuals-usage: "§7» §f/pomodoro visuals <bossbar|title> <on|off>"
+pomodoro-bossbar-on: "§a✔ §7已开启进度条显示。"
+pomodoro-bossbar-off: "§7» §7已关闭进度条显示。"
+pomodoro-title-on: "§a✔ §7已开启屏幕标题显示。"
+pomodoro-title-off: "§7» §7已关闭屏幕标题显示。"
+# 菜单
+pomodoro-main-title: "番茄钟"
+pomodoro-preset-work: "工作 {0} 分钟"
+pomodoro-preset-break: "短休息 {0} 分钟"
+pomodoro-preset-long-break: "长休息 {0} 分钟"
+pomodoro-preset-sessions: "每 {0} 轮工作后长休息"
+pomodoro-toggle-bossbar-on: "进度条：开"
+pomodoro-toggle-bossbar-off: "进度条：关"
+pomodoro-toggle-title-on: "屏幕标题：开"
+pomodoro-toggle-title-off: "屏幕标题：关"
+
+# ── 番茄钟 · 自定义预设编辑器 ──
+pomodoro-editor-title: "编辑预设"
+pomodoro-editor-new-title: "新建预设"
+pomodoro-editor-default-name: "我的预设"
+pomodoro-editor-adjust-hint: "§7左键 +1，右键 −1"
+pomodoro-editor-name: "名称：{0}"
+pomodoro-editor-icon: "图标：{0}"
+pomodoro-editor-save: "保存"
+pomodoro-editor-back: "返回"
+pomodoro-editor-discard: "放弃"
+pomodoro-name-prompt: "§7» §7在聊天栏输入新名称（当前 §f{0}§7），输入 §fcancel §7取消。"
+pomodoro-name-invalid: "§c✖ §7名称需为 1–32 个字符，且不能包含 § 或控制字符。"
+pomodoro-preset-saved: "§a✔ §7预设 §f{0} §7已保存。"
+pomodoro-preset-discarded: "§7» §7已放弃这次新建。"
+pomodoro-preset-limit: "§c✖ §7自定义预设已达上限（{0} 个），先删掉一个再新建。"
+
+# ── 番茄钟 · 水晶柱界面 ──
+# 功能柱：柱顶晶体是按钮，lore 里写清左键做什么。
+# 每个功能的「短名」（柱顶）与「说明」（lore 第一行）分开，
+# 是因为柱顶要短到一眼看完，说明要完整到不用猜。
+pomodoro-action-start: "开始专注"
+pomodoro-action-resume: "继续专注"
+pomodoro-action-pause: "暂停计时"
+pomodoro-action-next: "进入休息"
+pomodoro-action-stop: "结束本次"
+pomodoro-action-gallery: "我的预设"
+pomodoro-action-create: "新建预设"
+pomodoro-action-stats: "专注统计"
+pomodoro-action-help: "命令帮助"
+pomodoro-action-close: "关闭"
+pomodoro-action-back: "返回"
+pomodoro-action-prev: "上一页"
+pomodoro-action-next-page: "下一页"
+pomodoro-do-start: "§7挑一个预设开始，或继续上一次。"
+pomodoro-do-start-replaces: "§8进行中的会话会被这一条替换。"
+pomodoro-do-resume: "§7从暂停处接着走。"
+pomodoro-do-pause: "§7停表，回来再继续。"
+pomodoro-do-next: "§7只在「工作完成」那一格亮起时可用。"
+pomodoro-do-stop: "§7结束并记下这一轮的专注时长。"
+pomodoro-do-gallery: "§7开始、编辑、复制、删除预设。"
+pomodoro-do-create: "§7做一套自己的工作/休息节奏。"
+pomodoro-do-stats: "§7看看累计专注了多久。"
+pomodoro-do-help: "§7列出所有命令写法。"
+pomodoro-do-reset: "§7数值恢复成内置默认，名称与图标保留。"
+pomodoro-do-duplicate: "§7存成另一份，再慢慢改。"
+pomodoro-do-delete: "§7先问一次，再删。"
+pomodoro-click-left: "左键"
+pomodoro-scenery: "水晶装饰"
+pomodoro-scenery-lore: "§8这一格只是装饰，点了不会发生什么。"
+pomodoro-status-idle: "尚未开始"
+pomodoro-status-idle-lore: "§7左起第一根柱子选一个预设。"
+pomodoro-status-name: "本次番茄钟"
+pomodoro-status-running: "§f{0} §8│ §f{1} §8│ §e{2} §8│ §7第 {3}/{4} 轮"
+pomodoro-status-hint: "§8状态每秒刷新，暂停时表停住。"
+# 预设长廊（列表页）
+pomodoro-gallery-title: "我的预设 · {0}/{1}"
+pomodoro-gallery-core: "预设长廊"
+pomodoro-gallery-count: "§7已存 §f{0} §7/ §f{1} §7个自定义预设"
+pomodoro-gallery-page: "§7第 §f{0} §7/ §f{1} §7页"
+pomodoro-gallery-hints: "§8左键开始 · 右键编辑/复制 · Shift+左键删除"
+pomodoro-gallery-start-hint: "§8▸ §7左键：立刻开始"
+pomodoro-gallery-edit-hint: "§8▸ §7右键：编辑"
+pomodoro-gallery-copy-hint: "§8▸ §7右键：复制一份再改（内置预设不能直接改）"
+pomodoro-gallery-delete-hint: "§8▸ §7Shift+左键：删除（会先问一次）"
+pomodoro-preset-badge-builtin: "§b[内置]"
+pomodoro-preset-badge-custom: "§d[自定义]"
+# 编辑器
+pomodoro-editor-name-help: "§7左键改名，在聊天栏里输入。"
+pomodoro-editor-field-work: "§8一个工作回合的长度。"
+pomodoro-editor-field-break: "§8两轮工作之间的短休息。"
+pomodoro-editor-field-long-break: "§8整组做完后的长休息。"
+pomodoro-editor-field-sessions: "§8几轮工作之后接长休息（1–12）。"
+pomodoro-editor-icon-help: "§7在预设图标之间循环。"
+pomodoro-editor-reset: "恢复默认"
+pomodoro-editor-reset-done: "§a✔ §7数值已恢复为内置默认。"
+pomodoro-editor-preview: "预览 · {0}"
+pomodoro-editor-drafting: "§8保存后才会出现在预设长廊里。"
+pomodoro-editor-copy-suffix: "副本"
+pomodoro-editor-duplicate: "存为副本"
+pomodoro-editor-delete: "删除预设"
+# 确认页
+pomodoro-confirm-delete-title: "确认删除"
+pomodoro-confirm-delete-detail: "§7将删除 §f{0}§7，删掉就找不回来了。"
+pomodoro-confirm-yes: "确认删除"
+pomodoro-confirm-no: "算了"
+# 结果与提示
+pomodoro-preset-deleted: "§a✔ §7预设 §f{0} §7已删除。"
+pomodoro-preset-gone: "§e⚠ §7这条预设已经不在了，可能刚在别处删过。"
+pomodoro-preset-duplicated: "§a✔ §7已存为 §f{0}§7。"
+pomodoro-preset-builtin-protected: "§c✖ §7内置预设不能删除。右键可以复制一份再改。"
+pomodoro-already-running: "§e⚠ §7已有进行中的番茄钟。想换预设先结束本次。"
+pomodoro-help: "§7» §f/pomodoro §7打开柱殿；§f/pomodoro presets §7开预设长廊；§f/start <名字>§7、§f/pause§7、§f/resume§7、§f/stop§7、§f/next§7、§f/stats§7。"
+pomodoro-help-visuals: "§7» §f/pomodoro visuals <bossbar|title> <on|off> §7单独开关两个读数。"
+
+# ── 番茄钟 · 导航文案 ──
+# 导航格必须有一句「点下去会发生什么」，尤其是「关闭」——它不影响正在进行的计时。
+pomodoro-do-back: "§7回到上一层，不改动任何东西。"
+pomodoro-do-close: "§7只关掉这个窗口，计时照常继续。"
+pomodoro-do-prev: "§7上一页。"
+pomodoro-do-next-page: "§7下一页。"
+pomodoro-do-discard: "§7丢掉这份草稿，已经存过的预设不受影响。"
+pomodoro-action-main-menu: "主菜单"
+pomodoro-do-main-menu: "§7回到插件主菜单（/menu）。"
+menu-item-prev-page: "上一页"
+menu-item-prev-page-lore: "§7回到上一页。"
+menu-item-back-up: "返回"
+menu-item-back-up-lore: "§7回到上一层。"
+pomodoro-preset-usage: "§c用法：/pomodoro preset <start|edit|delete> <序号>"
+pomodoro-editor-usage: "§c用法：/pomodoro editor <字段> <up|down>，或 name/save/duplicate/delete/reset"
+home-confirm-expired: "§c这次确认已经过期，请重新操作。"

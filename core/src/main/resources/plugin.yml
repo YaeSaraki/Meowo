@@ -1,0 +1,228 @@
+name: Meowo
+version: '${version}'
+main: com.meowo.taboolib.platform.BukkitPlugin
+api-version: '26.2'
+authors: [Meowo]
+description: Modular economy, menu and client-only entity examples
+softdepend: [packetevents, AuraSkills]
+commands:
+  meowo:
+    description: Meowo commands
+    usage: /meowo help
+    aliases: [mw]
+  # Root-level mirrors. /help and /reload stay behind /meowo so they cannot shadow the
+  # vanilla /help or a server-management plugin's /reload.
+  meo:
+    description: Short alias for /meowo
+    usage: /meo help
+  info:
+    description: Show version and actually active contexts
+    usage: /info
+  eco:
+    description: Balance and economy operations
+    usage: /eco balance [player]
+  menu:
+    description: Open your wallet
+    usage: /menu
+  render:
+    description: Client-only entity rendering
+    usage: /render spawn <count>
+  sit:
+    description: Toggle sitting down
+    usage: /sit
+  ride:
+    description: Ride another player, or dismount
+    usage: /ride [player]
+  hat:
+    description: Wear the held item as a hat, or take it off
+    usage: /hat
+  mail:
+    description: Read your private-message mailbox
+    usage: /mail
+  # Declared so Bukkit's built-in /msg hands over to /meo msg instead of running both.
+  msg:
+    description: Private message a player or a speaker
+    usage: /msg <player or speaker> <text>
+  afk:
+    description: Toggle your away marker
+    usage: /afk
+  mine:
+    description: Report your rare-material discoveries
+    usage: /mine [player]
+  pay:
+    description: Pay another player
+    usage: /pay <player> <amount>
+  tpa:
+    description: Request teleport to another player
+    usage: /tpa <player>
+  tpaccept:
+    description: Accept a teleport request
+    usage: /tpaccept [player]
+  tpdeny:
+    description: Deny a teleport request
+    usage: /tpdeny [player]
+  tpacancel:
+    description: Cancel your outgoing request
+    usage: /tpacancel
+  # Root-level mirror of the `back` route: the command players actually type. Without this
+  # declaration and the matching alias entry in MeowoRuntime the route only answered as
+  # `/meowo back`, which is not what any player reaches for after dying.
+  back:
+    description: Return to where you last died or travelled from
+    usage: /back
+  spawn:
+    description: Return to the world spawn
+    usage: /spawn
+  setspawn:
+    description: Set the world spawn to your position
+    usage: /setspawn
+  shadowbox:
+    description: Open the shadow box in your main hand
+    usage: /shadowbox [give <player>]
+  home:
+    description: Private homes and navigation
+    usage: /home [number or name] [force]
+  invsee:
+    description: Open another player's inventory as an operator
+    usage: /invsee <player>
+  # The avatar features. The menu's cells run these names, so they have to exist as root
+  # commands — a cell whose action is a command the server does not know answers "unknown
+  # command" to the player who clicked it.
+  phantom:
+    description: Stop the night phantoms from coming for you, or let them come again
+    usage: /phantom [on|off]
+  size:
+    description: Change the size of your own body
+    usage: /size [up|down|reset|number]
+  homes:
+    description: Open your home GUI
+    usage: /homes
+  sethome:
+    description: Set or relocate a private home
+    usage: /sethome [number or name]
+  delhome:
+    description: Delete a private home
+    usage: /delhome <number or name>
+  pomodoro:
+    description: Open the Pomodoro GUI; start / pause / resume / stop / next / stats
+    usage: /pomodoro [gui|start <name>|pause|resume|stop|next|stats]
+  pomo:
+    description: Short alias for /pomodoro
+    usage: /pomo [verb]
+  sell:
+    description: Sell your ore to the ModaCat shop
+    usage: /sell [gui|hand|all <ore>]
+permissions:
+  meowo.teleport:
+    default: true
+  # `/meo back` — return to where you were before dying or teleporting — was the one permission node
+  # used as a route permission and never declared here. Bukkit resolves an undeclared node against
+  # the default group, so it behaved as OP-only: the feature was written, routed, and unreachable by
+  # every ordinary player, and the help page filtered it correctly on the way past, so nothing
+  # anywhere said so. It is the same feature as /tpa, so it is open to everyone too.
+  meowo.teleport.back:
+    default: true
+  meowo.economy.pay:
+    default: true
+  meowo.economy.daily:
+    default: true
+  meowo.economy.treasury:
+    default: op
+  meowo.use:
+    default: true
+  meowo.admin:
+    default: op
+    children:
+      meowo.economy.*: true
+      meowo.render: true
+      meowo.home.admin: true
+      meowo.admin.invsee: true
+  meowo.economy.balance:
+    default: true
+  meowo.economy.balance.others:
+    default: op
+  meowo.economy.give:
+    default: op
+  meowo.economy.take:
+    default: op
+  meowo.economy.set:
+    default: op
+  meowo.economy.*:
+    default: op
+    children:
+      meowo.economy.balance: true
+      meowo.economy.balance.others: true
+      meowo.economy.give: true
+      meowo.economy.take: true
+      meowo.economy.set: true
+      meowo.economy.pay: true
+      meowo.economy.daily: true
+      meowo.economy.treasury: true
+  meowo.menu:
+    default: true
+  meowo.render:
+    default: op
+  meowo.spawn:
+    default: true
+  meowo.spawn.set:
+    default: op
+  meowo.sit:
+    default: true
+  meowo.ride:
+    default: true
+  meowo.ride.any:
+    default: op
+  meowo.mine:
+    default: true
+  meowo.nametag:
+    default: true
+  meowo.nametag.afk:
+    default: op
+  meowo.chat.use:
+    default: true
+  meowo.chat.status:
+    default: op
+  meowo.hat:
+    default: true
+  # The two per-player avatar switches: whether the night phantoms hunt you, and the size of your
+  # own body. Both are free, both are per player, and both are open to everyone — a server that wants
+  # to close one of them can, without touching the other.
+  meowo.phantom:
+    default: true
+    description: Stop the night phantoms from coming for you, or let them come again
+  meowo.size:
+    default: true
+    description: Change the size of your own body
+  meowo.shadowbox:
+    default: true
+  meowo.shadowbox.give:
+    default: op
+  meowo.shop:
+    default: true
+    description: Sell ore to the ModaCat shop
+
+  # Its own node rather than a child only: bag duty can be handed to a moderator without handing out
+  # the rest of administration.
+  meowo.admin.invsee:
+    default: op
+    description: Open another player's inventory and take or exchange their items
+
+  meowo.home:
+    default: true
+    description: Create, edit, navigate to and return to your private homes
+  meowo.home.force:
+    default: true
+    description: Return to a home whose saved spot no longer passes the landing-spot check
+  meowo.home.admin:
+    default: op
+    description: List and set another player's homes
+    children:
+      meowo.home: true
+  meowo.pomodoro:
+    default: true
+    description: Open the Pomodoro GUI and start / pause / resume / stop sessions
+  meowo.pomodoro.admin:
+    default: op
+    description: Bypass per-player custom-preset limits and inspect others' focus history
+    children:
+      meowo.pomodoro: true

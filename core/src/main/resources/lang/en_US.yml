@@ -1,0 +1,845 @@
+# Meowo player messages · English
+#
+# Conventions:
+#   § prefixed codes are legacy Minecraft colours, rendered for players only; they are stripped
+#   for console/RCON/command blocks. Plain text without § also works — colour is decoration.
+#   \n breaks become separate chat lines (native Paper behaviour).
+#   Placeholders are {0} {1} in positional order; %s / String.format is not used.
+#   Colour meaning: §a success §c error §e value/emphasis §7 secondary §8 muted §b brand §f body
+
+# ═══════════ SPEAKERS ═══════════
+# Player-facing chat is attributed to a speaker and renders as "✉ Name content".
+# The name and the body are composed and delivered together as one plain message. Do **not** go
+# back to ChatType.CHAT.bind: the client then wraps the whole line in <> via chat.type.text, and
+# that pair cannot be stripped server-side (docs/minimax/09 §2).
+# Naming rule is <Context>Cat; rename freely here. Blank or removed falls back to the code default.
+# These are system messages, not real player speech: no signature, no profile, so they cannot be
+# whispered, mentioned or deleted. See docs/minimax/09.
+speaker-system: "MeowCat"
+speaker-economy: "EconCat"
+speaker-menu: "MenuCat"
+speaker-render: "RendCat"
+speaker-spawn: "WarpCat"
+speaker-home: "NestCat"
+speaker-sit: "SitCat"
+speaker-hat: "HatCat"
+speaker-nametag: "IdleCat"
+speaker-mine: "MineCat"
+speaker-shadowbox: "ShadCat"
+speaker-teleport: "TeleCat"
+speaker-invsee: "InvCat"
+speaker-shop: "ShopCat"
+
+# ═══════════ SYSTEM STATE ═══════════
+info: "§8[§bMeowo§8]§r §7v{0} §8│ §f{1} §8│ §7subscriptions §f{2}§r"
+reloaded: "§8[§bMeowo§8]§r §a✔ §7Configuration and language bundle reloaded.§r"
+reload-partial: |-
+  §8[§bMeowo§8]§r §e⚠ §7Configuration applied, but some contexts failed to start.
+reload-failed: |-
+  §8[§bMeowo§8]§r §c✖ §7Reload rejected: the configuration failed validation. Your running state was kept.
+
+# ═══════════ GENERAL ═══════════
+no-permission: "§c✖ §fYou do not have permission to do that.§r"
+unknown-command: |-
+  §c✖ §fUnknown command, or the owning context is currently disabled.
+unknown-player: |-
+  §c✖ §fThat player could not be resolved.
+player-only: "§c✖ §fOnly players can run this command.§r"
+internal-error: "§c✖ §7The operation failed. See the server console log for details.§r"
+
+# ═══════════ ECONOMY ═══════════
+balance: "§7» §f{0} §8· §7balance §e§l{1}§r"
+eco-usage: |-
+  §7» §f/meowo eco balance [player/UUID] §8— §7check a balance
+treasury: "§7» §7eco treasury §8│ §e§l{0}§r"
+
+pay-sent: |-
+  §a✔ §fSent §e{1} §fto §e{0}§f
+pay-received: |-
+  §a✔ §fReceived §e{1} §ffrom §e{0}§f
+
+daily-paid: |-
+  §a✔ §fDaily login subsidy §e{0} §fgranted§f
+daily-empty: |-
+  §e⚠ §7Nothing to claim today, meow.
+  §8The treasury is empty; try again tomorrow.
+
+error-invalid_amount: |-
+  §c✖ §fInvalid amount: must be between §e0§f and §e999999999999.99§f with at most two decimals.
+error-insufficient_funds: "§c✖ §7Not enough Meo — §lnothing was charged§7, nya~."
+error-limit_exceeded: |-
+  §c✖ §fThis would push the balance above the §e999999999999.99§f limit.
+error-self_transfer: "§c✖ §fYou cannot pay yourself.§r"
+error-transfer_pending: "§c✖ §fYou already have a teleport settlement in progress. Please wait.§r"
+error-unavailable: "§c✖ §7Economy is busy or disabled. Please try again shortly.§r"
+
+# ═══════════ WALLET MENU ═══════════
+menu-title: "Meowo §8· §eWallet"
+menu-balance: "§7Balance §e§l{0}"
+menu-refresh: "§8Click the nugget to refresh"
+unavailable: "§8§oEconomy is disabled"
+
+# ═══════════ CLIENT RENDERING ═══════════
+render-usage: |-
+  §7» §f/meowo render spawn <count> §8— §7spawn client-only fake entities
+render-limit: |-
+  §c✖ §fInvalid count, or it would exceed your personal cap of §e{0}§f.
+render-spawned: "§a✔ §7Spawned §e{0} §7client-only entities for you §8· §7visible to you alone§r"
+render-cleared: "§a✔ §7Your client-only entities were removed.§r"
+
+# ═══════════ TELEPORT ═══════════
+tpa-usage: |-
+  §7» §f/tpa <player> §8— §7ask to teleport to someone (you pay the fee)
+
+tpa-sent: |-
+  §a✔ §7Teleport request sent to §e{0} §8· §7expires in §f{1}s
+tpa-incoming: "§e✦ §e{0} §fwants to teleport to you §8· §7expires in §f{1}s §8· §7they pay the fee"
+
+tpa-accepted: "§a✔ §7Accepted §e{0} §7's request, waiting for the fee to settle…"
+tpa-charged: "§a✔ §7Teleport tax §e§l{0} §7reserved. Teleporting in §e{1}s."
+tpa-charged-sponsored: "§a✔ §e{0} §7covered your teleport tax of §e§l{1}§7. Teleporting in §e{2}s."
+tpa-sponsor-offer: "§e⚠ §f{0} §7cannot cover the teleport tax right now."
+tpa-sponsor-failed: "§c✖ §7You cannot cover §f{0} §7's teleport tax either."
+
+tpa-self: "§c✖ §fYou cannot send a teleport request to yourself.§r"
+tpa-busy-out: "§c✖ §fYou already have a pending request or an active teleport. Cancel it or wait.§r"
+tpa-busy-in: "§c✖ §7That player already has the maximum of 10 incoming requests. Try again later.§r"
+tpa-busy: "§c✖ §fYou cannot send a teleport request right now.§r"
+tpa-none: "§c✖ §fNo matching active teleport request.§r"
+tpa-choose: "§7» §7You have several requests — name one: §f/tpaccept <player>§7 or §f/tpdeny <player>§r"
+tpa-offline: "§c✖ §7The player who sent that request has gone offline; it is void.§r"
+tpa-cancelled: "§7» §8The teleport request was cancelled.§r"
+tpa-countdown-cancelled: "§a✔ §7Teleport cancelled. The reserved tax goes back to the payer.§r"
+tpa-expired: "§7» §8The teleport request expired.§r"
+tpa-denied: "§7» §8The teleport request was declined.§r"
+tpa-failed: |-
+  §c✖ §7The teleport did not complete, so no fee was charged.
+tpa-success: "§a✔ §7There you go. Teleport tax §e§l{0} §7went into the eco pool, nya~."
+tpa-estimate: |-
+  §7» §7Estimated fee §e{0}§7 — the real amount uses your balance at accept time.
+
+# ═══════════ CLICKABLE ACTIONS ═══════════
+# Rendered as Adventure components by platform/Messages; players only.
+# A click runs /tpaccept|deny <player> as the reader, so permission checks still apply.
+action-prefix: "§7» "
+action-separator: " §8· "
+tpa-click-accept: "§a§l[ACCEPT]"
+tpa-click-deny: "§c§l[DECLINE]"
+tpa-click-accept-hint: "§7Click to accept §e{0} §7's teleport request"
+tpa-click-deny-hint: "§7Click to decline §e{0} §7's teleport request"
+tpa-click-sponsor: "§e§l[PAY FOR THEM]"
+tpa-click-refuse: "§8§l[GIVE UP]"
+tpa-click-sponsor-hint: "§7Click to cover §e{0} §7's teleport tax and complete the teleport"
+tpa-click-refuse-hint: "§7Click to give up on §e{0} §7's teleport request"
+
+# ═══════════ SPAWN ═══════════
+spawn-usage: |-
+  §7» §f/spawn §8— §7return to the world spawn (free)
+spawn-warmup: "§a✔ §7Teleporting in §e{0}s §7— stay still."
+spawn-done: "§a✔ §7Back at the world spawn."
+spawn-blocked: "§c✖ §7The teleport was blocked by another plugin or region rule."
+spawn-moved: "§e⚠ §7You moved, so the teleport was cancelled."
+spawn-damaged: "§e⚠ §7You took damage, so the teleport was cancelled."
+spawn-busy: "§e⚠ §7You already have a return in progress."
+spawn-cooldown: "§e⚠ §7Wait §e{0}s more before using /spawn again."
+spawn-unsafe: "§c✖ §7No standable spot near the spawn point; nothing happened."
+spawn-unloaded: "§c✖ §7The spawn chunk is not loaded; nothing happened (this plugin never generates chunks)."
+spawn-state: "§c✖ §fYou cannot teleport right now (dead or spectating)."
+spawn-missing-world: "§c✖ §7The world §e{0} §7from spawn.world does not exist."
+spawn-set: "§a✔ §7The world spawn for §e{0} §7is now your position."
+spawn-set-unsafe: "§e⚠ §7Heads up: this is not a safe standing spot, so players will be searched nearby."
+spawn-set-failed: "§c✖ §7Could not set the spawn point."
+
+# ═══════════ HELP ═══════════
+help-header: |-
+  §b§lMeowo §8· §7command reference §8· §7only what you can run right now
+help-group: "§8▌§b {0}"
+help-line: "§7▸ §f{0} §8· §7{1}"
+help-footer: |-
+  §8Emoji: §7` + a name, e.g. §f`sad §7/ §f`sx §7/ §f`smile §8· §7start with a backtick, press §fTab §7to complete
+  §8Every line opens with a §f#code §8· §7run §f/meo replay #code §7to read that conversation
+  §8────────────────────────────────
+help-empty: "§7You cannot run any command here yet.\n§8────────────────────────────────"
+help-usage: "§7Usage: §f/meo help §7or §f/meo help <page> §8· §7{0} pages in total."
+help-no-page: "§c✖ §7There are only {0} pages of help, meow."
+help-nav: "§8Page §f{0}§8/§f{1}"
+help-nav-text: "§8Page §f{0}§8/§f{1} §8· §7{2}"
+help-nav-previous: "§b« Previous"
+help-nav-next: "§bNext »"
+help-nav-first: "§b« Back to the start"
+help-nav-hover: "§7Click for page §f{0} §8· §7{1}"
+help-commands: |-
+  @Talking
+  msg|§7private message a player or a speaker
+  mail|§7read your mailbox
+  who|§7list every speaker
+  replay|§7read back a conversation (Tab lists the codes you can replay)
+  em|§7emoji menu
+  @What the cats know
+  known|§7see each cat's impression of you
+  forget|§7make the cats forget you (type your own name)
+  @Money
+  eco|§7balance, transfers, daily subsidy
+  pay|§7pay another player
+  menu|§7open your wallet
+  sell|§7sell your ore to ModaCat (§f/sell gui §8opens the price list)
+  @Getting around
+  home|§7homes and waypoints (§f/home gui §8opens the menu)
+  tpa|§7ask to be teleported (§f/tpa accept §8and §f/tpa deny §8to answer)
+  tpaccept|/meo tpa accept|§7accept someone's teleport request
+  back|§7return to where you were before dying or teleporting
+  spawn|§7free return to spawn
+  @Carried and position
+  sit|§7sit down where you stand (again to stand)
+  ride|§7ride another player
+  hat|§7wear the item in your hand
+  pomodoro|§7pomodoro focus timer (§f/pomodoro gui §8opens the menu)
+  shadowbox|§7shadow box storage
+  @Appearance
+  phantom|§7leave the night phantoms alone (§f/phantom on §8· §7off§8)
+  size|§7change the size of your own body (§f/size up §8· §7down §8· §7reset§8)
+  @The world
+  mine|§7ore prospecting and codex
+  afk|§7mark yourself away
+  @Administration
+  invsee|§7open another player's bag and take or exchange their items
+  info|§7version and actually active contexts
+  setspawn|§7set the world spawn here
+  reload|§7reload language and context switches
+
+tpa-moved: "§e⚠ §7Movement cancelled the teleport. All reserved fees go back to the original payer."
+tpa-sponsor-charge-detail: "§7» §6§lApplicant tax §e§l{0} §8· §6§lPayment tax §e§l{1} §8· §6§lTotal §e§l{2}"
+eco-pay-tax: "§7» §6§lPayment tax §e§l{0} §8· §6§lTotal §e§l{1}§r"
+
+# ═══════════ SIT / RIDE ═══════════
+seat-sat: "§a✔ §7You sat down. Sneak or run the command again to stand."
+seat-stand: "§7» §7You stood up."
+seat-airborne: "§c✖ §7There is no ground to sit on."
+seat-occupied: "§e⚠ §7You are already on a vehicle. Dismount first."
+seat-state: "§c✖ §7You cannot sit right now (dead or spectating)."
+seat-gone: "§e⚠ §7Your chair block was broken, so you stood up."
+seat-failed: "§c✖ §7That did not work. Try again."
+seat-riding: "§a✔ §7You are riding §f{0}§7. Sneak to dismount."
+seat-dismounted: "§7» §7You dismounted."
+seat-not-riding: "§e⚠ §7You are not riding anything."
+seat-self: "§c✖ §7You cannot ride yourself."
+seat-already: "§e⚠ §7You are already riding that."
+seat-no-target: "§c✖ §7No §f{0}§7 found nearby (players must be online, mobs must be in range)."
+seat-need-any: "§c✖ §7Only admins may ride mobs. Riding another player needs no permission."
+
+seat-nearby-player: "§c✖ §7No rideable player named §f{0} §7in the nearby 3x3 area."
+
+# ═══════════ AVATAR ═══════════
+# "Phantom" switches off the **vanilla** insomnia mechanic — it does not summon a companion.
+avatar-phantom-on: "§a✔ §7The night phantoms will leave you alone now, meow."
+avatar-phantom-off: "§7» §7The night phantoms will come for you again."
+avatar-phantom-usage: "§c✖ §7Usage: §f/phantom [on|off]"
+avatar-size-current: "§7» §7Your size is §f{0}§7 right now."
+avatar-size-changed: "§a✔ §7You are §f{0}§7 big now, meow."
+avatar-size-reset: "§7» §7Your size is back to §f{0}§7."
+avatar-size-usage: "§c✖ §7Usage: §f/size [up|down|reset|number]"
+avatar-size-unavailable: "§c✖ §7This server cannot resize players."
+seat-ride-usage: "§7» §f/ride [player] §8— §7ride a nearby player in the 3x3 area; omit the name to dismount."
+
+seat-stack-invalid: "§c✖ §7Cannot extend this riding stack: every rider must be a nearby visible player, with no cycle."
+
+seat-ride-state: "§c✖ §7Cannot ride while a player is dead or in spectator mode."
+
+# ═══════════ HAT ═══════════
+hat-on: "§a✔ §7You put §f{0} §7on your head."
+hat-off: "§7» §7You took off §f{0}§7."
+hat-nothing: "§e⚠ §7Your hand is empty and you are not wearing a helmet."
+
+hat-refused: "§c✖ §7§f{0} §7cannot be worn on the head (tools are refused)."
+
+# ═══════════ SHADOW BOX ═══════════
+# A shadow box is a vanilla container block item carrying a plugin tag; its contents live in that
+# item's own NBT. Renaming the item therefore leaves existing boxes with the old name — deliberate,
+# so that a rename can never turn into a way to duplicate a box.
+shadowbox-title: "Meowo §8· §eShadow Box"
+shadowbox-name: "§5Shadow Box"
+shadowbox-lore-open: "§7Shift + Right in your bag §8· §7Sneak + Right in hand"
+shadowbox-lore-command: "§7or type §f/shadowbox §7to open"
+shadowbox-slot-count: "§8Slots §e{0}"
+shadowbox-usage: |-
+  §7» §f/shadowbox §8— §7open the shadow box in your main hand
+shadowbox-usage-open: "§7» §f/shadowbox §8— §7open the shadow box in your main hand"
+shadowbox-given: "§a✔ §7Gave a shadow box to §f{0}§7."
+shadowbox-empty-hand: "§c✖ §7The item in your main hand is not a shadow box."
+shadowbox-busy: "§e⚠ §7You already have a shadow box open; close it first."
+shadowbox-split-first: "§e⚠ §7Split that stack into single boxes first — a stack cannot hold contents per box."
+shadowbox-invalid: "§c✖ §7This shadow box cannot hold items. Ask an admin to check §fshadowbox.material§7."
+shadowbox-open-failed: "§c✖ §7The shadow box could not be opened. Try again."
+
+# ═══════════ MODACAT SHOP ═══════════
+# /sell turns ore into money. Prices are per **single** item and deepslate pays the same as the
+# surface ore; the table lives in config.yml under shop.prices.
+shop-title: "Meowo §8· §eModaCat Shop"
+# One name per ore, keyed by the material name in lower case, so an ore added to `shop.prices`
+# only needs a matching key here. Without one it falls back to the readable material name.
+shop-item-coal_ore: "coal ore"
+shop-item-deepslate_coal_ore: "deepslate coal ore"
+shop-item-nether_quartz_ore: "nether quartz ore"
+shop-item-iron_ore: "iron ore"
+shop-item-deepslate_iron_ore: "deepslate iron ore"
+shop-item-copper_ore: "copper ore"
+shop-item-deepslate_copper_ore: "deepslate copper ore"
+shop-item-redstone_ore: "redstone ore"
+shop-item-deepslate_redstone_ore: "deepslate redstone ore"
+shop-item-gold_ore: "gold ore"
+shop-item-deepslate_gold_ore: "deepslate gold ore"
+shop-item-diamond_ore: "diamond ore"
+shop-item-deepslate_diamond_ore: "deepslate diamond ore"
+shop-item-lapis_ore: "lapis ore"
+shop-item-deepslate_lapis_ore: "deepslate lapis ore"
+shop-item-emerald_ore: "emerald ore"
+shop-item-deepslate_emerald_ore: "deepslate emerald ore"
+shop-cell-name: "§f{0}"
+shop-cell-price: "§7Pays §e{0} §7each"
+shop-cell-held: "§7You are carrying §f{0}"
+shop-cell-gestures: "§8Left-click sells all of this ore · Right-click sells the stack in your main hand"
+shop-sell-all: "Sell everything"
+shop-sell-all-lore: "§7Sells every ore in your bag. It still asks once first."
+shop-hand: "Sell main hand"
+shop-hand-lore: "§7Sells the stack in your main hand. No question asked."
+shop-confirm-title: "ModaCat wants these ores"
+shop-confirm-detail: "§7Sell §f{0} §7ore from your bag for §a{1}"
+shop-sold: "§a✔ §7ModaCat took §f{0} §7ore and paid you §e{1} §8· §7balance §e{2}"
+shop-sold-line: "§8· §7{0} §8×§f{1} §8= §e{2}"
+shop-refunded: "§c✖ §7The payment failed, so the ore is back in your bag."
+shop-empty: "§eModaCat looked through your pockets: nothing worth buying."
+shop-hand-empty: "§eThere is nothing in your main hand to sell."
+shop-not-mine: "§eModaCat looks at your main hand: §f{0} §eis not on the list."
+shop-none-held: "§eYou have no §f{0} §eleft."
+shop-unknown-ore: "§c✖ §7ModaCat does not know that ore. Type §f/sell gui §7to see what it buys."
+shop-usage: "§7» §f/sell §8— §7sell every ore in your bag (it asks once first)"
+shop-usage-forms: |-
+  §7» §f/sell hand §8— §7only the main hand §8· §7» §f/sell all <ore> §8— §7only that kind
+  §7» §f/sell gui §8— §7open the price list
+
+# ═══════════ INVSEE ═══════════
+# An operator opens somebody else's bag. The window is only a **mirror**: every take and every give
+# is applied to the real inventory at once, so there is no state where closing the window decides
+# whether an item survives.
+invsee-title: "Meowo §8· §e{0}'s bag"
+invsee-usage: "§7» §f/invsee <player> §8— §7open their bag and take items from it"
+invsee-self: "§c✖ §7You cannot open your own bag this way."
+invsee-busy: "§e⚠ §7You already have a player's bag open; close it first."
+invsee-opened: "§7» §f{0} §7is open: left-click to hold, right-click for the whole stack, shift + left-click straight into your own bag."
+invsee-open-failed: "§c✖ §7The bag could not be opened. Try again."
+invsee-gone: "§e⚠ §7That player is no longer online; the bag was closed."
+invsee-no-longer: "§c✖ §7You may no longer do that; the bag was closed."
+invsee-unsupported: "§e⚠ §7Only left-click, right-click and shift + left-click work here."
+invsee-no-drag: "§e⚠ §7Pick the item up first, then click the slot you want it in."
+invsee-not-equipment: "§c✖ §7§f{0} §7is not armour, so it cannot go in an equipment slot."
+invsee-took: "§7» §fTook §e{1} §7from §e{0}§7."
+invsee-gave: "§7» §fGave §e{1} §7to §e{0}§7."
+invsee-swapped: "§7» §fSwapped with §e{0}§7: §e{1}§7."
+seat-stairs-flipped: "§c✖ §7These stairs are upside down, so there is no step to sit on."
+seat-stairs-backwards: "§c✖ §7This step faces the other way. Move round to the step side and try again."
+seat-too-far: "§c✖ §7Too far away. Come closer before sitting."
+seat-blocked: "§c✖ §7There is no headroom above that spot."
+seat-taken: "§c✖ §7Somebody is already sitting there."
+
+# ═══════════ NAMETAG ═══════════
+nametag-afk-on: "§7» §7You are marked away; the dot after your name turns deep amber."
+nametag-away-title: "§e§lAway"
+nametag-away-hint: "§7Crouch, swing, eat, switch slot or type to end it"
+nametag-afk-off: "§7» §7Your away marker is cleared."
+
+# Home / TabooLib UI
+home-title: "Homes · {0}/{1}"
+home-edit-title: "Edit #{0} · {1}"
+home-default-name: "Home {0}"
+home-usage: "/home opens GUI; /home <number|name>; /sethome [number|name]; /home edit <number>; /home cancel; /home nav <number|off>; /home rename <number> <name>; /home color <number> <color|#RGB>; /home show <number> <on|off>; /home icon <number> <default|bowtie>"
+home-admin-usage: "Admin: /home view <player> to list; /home set <player> [number|name] to set one (free, and works while they are offline)."
+home-force-usage: "Forced travel: /home <number|name> force — skip the landing-spot check and go to the saved coordinates as they are."
+home-loading: "§7Homes are recovering. Please try again shortly."
+home-missing: "§cHome not found."
+home-limit: "§cYou can set up to {0} homes."
+home-invalid-name: "§cUse 1–24 unique characters without control or formatting codes."
+home-invalid-color: "§cUse a preset color or six-digit RGB, e.g. #91B7A2."
+home-busy: "§eA home operation or teleport is already in progress."
+home-stale: "§eThis home changed. Please reopen the menu."
+home-world-missing: "§cWorld {0} is unavailable. No charge."
+home-cross-world-disabled: "§cCross-world home travel is disabled."
+home-unsafe: "§cUnsafe destination or unavailable chunk. Pending fees will be refunded."
+home-force-disabled: "§cForced travel is disabled, so a home with an unsafe spot cannot be reached."
+home-force-height: "§cThis home's coordinates are outside the build limits of {0}. Even a forced trip cannot land there."
+home-state: "§cLeave vehicles, passengers, spectator or death state before travelling."
+home-saved: "§aSaved #{0} {1}. Setup tax §e§l{2} §7went to eco, nya~."
+home-admin-unknown: "§c✖ §7The server does not know §f{0}§7. It only works on players it has seen — online, or who have joined before."
+home-admin-view-header: "§8[§bMeowo§8]§r §7§f{0} §7homes §8· §f{1}"
+home-admin-view-empty: "§8└ none at all."
+home-admin-view-row: "§8│ §f#{0} §b{1} §8· §7{2} §8· §7{3}, {4}, {5} §8· §7{6}"
+home-admin-view-footer: "§8└ Change one: §f/home set <player> [number|name] §8· §7no setup tax, meow."
+home-admin-set-doing: "§7Setting §f{0}'s §f#{1} {2} §7to where you stand……"
+home-admin-set-done: "§aSet §f{0}'s §f#{1} {2} §7to where you stand. No setup tax, meow."
+home-admin-set-told: "§e⚠ §7§f{0} §7moved your §f#{1} {2} §7to their own feet (no charge). Ask them if that is wrong, meow."
+home-updated: "§aAppearance/navigation saved for free."
+home-deleted: "§7Deleted home {0}."
+home-warmup: "§aBack to {0} in {1}s, holding back §e§l{2}§7. Look around if you like, just don't step, nya~."
+home-arrived: "§aHome at {0}. Fee §e§l{1} §7went to eco, nya~."
+home-force-arrived: "§aForced back to the saved coordinates of {0}. Fee §e§l{1} §7went to eco. The landing spot was not checked, nya~."
+home-failed: "§cOperation failed. Pending fees are refunded; unavailable storage recovers on restart."
+home-moved: "§ePosition changed. Home travel cancelled; pending fee will be refunded."
+home-cancelled: "§7Home travel cancelled; pending fee will be refunded."
+home-no-travel: "§7No home countdown is in progress."
+home-empty-slot: "#{0} Empty slot"
+home-create-hint: "Click to set home here (setup tax applies)"
+home-list-help: "Left: return · Right: edit"
+home-nav-help: "Home navigation and settings"
+home-visible: "Navigation: visible (toggle)"
+home-hidden: "Navigation: hidden (toggle)"
+home-icon-detail: "Locator style: {0}"
+home-nav-other-world: "Other world: {0}"
+home-nav-selected: "§7Selected navigation to {0}."
+home-name-prompt: "§7Type a new name in chat (private), or cancel. Expires in 60 seconds."
+home-close: "Close"
+home-back: "Back"
+home-travel: "Return home"
+home-force-travel: "Force back to the coordinates"
+home-force-help: "Skips the landing-spot check — the way out when you have rebuilt over your own home"
+home-rename: "Rename"
+home-color: "Choose color"
+home-free: "Free change"
+home-bar-icon: "Locator icon"
+home-menu-icon: "Menu item icon"
+home-icon-limit: "Vanilla: dot/bowtie. More icons require a resource pack."
+home-nav-select: "Toggle direction navigation"
+home-relocate: "Relocate here"
+home-delete: "Delete home"
+home-set-tax-hint: "Setup tax §6§l{0}% of balance§7 (§e§l{1}§7–§e§l{2}§7)"
+home-confirm-title: "Confirm home operation"
+home-confirm: "Confirm"
+home-confirm-set: "Save {0} · estimated setup tax {1}"
+home-confirm-travel: "Back to {0} · fee §e§l{1}"
+home-confirm-force: "Force back to the saved coordinates of {0} · fee §e§l{1} (no landing-spot check)"
+home-confirm-delete: "Delete {0} (free; past tax is not refunded)"
+home-confirm-tax: "Setup tax uses balance at confirmation; successful fees enter eco."
+home-style-default: "Dot (changes with distance)"
+home-style-bowtie: "Bowtie (vanilla style)"
+home-color-white: "White"
+home-color-orange: "Orange"
+home-color-magenta: "Magenta"
+home-color-light_blue: "Light Blue"
+home-color-yellow: "Yellow"
+home-color-lime: "Lime"
+home-color-pink: "Pink"
+home-color-gray: "Gray"
+home-color-light_gray: "Light Gray"
+home-color-cyan: "Cyan"
+home-color-purple: "Purple"
+home-color-blue: "Blue"
+home-color-brown: "Brown"
+home-color-green: "Green"
+home-color-red: "Red"
+home-color-black: "Black"
+home-item-white_bed: "White Bed"
+home-item-red_bed: "Red Bed"
+home-item-blue_bed: "Blue Bed"
+home-item-oak_door: "Oak Door"
+home-item-compass: "Compass"
+home-item-bell: "Bell"
+home-item-lantern: "Lantern"
+home-item-campfire: "Campfire"
+home-item-diamond: "Diamond"
+home-item-emerald: "Emerald"
+home-item-chest: "Chest"
+home-item-crafting_table: "Crafting Table"
+home-item-enchanting_table: "Enchanting Table"
+home-item-book: "Book"
+home-item-wheat: "Wheat"
+home-item-cherry_sapling: "Cherry Sapling"
+
+menu-main-title: "Meowo · Main Menu"
+
+# ═══════════ MINE ═══════════
+
+rare-diamond: "diamond"
+rare-deepslate-diamond: "deepslate diamond"
+rare-emerald: "emerald"
+rare-deepslate-emerald: "deepslate emerald"
+rare-netherite: "netherite"
+mine-announce: "§7⛏ §f{0} §7mined §e{1} §7× §e{2}"
+mine-first: "§6⛏ §e★ §f{0} §7is the first to mine §6{1} §7here! §e{2} in total"
+mine-header: "§7» §fRare materials found in §f{0}§7:"
+mine-entry: "§8· §e{0} §8· §7first §f{1} §8· §7total §e{2}"
+mine-none: "§7» §f{0} §7has produced no rare materials yet."
+mine-none-world: "§c✖ §7No world is available."
+
+home-confirm-chat: "§7» §fGoing home to §e{0} §7costs §6§l{1}§7. Run §f/home {0} §7again within §e{2}s §7to leave, nya~."
+home-force-chat: "§7» §e⚠ §fForced trip to §e{0} §7at its saved coordinates (no landing-spot check) costs §6§l{1}§7. Run §f/home {0} force §7again within §e{2}s §7to go, nya~."
+home-confirm-chat-set: "§7» §fSetting a home at §e{0} §7costs §6§l{1}§7. Repeat §f/home set {0} §7within §e{2}s §7to confirm, nya~."
+home-confirm-chat-delete: "§7» §c✖ §7Deleting §e{0} §7cannot be undone. Run §f/home delete {0} §7again within §e{1}s §7to really do it, nya~."
+
+# ── Menu buttons (GUI text must go through the language bundle too) ──
+menu-item-homes: "Homes"
+menu-item-homes-lore: "Manage your homes, travel and navigation"
+menu-item-shop: "ModaCat Shop"
+menu-item-shop-lore: "§7Sell your ore to ModaCat for money (§f/sell gui §8opens the price list)"
+menu-item-wallet: "Wallet"
+menu-item-wallet-lore: "Click to view your balance"
+menu-item-pomodoro: "Pomodoro"
+menu-item-pomodoro-lore: "§7Work / break cycles, with custom presets"
+# The main menu's centre cell: a visual focus that does nothing, so it has to say so.
+menu-item-core: "§d✦ §fMeowo"
+menu-item-core-lore: "§8The centre of the main menu. Clicking this does nothing."
+menu-item-main-menu: "Main menu"
+menu-item-main-menu-lore: "§7Back to the Meowo main menu."
+# The flanking pillars: decoration, and they say so for the same reason.
+menu-item-pillar: "§8·"
+menu-item-pillar-lore: "§8A decorative pillar. Clicking this does nothing."
+# The main menu's heart outline: decoration as well, and it says so.
+menu-item-heart: "§8·"
+menu-item-heart-lore: "§8The outline of the heart. Clicking this does nothing."
+# The night phantoms: a switch, so the name follows the state.
+# This is the **vanilla** "stay up and a phantom comes" mechanic, switched off for this player.
+menu-item-phantom: "Phantom"
+menu-item-phantom-on: "§d✦ Phantom · will not come"
+menu-item-phantom-off: "§8Phantom · will come"
+menu-item-phantom-lore: "§7Vanilla sends a phantom after anyone who stays up. Switch this on and it stops."
+menu-item-phantom-hint: "§8Left click to switch it on and off"
+# The size: left click bigger, right click smaller, shift+left back to normal.
+# This line carries the current number, so it cannot be a language key (a key is looked up without
+# arguments) — the menu fills it in. It therefore carries no colour code on purpose: a filled-in line
+# goes down the literal path, where & and not § is the colour code.
+menu-item-size: "§b❖ Size"
+menu-item-size-lore: "Your size: {0}"
+menu-item-size-hint: "§8Left click bigger · Right click smaller · Shift+left to reset"
+menu-item-close: "Close"
+menu-item-close-lore: "§7Closes this menu only; nothing else is affected."
+menu-item-page-prev: "Previous page"
+menu-item-page-next: "Next page"
+menu-item-back-main: "Back to main menu"
+menu-item-back-main-lore: "§7Back to the main menu. Nothing is changed."
+menu-item-nav-off: "Turn off the nav compass"
+menu-homes-entry: "#{0} {1}"
+menu-homes-title: "Homes · {0}/{1}"
+menu-homes-empty: "#{0} · not set"
+menu-homes-empty-lore1: "Click to create a home here"
+menu-homes-empty-lore2: "The fee is shown on the confirmation page"
+menu-homes-lore-coords: "{0} · {1}, {2}, {3}"
+menu-homes-lore-sameworld: "{0}m · ΔY {1}"
+menu-homes-lore-crossworld: "another world"
+menu-homes-visible: "shown"
+menu-homes-hidden: "hidden"
+menu-homes-style-bowtie: "⋈ bowtie"
+menu-homes-style-default: "◆ default"
+menu-homes-lore-hint: "Left-click to travel · Right-click to edit"
+menu-homes-summary: "{0}/{1} homes · {2}/{3} pages"
+menu-homes-capacity: "Capacity permission: meowo.home.limit.{0}"
+
+# ═══════════ CHAT ═══════════
+chat-status: "§8[§bMeowo§8]§r §7speakers §e{0} §8│ §7filters §e{1} §8│ §7audit capacity §e{2}"
+chat-speaker: "§8[§bMeowo§8]§r §f{0} §8· §7{1} §8· §7answerable §f{2}"
+chat-yes: "§ayes"
+chat-no: "§8no"
+
+# One-line purpose per speaker, shown by /meowo who
+speaker-summary-system: "system and general notices"
+speaker-summary-economy: "balance, transfers and the daily subsidy"
+speaker-summary-menu: "the wallet menu"
+speaker-summary-render: "client-only entity rendering"
+speaker-summary-spawn: "free return to spawn"
+speaker-summary-sit: "sitting and riding"
+speaker-summary-hat: "wearing items on your head"
+speaker-summary-nametag: "away marker and nametag state"
+speaker-summary-mine: "ore prospecting and the codex"
+speaker-summary-shadowbox: "shadow boxes and carried storage"
+speaker-summary-teleport: "teleport requests"
+speaker-summary-home: "homes and waypoints"
+speaker-summary-invsee: "opening another player's bag"
+speaker-summary-shop: "the ore shop and its quotes"
+speaker-summary-pomodoro: "the focus timer"
+helpdesk-hello: "§7Meow~ What can I do for you? Ask me for \"help\" or \"balance\"."
+helpdesk-thanks: "§7Any time, meow~"
+helpdesk-help: |-
+  §7I can:
+helpdesk-about: "§7I'm §f{0}§7, one of Meowo's speakers. Just ask."
+helpdesk-balance: "§7Your balance is §e{0}§7."
+helpdesk-economy-off: "§c✖ §7The economy context is disabled, so I cannot read balances."
+helpdesk-unknown: "§e⚠ §7I did not get that. Try \"help\" or \"balance\", or go ask §fMeowCat§7."
+
+# — Delivery receipts ride the action bar, never the chat log —
+
+# — Mailbox: /meo msg with no target —
+
+# — A cat carrying your words onward —
+helpdesk-relay-usage: "§e⚠ §7Usage: 转告 <player> <text>"
+helpdesk-relay-unknown: "§c✖ §7No player called §f{0}§7."
+helpdesk-relay-sent: "§a✔ §7Carried your words over to §f{0}§7."
+helpdesk-relay-cooldown: "§e⚠ §7I just relayed something, one moment."
+helpdesk-relay-self: "§c✖ §7I cannot relay to you, meow."
+
+# — Private badge: a bare glyph, the detail on hover —
+
+# — The private badge leads every message; a player's is clickable, a system's is not —
+mail-badge: "§7✉"
+mail-mark-new: "§b✉"
+mail-mark-read: "§8✉"
+mail-mark-replied: "§8✉✓"
+
+# — /meo msg —
+msg-usage: "§c✖ §7Usage: §f/meo msg <player or speaker> <text>"
+msg-unknown: "§c✖ §7No player or speaker called §f{0}§7."
+msg-refused-self: "§c✖ §7You cannot whisper yourself."
+msg-refused-rate_limit: "§e⚠ §7Too fast, wait a moment."
+msg-refused-blocked: "§c✖ §7That content was blocked by moderation."
+chat-blocked: "§c✖ §7That message did not go out, meow."
+chat-muted: "§c✖ §7You are muted and cannot send messages right now."
+chat-log-header: "§8[§bMeowo§8]§r §7{0} §8│ §7last §f{1} §7"
+chat-log-empty: "§7No recent messages from §f{0}§7."
+chat-log-offline: "§c✖ §7No online player called §f{0}§7."
+chat-log-head: "§8#{0} §8│ §7{1} §8│ §7{2}"
+chat-log-text: "§f{0}"
+msg-refused-empty: "§e⚠ §7A code on its own is not a message. Say something, meow."
+msg-refused-muted: "§c✖ §7You are muted and cannot whisper right now."
+msg-refused-unknown: "§c✖ §7Not delivered, meow."
+msg-nobody-home: "§e⚠ §7Nobody is answering for §f{0} §7right now, meow."
+
+# A successful send says nothing: the private line already carries ✔ / 〇 as its receipt.
+# Only failures speak up, because a failure renders no line.
+
+# — /meo mail —
+mail-empty: "§7Your mailbox is empty, meow."
+mail-header: "§8[§bMeowo§8]§r §7mailbox §8· §f{0} §7total §8│ §7unread §e{1}"
+mail-foot: |-
+  §8Click a name to §7reply.
+  §8read §8│ §7new §b✉ §8│ §7answered §8✉✓
+
+# — Emoji: /meo em —
+em-header: "§8[§bMeowo§8]§r §7emoji §8· §f{0} §7of them; type §f`name §7in chat"
+em-body: |-
+  §8{0}
+em-unknown: "§7No §f{0}§7. Type §f/meo em §7for the full list."
+em-resolved: "§7§f{1} §8= §f{2} §8│ §7aliases in §f{0}"
+
+# — Codes #k3f9: every message opens with one —
+code-hover: "§7{0} §8· §7{1}"
+code-hover-replies: "§7{0} §8· §7{1} §8│ §7{2} §8· §fclick to open"
+# ═══════════ AGENTS / IMPRESSIONS ═══════════
+
+known-header: "§8[§bMeowo§8]§r §7what the cats think of you §8· §f{0}"
+known-row: "§8│ §f{0}§8: §7{1} §8(§7{2}§8)"
+known-empty: "§7No cat has an impression of you yet. It takes a few talks with the same one."
+known-footer: "§8└ These are the cats' own words. They will not bring them up unless you do first."
+known-console: "§7This one is for a player to run about themselves."
+# ═══════════ AGENTS / REPORTS ═══════════
+# These keys are returned by ReportService — it has no language file and must not have one.
+report-console: "§7This one is for a player to run about someone else."
+report-usage: "§7Usage: §f/meo report <player> <negative|positive> <reason>§7"
+report-bad-sentiment: "§c✖ §7Only §fnegative§7 or §fpositive§7 is accepted; got §f{0}§7."
+report-unknown-player: "§c✖ §7Nobody here goes by §f{0}§7."
+report-unavailable: "§c✖ §7Complaints are not wired up right now, meow. Tell an admin."
+report-refuse-self: "§c✖ §7You cannot review yourself."
+report-refuse-coplay: "§c✖ §7You have to have played with them first; this one does not count."
+report-refuse-rate: "§c✖ §7You have already said something about them today. One a day is enough."
+report-stored: "§8[§bMeowo§8]§r §7Noted, meow."
+report-stored-untrusted: "§8[§bMeowo§8]§r §7Noted. You have not played together much, so this counts for reference only."
+report-stored-burst: "§8[§bMeowo§8]§r §7Noted. There have been a lot of these about them lately, so this one does not count on its own."
+forget-console: "§7This one is for a player to run about themselves."
+forget-usage: "§7Usage: §f/meo forget {0}§7 — type your own name, so it is you being forgotten."
+forget-name-mismatch: "§c✖ §7That is not your name. The record being forgotten is §f{0}§7's own."
+forget-failed: "§c✖ §7Nothing was fully removed. Tell an admin, or try again later, meow."
+forget-profile-gone: "removed"
+forget-profile-none: "there was none"
+forget-partial: "§8[§bMeowo§8]§r §7Only part of it went, meow. §8· §f{0}§7 impressions §8· §f{1}§7 reports you filed §8· §7profile {2}§8· §cThe chat log could not be reached, so I cannot say whether it went."
+forget-done: "§8[§bMeowo§8]§r §7Forgotten, meow. §8· §f{0}§7 chat lines §8· §f{1}§7 impressions §8· §f{2}§7 reports you filed §8· §7profile {3}"
+forget-kept: "§8└ §f{0}§7 reports other people wrote about you and §f{1}§7 work orders were **not** deleted — those are someone else's words and the server's record."
+forget-kept-hint: "§8  They are out of use now: no cat reads them and the discipline ladder cannot escalate from them. The names are still in the database. To remove those as well, ask an admin, meow."
+
+agents-proactive: "[You just saw this player run §f{0}§7. They did not say anything to you. You may say one thing, or say nothing at all — this line is not an instruction to speak.]"
+code-replies: "§e{0} §7replies"
+replay-header: "§8[§bMeowo§8]§r §7message record §f#{0}"
+replay-body: "§8{0} §8line(s)"
+replay-head: "§8#{0} §8│ §7{1}"
+replay-text: "§f{0}"
+replay-gone: "§7That record is gone (only the last 7 days are kept, and it can fall out of memory)."
+replay-usage: "§c✖ §7Usage: §f/meo replay #<four-character code>"
+
+# — Profile card (shown when hovering a name; must be bilingual or it stays one language) —
+# One heading and one shape for cats and players alike; being a real account is not a reason to
+# word it differently. The card promises nothing clickable beyond the UUID: both sides read the
+# same private line, so any fixed "click to message X" is guaranteed to be wrong for one of them.
+profile-heading: "§bProfile"
+profile-name: "Name"
+profile-uuid: "UUID"
+profile-joined: "Joined"
+profile-session: "Online"
+profile-playtime: "Playtime"
+profile-balance: "Balance"
+profile-purpose: "Purpose"
+profile-unknown: "…"
+profile-copy-uuid-hint: "Click to copy the UUID"
+profile-reply: "Reply with"
+# The visible reply button at the end of a private line. Glyph and word both live here so a
+# non-Chinese client gets its own wording instead of an English word inside a Chinese sentence.
+
+# ── /back: return to where you were before the last death or teleport ──
+back-usage: "§7» §f/back §8— §7return to where you were before your last death or trip (no arguments)."
+back-state: "§c✖ §7You cannot go back right now (dead or spectating). Try again shortly."
+back-nowhere: "§e⚠ §7There is nowhere to go back to yet.§8· §7Die or travel somewhere first, then run §f/back§7."
+back-busy: "§e⚠ §7Your last trip back has not finished yet. Run §f/back§7 again in a moment."
+back-broke: "§c✖ §7You cannot afford the trip back; this one needs §f{0}§7."
+back-failed: "§c✖ §7The trip back did not complete and the fee was refunded. You can try again."
+back-moved: "§e⚠ §7You moved, so the trip back was cancelled and the fee refunded."
+back-charged: "§a✔ §7Reserved §f{0}§7 for the trip back. Stay still for §e{1}§7s."
+back-done: "§a✔ §7You are back. This trip cost §f{0}§7."
+
+# ── Pomodoro /pomodoro ──
+# Countdowns, states and menu copy. Placeholders are positional: {0} {1} …
+speaker-pomodoro: "PomoCat"
+pomodoro-usage: "§7» §f/pomodoro [gui|start <preset>|pause|resume|stop|next|stats|visuals bossbar|title on|off]"
+# Display names for the six states, shared by BossBar, Title and the floating text.
+status-work: "Working"
+status-work-completed: "Work done"
+status-break: "Break"
+status-long-break: "Long break"
+status-paused: "Paused"
+status-stopped: "Ended"
+# The three readouts: BossBar, Title subtitle, floating text.
+pomodoro-bossbar: "§d◆ §f{0} §8┃ §f{1} §8┃ §e{2} §8┃ §7{3}/{4}"
+pomodoro-title: "§d◆ §f{0} §d◆"
+pomodoro-subtitle: "§f{0} §8┃ §e{1} §8┃ §7{2}/{3}"
+pomodoro-text-display: "§d◆ §f{0} §8┃ §f{1} §e{2}"
+pomodoro-started: "§a✔ §7Started §f{0}§7. Go go go!"
+pomodoro-paused: "§e⚠ §7Paused. Type §f/pomodoro resume §7when you're back."
+pomodoro-resumed: "§a✔ §7Resumed!"
+pomodoro-stopped: "§7» §7Session ended. Your focus time was recorded."
+pomodoro-work-start: "§a▶ §7Work starts now!"
+pomodoro-break-start: "§b▶ §7Short break — go stretch."
+pomodoro-long-break: "§e▶ §7A full cycle done — long break!"
+pomodoro-cycle-complete: "§a✔ §7Round complete. Use §f/pomodoro next §7to take your break."
+pomodoro-too-far: "§e⚠ §7You drifted more than {0} blocks away, so the timer paused. Come back and type §f/pomodoro resume§7."
+pomodoro-cannot-pause: "§e⚠ §7This phase cannot be paused — after work is done use §f/pomodoro next§7."
+pomodoro-not-paused: "§e⚠ §7Nothing is paused right now."
+pomodoro-not-active: "§e⚠ §7You have no pomodoro running."
+pomodoro-cannot-next: "§e⚠ §7Only the \"work done\" phase can advance."
+pomodoro-preset-not-found: "§c✖ §7No preset named §f{0}§7. Type §f/pomodoro §7to see the list."
+pomodoro-stats: "§7Total focus: §f{0} §7min §f{1} §7sec."
+pomodoro-visuals-usage: "§7» §f/pomodoro visuals <bossbar|title> <on|off>"
+pomodoro-bossbar-on: "§a✔ §7Progress bar shown."
+pomodoro-bossbar-off: "§7» §7Progress bar hidden."
+pomodoro-title-on: "§a✔ §7On-screen title shown."
+pomodoro-title-off: "§7» §7On-screen title hidden."
+# Menus
+pomodoro-main-title: "Pomodoro"
+pomodoro-preset-work: "Work {0} minutes"
+pomodoro-preset-break: "Break {0} minutes"
+pomodoro-preset-long-break: "Long break {0} minutes"
+pomodoro-preset-sessions: "Long break every {0} rounds"
+pomodoro-toggle-bossbar-on: "Progress bar: on"
+pomodoro-toggle-bossbar-off: "Progress bar: off"
+pomodoro-toggle-title-on: "Title: on"
+pomodoro-toggle-title-off: "Title: off"
+
+# ── Pomodoro · custom preset editor ──
+pomodoro-editor-title: "Edit preset"
+pomodoro-editor-new-title: "New preset"
+pomodoro-editor-default-name: "My preset"
+pomodoro-editor-adjust-hint: "§7Left-click +1, right-click −1"
+pomodoro-editor-name: "Name: {0}"
+pomodoro-editor-icon: "Icon: {0}"
+pomodoro-editor-save: "Save"
+pomodoro-editor-back: "Back"
+pomodoro-editor-discard: "Discard"
+pomodoro-name-prompt: "§7» §7Type the new name in chat (currently §f{0}§7), or §fcancel§7."
+pomodoro-name-invalid: "§c✖ §7A name must be 1–32 characters with no § or control characters."
+pomodoro-preset-saved: "§a✔ §7Preset §f{0} §7saved."
+pomodoro-preset-discarded: "§7» §7New preset discarded."
+pomodoro-preset-limit: "§c✖ §7You already have the maximum of {0} custom presets. Delete one first."
+
+# ── Pomodoro · crystal pillar UI ──
+# A function pillar's crystal head carries the short name; the first lore line is what it does.
+# Keeping the two apart is what lets the head stay readable at a glance without the tooltip guessing.
+pomodoro-action-start: "Start focus"
+pomodoro-action-resume: "Resume focus"
+pomodoro-action-pause: "Pause timer"
+pomodoro-action-next: "Take break"
+pomodoro-action-stop: "End session"
+pomodoro-action-gallery: "My presets"
+pomodoro-action-create: "New preset"
+pomodoro-action-stats: "Focus stats"
+pomodoro-action-help: "Command help"
+pomodoro-action-close: "Close"
+pomodoro-action-back: "Back"
+pomodoro-action-prev: "Previous"
+pomodoro-action-next-page: "Next"
+pomodoro-do-start: "§7Pick a preset to begin, or carry on the last one."
+pomodoro-do-start-replaces: "§8A session already running will be replaced."
+pomodoro-do-resume: "§7Pick the timer up where it stopped."
+pomodoro-do-pause: "§7Stops the clock; resume whenever."
+pomodoro-do-next: "§7Only lights up while work is done and waiting."
+pomodoro-do-stop: "§7Ends the session and records the focus time."
+pomodoro-do-gallery: "§7Start, edit, copy or delete presets."
+pomodoro-do-create: "§7Build your own work/break rhythm."
+pomodoro-do-stats: "§7How long you have focused in total."
+pomodoro-do-help: "§7Lists every command form."
+pomodoro-do-reset: "§7Numbers back to the built-in default; name and icon kept."
+pomodoro-do-duplicate: "§7Save another copy and tweak that one."
+pomodoro-do-delete: "§7Asks once, then removes it."
+pomodoro-click-left: "Left-click"
+pomodoro-scenery: "Crystal scenery"
+pomodoro-scenery-lore: "§8Decoration only — nothing happens if you click it."
+pomodoro-status-idle: "Not started"
+pomodoro-status-idle-lore: "§7The first pillar on the left picks a preset."
+pomodoro-status-name: "This session"
+pomodoro-status-running: "§f{0} §8│ §f{1} §8│ §e{2} §8│ §7round {3}/{4}"
+pomodoro-status-hint: "§8Refreshes every second; the clock freezes while paused."
+# Preset gallery (list page)
+pomodoro-gallery-title: "My presets · {0}/{1}"
+pomodoro-gallery-core: "Preset gallery"
+pomodoro-gallery-count: "§7Stored §f{0} §7of §f{1} §7custom presets"
+pomodoro-gallery-page: "§7Page §f{0} §7of §f{1}"
+pomodoro-gallery-hints: "§8Left-click start · right-click edit/copy · shift+left-click delete"
+pomodoro-gallery-start-hint: "§8▸ §7Left-click: start now"
+pomodoro-gallery-edit-hint: "§8▸ §7Right-click: edit"
+pomodoro-gallery-copy-hint: "§8▸ §7Right-click: copy it, then edit the copy (built-ins cannot be edited)"
+pomodoro-gallery-delete-hint: "§8▸ §7Shift+left-click: delete (asks first)"
+pomodoro-preset-badge-builtin: "§b[Built-in]"
+pomodoro-preset-badge-custom: "§d[Custom]"
+# Editor
+pomodoro-editor-name-help: "§7Left-click to rename; type it in chat."
+pomodoro-editor-field-work: "§8Length of one work round."
+pomodoro-editor-field-break: "§8The short break between rounds."
+pomodoro-editor-field-long-break: "§8The long break after a full cycle."
+pomodoro-editor-field-sessions: "§8Rounds before a long break (1–12)."
+pomodoro-editor-icon-help: "§7Cycles through the preset icons."
+pomodoro-editor-reset: "Reset numbers"
+pomodoro-editor-reset-done: "§a✔ §7Numbers restored to the built-in default."
+pomodoro-editor-preview: "Preview · {0}"
+pomodoro-editor-drafting: "§8Nothing is stored until you save."
+pomodoro-editor-copy-suffix: "copy"
+pomodoro-editor-duplicate: "Save as copy"
+pomodoro-editor-delete: "Delete preset"
+# Confirmation
+pomodoro-confirm-delete-title: "Confirm delete"
+pomodoro-confirm-delete-detail: "§7This deletes §f{0}§7 and it cannot be recovered."
+pomodoro-confirm-yes: "Delete it"
+pomodoro-confirm-no: "Never mind"
+# Results
+pomodoro-preset-deleted: "§a✔ §7Preset §f{0} §7deleted."
+pomodoro-preset-gone: "§e⚠ §7That preset is already gone — it may have been deleted elsewhere."
+pomodoro-preset-duplicated: "§a✔ §7Saved as §f{0}§7."
+pomodoro-preset-builtin-protected: "§c✖ §7A built-in preset cannot be deleted. Right-click it to copy and edit the copy."
+pomodoro-already-running: "§e⚠ §7A pomodoro is already running. End this one to switch presets."
+pomodoro-help: "§7» §f/pomodoro §7opens the colonnade; §f/pomodoro presets §7the gallery; §f/start <name>§7, §f/pause§7, §f/resume§7, §f/stop§7, §f/next§7, §f/stats§7."
+pomodoro-help-visuals: "§7» §f/pomodoro visuals <bossbar|title> <on|off> §7toggles the two readouts separately."
+
+# ── Pomodoro · navigation copy ──
+# Every navigation cell states what happens, especially the close: it does not touch a running timer.
+pomodoro-do-back: "§7Goes up one level. Nothing is changed."
+pomodoro-do-close: "§7Closes this window only; the timer keeps running."
+pomodoro-do-prev: "§7Previous page."
+pomodoro-do-next-page: "§7Next page."
+pomodoro-do-discard: "§7Throws this draft away; saved presets are untouched."
+pomodoro-action-main-menu: "Main menu"
+pomodoro-do-main-menu: "§7Back to the plugin's main menu (/menu)."
+menu-item-prev-page: "Previous page"
+menu-item-prev-page-lore: "§7Back to the previous page."
+menu-item-back-up: "Back"
+menu-item-back-up-lore: "§7Up one level."
+pomodoro-preset-usage: "§cUsage: /pomodoro preset <start|edit|delete> <index>"
+pomodoro-editor-usage: "§cUsage: /pomodoro editor <field> <up|down>, or name/save/duplicate/delete/reset"
+home-confirm-expired: "§cThat confirmation has expired; please start again."

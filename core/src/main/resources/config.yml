@@ -1,0 +1,312 @@
+# 语言策略：
+#   player = 按玩家客户端语言自动切换（推荐）；本键是「控制台 / 未提供语言的文件」使用的兜底语言
+#   server = 全服统一用本键指定的语言，忽略玩家客户端语言
+# 玩家客户端的 `en_gb` / `zh_hans_cn` 等地区变体会自动落到对应的基础语言文件。
+language-mode: player
+locale: zh_CN
+
+# 本文件的结构版本。每次**新增**配置项时 +1，插件启动时会把 jar 里新增的键补进本文件，
+# 并带上原注释。已经存在的键一律不读、不比、不改 —— 你改过的值不会被覆盖。
+# 想让某个键回到默认值：删掉那一行，重启后会自动补回默认值。
+# 不需要手动改这个数字。
+config-version: 4
+contexts:
+  economy: true
+  menu: true
+  render: true
+  teleport: true
+  spawn: true
+  sit: true
+  hat: true
+  shadowbox: true
+  home: true
+  nametag: true
+  mine: true
+  chat: true
+  # 多猫猫 AI：默认关闭（唯一一个会按次花钱的 context）。
+  agents: false
+  # 幻翼与体型：每个玩家自己的一份。总菜单里也能开。
+  avatar: true
+  # /invsee：管理员查看他人背包并取走 / 交换物品。权限 meowo.admin.invsee（OP 默认）。
+  invsee: true
+  # 番茄钟：/meowo pomodoro，打开 GUI 后选预设开始循环（工作 → 短休息 → 长休息）。需玩家同意移动。
+  pomodoro: true
+  # 喵达 ModaCat 商店：/sell 把矿石换成钱。没有 economy 钱包时自动停用。
+  shop: true
+render:
+  max-per-player: 200
+economy:
+  currency:
+    name: Meo
+    symbol: "ฅ"
+  teleport-tax:
+    # Fraction of the teleported player's balance before charging; 0.001 = 0.1%.
+    rate: "0.001"
+    minimum: "1.00"
+    maximum: "233.00"
+  pay-tax:
+    # Extra tax paid by the sender; sponsored teleport fees use the same rate.
+    rate: "0.01"
+  daily-subsidy:
+    enabled: true
+    # Paid from eco treasury once per calendar day; an empty pool does not mint money.
+    amount: "1.00"
+    timezone: Asia/Shanghai
+spawn:
+  # 空字符串表示「玩家当前所在世界」；多服可指定大厅世界名。
+  world: ""
+  # 站立等待秒数，移动到别的方块或受伤即取消。
+  warmup-seconds: 3
+  # 两次请求的最小间隔秒数。
+  cooldown-seconds: 5
+  # 传送后无敌秒数；会恢复玩家原本的无敌状态。
+  invulnerability-seconds: 4
+  # 对齐到目标方块中心。
+  center-align: true
+  # 出生点不安全时向上下搜索安全落点。关闭后不会做安全检查（仍不会生成区块）。
+  safety: true
+  safe-search-range: 16
+teleport:
+  request-seconds: 60
+  # Grace period between the fee being reserved and the actual move. 0 teleports on the next tick.
+  countdown-seconds: 3
+  particles: true
+sit:
+  # `/ride` 附近玩家区域的宽度，最大 3 格；旧配置中的更大值会限制为 3。
+  target-range: 3
+  # 右键楼梯 / 半砖 / 地毯坐下。关闭后只能用 /sit 原地坐下。
+  right-click-blocks: true
+  # 距离座位多远才能坐下。防止其他插件把交互距离调得很远时出现「隔空坐下」。
+  max-distance: "4"
+  # 各类方块的座位高度（相对方块中心 y+0.5，不是相对表面）。
+  # 三种表面高度不同，所以是三个不同的值：楼梯坐在下阶（最高，作基准），
+  # 半砖是更薄的搁板（略低），地毯只有 1/16 格、贴在地上（最低，紧贴地面）。
+  # 视觉高度不对时只改这里，不需要改代码。
+  stair-offset-y: "0.1"
+  slab-offset-y: "-0.15"
+  carpet-offset-y: "-0.5"
+  # 座位沿玩家朝向向前挪多少格，让椅子落在方块靠近玩家的一侧而不是埋在中间。
+  # 半砖只有半格深，所以比楼梯收一点；地毯本来就贴地，不需要前移。
+  stair-forward: "0.35"
+  slab-forward: "0.2"
+  carpet-forward: "0"
+hat:
+  # true = 工具也能戴到头上；false（默认）= 除工具外都能戴（羊毛、灯笼、唱片、箱子…）。
+  allow-tools: false
+  # 额外禁止的物品（材质名），例如 BEDROCK。留空表示不额外禁止。
+  deny: []
+  # 在自己物品栏里把物品点到头部槽时生效（客户端本身不允许放非护甲，这里由插件接管）。
+  inventory-slot: true
+shadowbox:
+  # 潜影盒长什么样。必须是「带方块实体背包」的容器方块物品（潜影贝盒、末影箱、箱子、木桶…），
+  # 因为盒子里的东西就存在这个方块的 NBT 里。写错不会让 /meowo reload 失败，会回落成 SHULKER_BOX 并在日志里提示。
+  material: SHULKER_BOX
+  # true（默认）= /shadowbox give 需要 meowo.shadowbox.give（OP 默认拥有）；普通玩家看不到这个子命令。
+  # false = 任何人都能 /shadowbox give 发放潜影盒。仅在你自己就是唯一会玩这台服的人时才改。
+  # 无论这里怎么设，两个键位和 /shadowbox（打开自己手上的盒子）对所有人开放。
+  give-permission: true
+nametag:
+  # 在玩家名称后加一个状态标记：挂机深黄、正常浅绿、**番茄钟进行中为红色**。
+  # 关闭后恢复原版名牌（红色标记也随之消失）。
+  enabled: true
+  # 静止多少秒算挂机（默认 180 秒 = 3 分钟）。挂机后不会因移动解除。
+  afk-after-seconds: 180
+  # 扫描间隔（秒）。1 秒足够灵敏，开销可忽略。
+  check-interval-seconds: 1
+
+home:
+  # 默认容量 1–1000；meowo.home.limit.<数量> 权限覆盖。降低上限不会删除旧家。
+  limit: 10
+  set-tax:
+    # 设置/迁址按操作确认时钱包余额计税；其余外观修改免费。
+    rate: "0.05"
+  minimum: "100"
+  maximum: "2333"
+  # 水平 X/Z 欧氏距离 ÷ 此数；向上取两位小数。
+  distance-divisor: "10"
+  # 不同世界没有可直接比较的距离，单独设置费用，范围同 minimum / maximum。
+  cross-world: true
+  cross-world-fee: "2333"
+  countdown-seconds: 3
+  particles: true
+  # 强制传送：`/home <编号或名称> force`（需 meowo.home.force 权限，默认所有人）。
+  # 正常回家的落点检查是严格的：保存坐标所在的两格必须可站、脚下是实体方块、不在岩浆/火里、
+  # 还在世界边界内。这在**设家那一刻**是对的，但坐标不会随世界变化——把家底下的方块挖掉、
+  # 把自己砌进墙里、动了世界边界，之后每次 /home 都会判成「落点不安全」而永远回不去。
+  # 开启后可以强制回到**保存时的原坐标**，不检查落点（区块仍会异步加载，坐标超出世界高度仍拒绝）。
+  # 关掉等于承认「回不去的家就只能重新设一个」，只在完全信任玩家时才建议关闭。
+  force: true
+  # 原版定位栏，需 PacketEvents 2.14.0；仅给所有者发标记，不修改真实经验值。
+  locator: true
+  # /home nav <编号> 或 GUI 选中后，用 BossBar 模拟方向；/home nav off 关闭。
+  bossbar: true
+mine:
+  # 每次挖到稀有矿物都全服通报（显示本次数量，不显示玩家累计——
+  # 原版 /minecraft:statistics 已经统计了每种方块的数量）。
+  announce: true
+  # 通报时全服播放一个提示音。
+  sound: true
+  # 每种矿物第一次出现时额外用更醒目的一行，保留「首挖礼」这个时刻。
+  highlight-first: true
+  # 连着的矿脉按一组统计（挖 1 颗钻石但旁边还连着 7 颗，就报 8）。0 = 不做矿脉合并。
+  max-vein-size: 32
+chat:
+  # 单条消息最大字符数，超出直接拦截。
+  max-length: 256
+  # 风险分达到该值时脱敏；达到 block-at 时拦截。两者都由外部 AI 通过 API 回填。
+  warn-at: 40
+  block-at: 80
+  # 审核器抛异常时：open = 放行（AI 故障不会瘫痪全服聊天）；closed = 拦截。
+  # 默认 closed：审核器挂了和"根本没开审核"在放行模式下看起来一模一样，而日志会说功能是开着的。
+  # 改成 open 会让被审核的消息直接放行（只影响这一条消息，其它审核器和别的频道不受影响）。
+  fail-open: false
+  # 审计环形缓冲容量，供风纪 AI 拉取。固定大小，重启即丢。
+  audit-capacity: 512
+  # 字面量过滤（不分大小写），命中整段替换为 ***
+  literal-filters: []
+  # 正则过滤。禁止嵌套量词（会回溯卡死聊天线程）。
+  regex-filters: []
+  # true = 玩家名与发言者重名时优先发给玩家；false（默认）= 系统发言者优先，防冒名。
+  player-first: false
+  # 内置应答台：让 /msg <猫> 有人应答。风纪 AI 接上后会自动顶替它。
+  helpdesk: true
+  # 每个玩家保留的离线邮件条数，超出后丢弃最旧的；落盘在 plugins/Meowo/chat/mail.db。
+  mail-capacity: 32
+  # 内存里保留多少行聊天（供 /meo replay 不碰 SQLite），超出后挤掉最旧的。
+  log-capacity: 4096
+  # 玩家聊天落盘保留多久——**按"最后一次登录"算，不是按消息日期**。
+  # 天天上线的玩家，三个月前说的话也留着；一个月没上线的人，说过什么全部删除。
+  # 属于任何玩家的行都跟这个玩家走；服务器公告这类"没有主人"的行仍按日期清理。
+  log-days: 15
+
+agents:
+  # 多猫猫 AI。默认关闭：这是唯一一个会按次花钱的 context，必须由服主显式开启。
+  # 开启后 /msg EconCat 等会被 Agent 顶替；关闭时回落到内置应答台。
+  #
+  # OpenAI 兼容端点。留空 = 不连任何模型，猫只会回一句简短的「走神了」——
+  # 这比"启动了但每个问题都卡住"好得多。
+  base-url: ""
+  api-key: ""
+  model: "MiniMax-M3"
+  # 输出预算。推理模型的思考 token 从这里扣：实测 80 会把 MiniMax-M3 每次响应都截断，
+  # 截断的响应看起来就像"模型不肯调工具"。300 是实测下限。
+  # 思考和正文共用这一份额度，所以它还得装得下一条 320 字的回复——512 只够思考，
+  # 聊得多的猫会被从中间截断。1024 是思考加正文的余量。
+  max-tokens: 1024
+  # 在系统提示里加一句"先判断能不能凭记忆答"。实测对多数模型无差别，故默认关闭。
+  preflight: false
+  # agent 专用线程数。绝不与 economy 的单线程 worker 共用。
+  workers: 2
+  # 玩家提问的等待队列上限；超出直接告知"忙"，而不是无限排队。
+  backlog: 32
+  # 全服每日调用上限（主动搭话的份额从中扣除，提问的份额永不被占）。
+  daily-cap: 500
+  # 每玩家每日上限，避免一个人轮询 12 只猫就清空全服额度。
+  per-player-cap: 20
+  # 同一玩家问同一只猫的最小间隔（秒）。
+  cooldown-seconds: 10
+  # 猫的记忆保留天数：玩家**多少天没登录**，猫就忘掉对他的印象。
+  #
+  # 刻意和 chat.log-days 一样。印象是聊天原文的压缩产物 —— 一份压缩副本比它的来源活得久，
+  # 「15 天不登录就删聊天」这条承诺就会悄悄变成假话。而时钟是**最后登录时间**，
+  # 不是印象有多旧：天天上线但最近没跟猫说话的人，猫照样记得他。
+  impression-days: 15
+  # 猫主动开口。默认关闭：没人要求，就不该有 unsolicited chatter。
+  proactive: false
+  # 落盘位置（相对 plugins/Meowo）。
+  store: "agents/profile.db"
+  # 带外风纪pass：剪掉过期互评 → 重算风险分并回填闸门 → 推进工单阶梯。
+  # 三者共用这一个定时器，因为它们读的是同一批行。
+  discipline-interval-seconds: 300
+
+teleport-back:
+  # /back：回到上次死亡或传送之前的位置。每次扣费。
+  # 0.1% 是刻意压低的：/back 主要是死后捡东西的救生索，收费太重等于不让玩家用。
+  rate: "0.001"
+  minimum: "10"
+  maximum: "233"
+  # 死亡时记录返回点。关掉的话 /back 在最需要的时候就没用了。
+  on-death: true
+
+# ═══════════ MENU ═══════════
+# 总菜单的布局（槽位、图标、文案、动作）现在归 UI 模块：见 `ui.yml` 的 `screens.menu` 与
+# `screens.menu-homes`。这里曾经有的 `menu.items` 已不再读取——布局只有一份，避免改了不生效。
+pomodoro:
+  # WORK 阶段中玩家可离开原位的最大距离（格）。超出后自动暂停 + 警告，不再强制拉回。
+  # Meowo 不束缚玩家输入；这只是个软提示。
+  max-distance: "16"
+  # 新建会话时默认显示 BossBar / Title；玩家可以在 GUI 内单独关闭。
+  bossbar-default: true
+  title-default: true
+  # 头顶漂浮文字距离玩家头顶的偏移量（仅在 PacketEvents 可用时显示）。
+  text-display:
+    offset-y: "2.4"
+  # 屏幕标题在一次发送后停留多少秒。标题**每 tick 重发一次**，所以这个值不再是更新间隔，
+  # 只需要足够长，让一次掉 tick 或卡顿不至于在两次刷新之间让屏幕空出来。
+  # 注意：淡入淡出固定为 0，正是它让「每秒重发」变成替换而不是重播淡入；改动那部分会立刻开始闪烁。
+  title-refresh-seconds: 5
+  # BossBar 颜色（枚举：BLUE / GREEN / PINK / PURPLE / RED / WHITE / YELLOW）。
+  bossbar-colors:
+    work: GREEN
+    break: BLUE
+    long-break: YELLOW
+    paused: RED
+  # 单个玩家可保存的自定义预设上限。超出后新增会被拒绝。
+  custom-preset-limit: 16
+  # 各时机的音效名（Bukkit Sound 名）。留空字符串 = 静音该提示，不影响其它提示。
+  sounds:
+    # 点击菜单按钮。
+    ui-click: "ui.button.click"
+    # 成功开始一个番茄钟。
+    ui-success: "entity.experience_orb.pickup"
+    # 当前阶段不允许该操作（例如对「工作完成」阶段按暂停）。
+    ui-fail: "entity.villager.no"
+    # 倒计时最后 5 秒，每秒一声。
+    timer-end-warning: "block.note_block.hat"
+    # 一轮工作走完、或进入短休息。
+    next-cycle: "entity.player.levelup"
+    # 离开原位超过 max-distance，被自动暂停。
+    leave-warning: "entity.villager.no"
+    # 完成一整组、进入长休息。
+    complete-all-rounds: "entity.firework_rocket.launch"
+    # 开始新一轮工作。
+    new-round-start: "block.bell.use"
+
+# ═══════════ AVATAR 幻翼与体型 ═══════════
+avatar:
+  # 整个功能关掉时，/phantom 与 /size 都不会注册。
+  enabled: true
+  # 体型：最小 0.5 倍、最大 3 倍、每按一次变 0.25 倍。
+  # 数值都必须是正数，且 min ≤ max。
+  scale:
+    min: "0.5"
+    max: "3.0"
+    step: "0.25"
+    default: "1.0"
+  # 「幻翼」这一格没有可调项：它取消的是原版「不睡觉就刷幻翼」的机制，
+  # 那是服务器原版的行为，开关本身不需要数字。
+
+# ═══════════ 喵达 MODACAT 商店 ═══════════
+shop:
+  # 回收单价，单位是**一个**矿石。表里没写的矿物不收：/sell 会原样留着它们。
+  # 下面这些是随插件附带的默认值，改这里即可覆盖——只写你要改的几种即可，
+  # 没写的仍按默认值。材质名写错会被忽略（不会让 /meowo reload 失败）。
+  # 深层矿（深板岩矿石）与地表的同名矿同价，两条都要写全，不写就按默认值走。
+  prices:
+    COAL_ORE: "3.00"
+    DEEPSLATE_COAL_ORE: "3.00"
+    NETHER_QUARTZ_ORE: "5.00"
+    IRON_ORE: "5.00"
+    DEEPSLATE_IRON_ORE: "5.00"
+    COPPER_ORE: "15.00"
+    DEEPSLATE_COPPER_ORE: "15.00"
+    REDSTONE_ORE: "20.00"
+    DEEPSLATE_REDSTONE_ORE: "20.00"
+    GOLD_ORE: "50.00"
+    DEEPSLATE_GOLD_ORE: "50.00"
+    DIAMOND_ORE: "100.00"
+    DEEPSLATE_DIAMOND_ORE: "100.00"
+    LAPIS_ORE: "120.00"
+    DEEPSLATE_LAPIS_ORE: "120.00"
+    EMERALD_ORE: "1000.00"
+    DEEPSLATE_EMERALD_ORE: "1000.00"
