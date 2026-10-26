@@ -1,0 +1,18 @@
+.gradle/
+# The local Gradle home used when the shared one is not writable.
+.gradle-home/
+.kotlin/
+**/build/
+.run/
+.idea/
+*.iml
+.DS_Store
+.tmp/
+
+# A full clone of an upstream project, kept next to the `pomodoro` context only as a
+# reference while that context was being written. It carries its own Git history, so
+# committing it would nest a repository inside this one and hide its files behind a
+# gitlink. It is a checkout, not a source of this project: the upstream URL lives in
+# `docs/Pomodoro/.git/config`, and the context it informed is the code in
+# `contexts/meowo-pomodoro`.
+docs/Pomodoro/
