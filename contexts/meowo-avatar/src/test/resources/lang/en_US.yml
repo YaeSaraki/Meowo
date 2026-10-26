@@ -1,0 +1,11 @@
+# The keys this context sends, as a test fixture. See the zh_CN file for why this exists.
+player-only: "§c✖ §7Only a player can run that."
+no-permission: "§c✖ §7You are not allowed to do that."
+avatar-phantom-on: "§a✔ §7The night phantoms will leave you alone now, meow."
+avatar-phantom-off: "§7» §7The night phantoms will come for you again."
+avatar-phantom-usage: "§c✖ §7Usage: §f/phantom [on|off]"
+avatar-size-current: "§7» §7Your size is §f{0}§7."
+avatar-size-changed: "§a✔ §7You are §f{0}§7 big now."
+avatar-size-reset: "§7» §7Your size is back to §f{0}§7."
+avatar-size-usage: "§c✖ §7Usage: §f/size [up|down|reset|number]"
+avatar-size-unavailable: "§c✖ §7This server cannot resize players."

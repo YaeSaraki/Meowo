@@ -1,0 +1,16 @@
+# The keys this context sends, as a test fixture.
+#
+# The real language bundles live in `core`, which depends on this module and so cannot be on its
+# test classpath. MockBukkit therefore has nothing to read, and `Messages` — which falls back to the
+# raw key — throws instead of answering. These two files are that minimum: enough for the routes to
+# be refused with a sentence rather than with a stack trace.
+player-only: "§c✖ §7这条命令只能由玩家使用。"
+no-permission: "§c✖ §7你没有权限这么做。"
+avatar-phantom-on: "§a✔ §7夜里的幻翼不会再来找你了喵。"
+avatar-phantom-off: "§7» §7夜里的幻翼会照常来找你了。"
+avatar-phantom-usage: "§c✖ §7用法：§f/phantom [on|off]"
+avatar-size-current: "§7» §7你现在的体型是 §f{0}§7 倍。"
+avatar-size-changed: "§a✔ §7体型变成 §f{0}§7 倍了喵。"
+avatar-size-reset: "§7» §7体型恢复成 §f{0}§7 倍。"
+avatar-size-usage: "§c✖ §7用法：§f/size [up|down|reset|倍数]"
+avatar-size-unavailable: "§c✖ §7这台服务器不支持调整体型。"
