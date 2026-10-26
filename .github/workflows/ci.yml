@@ -1,0 +1,36 @@
+name: CI
+
+# Every push and every pull request runs the same thing: the tests, the architecture gate and the
+# coverage gate. The gates are part of `check` (see the root `build.gradle.kts`), so this workflow
+# does not have to know their names — and a gate added later is enforced without anyone editing
+# this file.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Test, architecture and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 25, because the build compiles with it: `jvmToolchain(25)` and the resolvable
+      # configurations are stamped `TARGET_JVM_VERSION = 25`. The bytecode target is 21, so the
+      # result still runs on a Java 21 server.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build and verify
+        run: ./gradlew check build --stacktrace
