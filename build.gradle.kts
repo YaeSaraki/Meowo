@@ -150,3 +150,51 @@ tasks.register("verifyArchitecture") {
         }
     }
 }
+
+val allTests = subprojects.map { it.tasks.named("test") }
+
+/**
+ * The gates run as part of `check`.
+ *
+ * A gate that has to be remembered is a gate that is not there. Both `verifyArchitecture` and
+ * `verifyCoverage` were separate tasks that a developer had to know the name of and type, and
+ * nothing in the build stopped a change that broke either of them from being merged — the build
+ * stayed green and the rule was simply not applied.
+ *
+ * So `check` depends on both of them, and on every module's own `check`, which is where the tests
+ * live. `./gradlew check` is now the whole story, and CI runs exactly that.
+ */
+tasks.named("check") {
+    dependsOn(subprojects.map { it.tasks.named("check") })
+    dependsOn("verifyArchitecture")
+    dependsOn("verifyCoverage")
+}
+tasks.register<JacocoReport>("coverageReport") {
+    dependsOn(allTests)
+    dependsOn(subprojects.map { it.tasks.named("jacocoTestReport") })
+    executionData(provider { subprojects.map { it.layout.buildDirectory.file("jacoco/test.exec").get().asFile }.filter { it.exists() } })
+    classDirectories.from(subprojects.map { it.extensions.getByType<SourceSetContainer>()["main"].output })
+    sourceDirectories.from(subprojects.map { it.file("src/main/kotlin") })
+    reports { xml.required.set(true); html.required.set(true) }
+}
+jacoco { toolVersion = "0.8.14" }
+tasks.register("verifyCoverage") {
+    dependsOn("coverageReport")
+    doLast {
+        val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        fun coverage(path: File): Double {
+            val root = factory.newDocumentBuilder().parse(path).documentElement
+            val counters = root.childNodes
+            val line = (0 until counters.length).map { counters.item(it) }
+                .filterIsInstance<org.w3c.dom.Element>().single { it.tagName == "counter" && it.getAttribute("type") == "LINE" }
+            val covered = line.getAttribute("covered").toDouble()
+            return covered / (covered + line.getAttribute("missed").toDouble())
+        }
+        val total = coverage(file("build/reports/jacoco/coverageReport/coverageReport.xml"))
+        val domain = coverage(file("contexts/meowo-economy/domain/build/reports/jacoco/test/jacocoTestReport.xml"))
+        logger.lifecycle("Line coverage: total=%.2f%%, domain=%.2f%%".format(total * 100, domain * 100))
+        check(total >= 0.70) { "Total coverage below 70%" }
+        check(domain >= 0.90) { "Domain coverage below 90%" }
+    }
+}
