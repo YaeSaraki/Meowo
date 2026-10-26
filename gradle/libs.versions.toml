@@ -1,0 +1,35 @@
+[versions]
+kotlin = "2.2.21"
+taboolib-plugin = "2.0.38"
+taboolib = "6.2.4-c90a237"
+paper = "26.2.build.129-stable"
+mockbukkit = "4.116.1"
+junit = "5.13.4"
+sqlite = "3.50.3.0"
+packetevents = "2.14.0"
+gson = "2.14.0"
+vault = "1.7.1"
+
+[libraries]
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+mockbukkit = { module = "org.mockbukkit.mockbukkit:mockbukkit-v26.2", version.ref = "mockbukkit" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+# Downloaded at **runtime** by TabooLib, not bundled: the native payload covers six platforms
+# and twenty-four architectures, and one server uses one ~2 MB file of it. The cache lands in the
+# **server's own `libraries/` directory** — the one next to `plugins/`, not inside the plugin's
+# folder — so an air-gapped server is prepared by copying that directory across.
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
+packetevents = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+# The economy facade that shop plugins talk to. compileOnly throughout: Vault is another plugin,
+# so its classes are present at runtime only when the operator installs it.
+vault = { module = "com.github.MilkBowl:VaultAPI", version.ref = "vault" }
+# The one TabooLib module this project compiles against. Named here so the four modules that use
+# it stop spelling the coordinate out: a version written in four places is four places to forget.
+taboolib-bukkit-ui = { module = "io.izzel.taboolib:bukkit-ui", version.ref = "taboolib" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+taboolib = { id = "io.izzel.taboolib", version.ref = "taboolib-plugin" }
