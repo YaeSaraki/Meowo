@@ -16,3 +16,8 @@
 # `docs/Pomodoro/.git/config`, and the context it informed is the code in
 # `contexts/meowo-pomodoro`.
 docs/Pomodoro/
+
+# The build and server logs under `docs/` are **tracked on purpose**: `docs/acceptance.md` links to
+# them as the evidence for the acceptance claims, so ignoring them would leave those links pointing
+# at nothing. Their machine-specific paths were scrubbed instead — the logs stay, the home
+# directory does not.

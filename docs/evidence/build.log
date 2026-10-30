@@ -6,137 +6,413 @@ Daemon will be stopped at the end of the build
 Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'io.izzel.taboolib'
 Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'io.izzel.taboolib'
 
-> Task :contexts:meowo-menu:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :contexts:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :contexts:meowo-render:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :api:cleanTest UP-TO-DATE
+> Task :contexts:cleanTest UP-TO-DATE
+> Task :core:cleanTest
+> Task :platform:cleanTest
+> Task :shared:cleanTest
+> Task :ui:cleanTest
+> Task :contexts:meowo-agents:cleanTest
+> Task :contexts:meowo-avatar:cleanTest
+> Task :contexts:meowo-chat:cleanTest
+> Task :contexts:meowo-economy:cleanTest
+> Task :contexts:meowo-hat:cleanTest UP-TO-DATE
+> Task :contexts:meowo-home:cleanTest
+> Task :contexts:meowo-invsee:cleanTest
+> Task :contexts:meowo-menu:cleanTest UP-TO-DATE
+> Task :contexts:meowo-mine:cleanTest
+> Task :contexts:meowo-nametag:cleanTest
+> Task :contexts:meowo-pomodoro:cleanTest
+> Task :contexts:meowo-render:cleanTest
+> Task :contexts:meowo-shadowbox:cleanTest UP-TO-DATE
+> Task :contexts:meowo-shop:cleanTest
+> Task :contexts:meowo-sit:cleanTest
+> Task :contexts:meowo-spawn:cleanTest UP-TO-DATE
+> Task :contexts:meowo-teleport:cleanTest
+> Task :contexts:meowo-webapi:cleanTest
+> Task :contexts:meowo-economy:domain:cleanTest
 > Task :api:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :platform:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :contexts:meowo-economy:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :contexts:meowo-economy:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :platform:processResources NO-SOURCE
-> Task :contexts:meowo-menu:processResources NO-SOURCE
-> Task :contexts:meowo-economy:processResources NO-SOURCE
-> Task :contexts:meowo-render:processResources NO-SOURCE
-> Task :contexts:meowo-economy:domain:processResources NO-SOURCE
-> Task :platform:processTestResources NO-SOURCE
-> Task :contexts:meowo-economy:processTestResources NO-SOURCE
-> Task :contexts:compileKotlin NO-SOURCE
-> Task :contexts:meowo-render:processTestResources NO-SOURCE
-> Task :contexts:meowo-economy:domain:processTestResources NO-SOURCE
-> Task :contexts:meowo-menu:processTestResources NO-SOURCE
-> Task :contexts:compileJava NO-SOURCE
-> Task :contexts:processResources NO-SOURCE
-> Task :contexts:classes UP-TO-DATE
-> Task :verifyArchitecture
-> Task :contexts:jar UP-TO-DATE
-> Task :contexts:compileTestKotlin NO-SOURCE
-> Task :core:processResources UP-TO-DATE
-> Task :contexts:compileTestJava NO-SOURCE
-> Task :contexts:processTestResources NO-SOURCE
-> Task :contexts:testClasses UP-TO-DATE
-> Task :contexts:test NO-SOURCE
-> Task :contexts:jacocoTestReport SKIPPED
-> Task :core:processTestResources NO-SOURCE
+
 > Task :api:compileKotlin UP-TO-DATE
-> Task :shared:compileKotlin UP-TO-DATE
-> Task :shared:compileJava NO-SOURCE
+Caught exception: Could not start the FSEvents stream: $HOME/Meowo
+
 > Task :api:compileJava NO-SOURCE
-> Task :shared:processResources NO-SOURCE
-> Task :shared:classes UP-TO-DATE
 > Task :api:processResources NO-SOURCE
 > Task :api:classes UP-TO-DATE
 > Task :api:jar UP-TO-DATE
-> Task :shared:jar UP-TO-DATE
 > Task :api:compileTestKotlin NO-SOURCE
 > Task :api:compileTestJava NO-SOURCE
 > Task :api:processTestResources NO-SOURCE
 > Task :api:testClasses UP-TO-DATE
 > Task :api:test NO-SOURCE
 > Task :api:jacocoTestReport SKIPPED
-> Task :contexts:meowo-economy:domain:compileKotlin UP-TO-DATE
-> Task :contexts:meowo-economy:domain:compileJava NO-SOURCE
-> Task :contexts:meowo-economy:domain:classes UP-TO-DATE
-> Task :contexts:meowo-economy:domain:jar UP-TO-DATE
-> Task :contexts:meowo-economy:domain:compileTestKotlin UP-TO-DATE
-> Task :contexts:meowo-economy:domain:compileTestJava NO-SOURCE
-> Task :contexts:meowo-economy:domain:testClasses UP-TO-DATE
-> Task :contexts:meowo-economy:domain:test UP-TO-DATE
-> Task :shared:compileTestKotlin UP-TO-DATE
+> Task :contexts:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:compileKotlin NO-SOURCE
+> Task :contexts:compileJava NO-SOURCE
+> Task :contexts:processResources NO-SOURCE
+> Task :contexts:classes UP-TO-DATE
+> Task :contexts:jar UP-TO-DATE
+> Task :contexts:compileTestKotlin NO-SOURCE
+> Task :contexts:compileTestJava NO-SOURCE
+> Task :contexts:processTestResources NO-SOURCE
+> Task :contexts:testClasses UP-TO-DATE
+> Task :contexts:test NO-SOURCE
+> Task :contexts:jacocoTestReport SKIPPED
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :platform:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:compileKotlin UP-TO-DATE
+> Task :shared:compileJava NO-SOURCE
 > Task :platform:compileKotlin UP-TO-DATE
 > Task :platform:compileJava NO-SOURCE
-> Task :platform:classes UP-TO-DATE
-> Task :platform:jar UP-TO-DATE
-> Task :shared:compileTestJava NO-SOURCE
-> Task :platform:compileTestKotlin NO-SOURCE
-> Task :platform:compileTestJava NO-SOURCE
-> Task :platform:testClasses UP-TO-DATE
-> Task :platform:test NO-SOURCE
-> Task :platform:jacocoTestReport SKIPPED
-> Task :contexts:meowo-economy:domain:jacocoTestReport UP-TO-DATE
-> Task :shared:processTestResources NO-SOURCE
-> Task :shared:testClasses UP-TO-DATE
-> Task :shared:test UP-TO-DATE
-> Task :shared:jacocoTestReport UP-TO-DATE
-> Task :contexts:meowo-menu:compileKotlin UP-TO-DATE
+> Task :ui:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ui:compileKotlin UP-TO-DATE
+> Task :ui:compileJava NO-SOURCE
+> Task :contexts:meowo-agents:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-agents:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-agents:compileJava NO-SOURCE
+> Task :contexts:meowo-avatar:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-avatar:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-avatar:compileJava NO-SOURCE
+> Task :contexts:meowo-chat:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-chat:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-chat:compileJava NO-SOURCE
+> Task :contexts:meowo-economy:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-economy:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-economy:domain:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-economy:domain:compileJava NO-SOURCE
 > Task :contexts:meowo-economy:compileKotlin UP-TO-DATE
 > Task :contexts:meowo-economy:compileJava NO-SOURCE
-> Task :contexts:meowo-economy:classes UP-TO-DATE
+> Task :contexts:meowo-hat:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-hat:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-hat:compileJava NO-SOURCE
+> Task :contexts:meowo-home:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-home:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-home:compileJava NO-SOURCE
+> Task :contexts:meowo-invsee:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-invsee:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-invsee:compileJava NO-SOURCE
+> Task :contexts:meowo-menu:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-menu:compileKotlin UP-TO-DATE
 > Task :contexts:meowo-menu:compileJava NO-SOURCE
+> Task :contexts:meowo-mine:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-mine:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-mine:compileJava NO-SOURCE
+> Task :contexts:meowo-nametag:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-nametag:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-nametag:compileJava NO-SOURCE
+> Task :contexts:meowo-pomodoro:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-pomodoro:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-pomodoro:compileJava NO-SOURCE
+> Task :contexts:meowo-render:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-render:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-render:compileJava NO-SOURCE
+> Task :contexts:meowo-shadowbox:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-shadowbox:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-shadowbox:compileJava NO-SOURCE
+> Task :contexts:meowo-shop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-shop:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-shop:compileJava NO-SOURCE
+> Task :contexts:meowo-sit:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-sit:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-sit:compileJava NO-SOURCE
+> Task :contexts:meowo-spawn:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-spawn:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-spawn:compileJava NO-SOURCE
+> Task :contexts:meowo-teleport:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-teleport:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-teleport:compileJava NO-SOURCE
+> Task :contexts:meowo-webapi:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :contexts:meowo-webapi:compileKotlin UP-TO-DATE
+> Task :contexts:meowo-webapi:compileJava NO-SOURCE
+> Task :core:compileKotlin UP-TO-DATE
+> Task :core:compileJava NO-SOURCE
+> Task :core:processResources UP-TO-DATE
+> Task :core:classes UP-TO-DATE
+> Task :platform:processResources NO-SOURCE
+> Task :platform:classes UP-TO-DATE
+> Task :platform:jar UP-TO-DATE
+> Task :shared:processResources NO-SOURCE
+> Task :shared:classes UP-TO-DATE
+> Task :shared:jar UP-TO-DATE
+> Task :ui:processResources UP-TO-DATE
+> Task :ui:classes UP-TO-DATE
+> Task :ui:jar UP-TO-DATE
+> Task :contexts:meowo-agents:processResources NO-SOURCE
+> Task :contexts:meowo-agents:classes UP-TO-DATE
+> Task :contexts:meowo-agents:jar UP-TO-DATE
+> Task :contexts:meowo-avatar:processResources NO-SOURCE
+> Task :contexts:meowo-avatar:classes UP-TO-DATE
+> Task :contexts:meowo-avatar:jar UP-TO-DATE
+> Task :contexts:meowo-chat:processResources NO-SOURCE
+> Task :contexts:meowo-chat:classes UP-TO-DATE
+> Task :contexts:meowo-chat:jar UP-TO-DATE
+> Task :contexts:meowo-economy:processResources NO-SOURCE
+> Task :contexts:meowo-economy:classes UP-TO-DATE
+> Task :contexts:meowo-economy:jar UP-TO-DATE
+> Task :contexts:meowo-hat:processResources NO-SOURCE
+> Task :contexts:meowo-hat:classes UP-TO-DATE
+> Task :contexts:meowo-hat:jar UP-TO-DATE
+> Task :contexts:meowo-home:processResources NO-SOURCE
+> Task :contexts:meowo-home:classes UP-TO-DATE
+> Task :contexts:meowo-home:jar UP-TO-DATE
+> Task :contexts:meowo-invsee:processResources NO-SOURCE
+> Task :contexts:meowo-invsee:classes UP-TO-DATE
+> Task :contexts:meowo-invsee:jar UP-TO-DATE
+> Task :contexts:meowo-menu:processResources NO-SOURCE
 > Task :contexts:meowo-menu:classes UP-TO-DATE
 > Task :contexts:meowo-menu:jar UP-TO-DATE
-> Task :contexts:meowo-economy:jar UP-TO-DATE
-> Task :contexts:meowo-menu:compileTestKotlin NO-SOURCE
-> Task :contexts:meowo-menu:compileTestJava NO-SOURCE
-> Task :contexts:meowo-menu:testClasses UP-TO-DATE
-> Task :contexts:meowo-menu:test NO-SOURCE
-> Task :contexts:meowo-menu:jacocoTestReport SKIPPED
-> Task :contexts:meowo-economy:compileTestKotlin UP-TO-DATE
-> Task :contexts:meowo-economy:compileTestJava NO-SOURCE
-> Task :contexts:meowo-economy:testClasses UP-TO-DATE
-> Task :contexts:meowo-economy:test UP-TO-DATE
-> Task :contexts:meowo-economy:jacocoTestReport UP-TO-DATE
-> Task :contexts:meowo-render:compileKotlin
-> Task :contexts:meowo-render:compileJava NO-SOURCE
+> Task :contexts:meowo-mine:processResources NO-SOURCE
+> Task :contexts:meowo-mine:classes UP-TO-DATE
+> Task :contexts:meowo-mine:jar UP-TO-DATE
+> Task :contexts:meowo-nametag:processResources NO-SOURCE
+> Task :contexts:meowo-nametag:classes UP-TO-DATE
+> Task :contexts:meowo-nametag:jar UP-TO-DATE
+> Task :contexts:meowo-pomodoro:processResources UP-TO-DATE
+> Task :contexts:meowo-pomodoro:classes UP-TO-DATE
+> Task :contexts:meowo-pomodoro:jar UP-TO-DATE
+> Task :contexts:meowo-render:processResources NO-SOURCE
 > Task :contexts:meowo-render:classes UP-TO-DATE
-> Task :contexts:meowo-render:jar
-> Task :core:compileKotlin
-> Task :core:compileJava NO-SOURCE
-> Task :core:classes UP-TO-DATE
-> Task :contexts:meowo-render:compileTestKotlin
-> Task :contexts:meowo-render:compileTestJava NO-SOURCE
-> Task :contexts:meowo-render:testClasses UP-TO-DATE
-> Task :contexts:meowo-render:test
-> Task :contexts:meowo-render:jacocoTestReport
-> Task :core:jar
-
-> Task :core:taboolibMainTask
-[taboolibMainTask] 1208 classes, 196 resources | ASM: 2238ms (8 threads), Write: 3223ms, Total: 5500ms
-
-> Task :core:assemble
-> Task :core:compileTestKotlin
+> Task :contexts:meowo-render:jar UP-TO-DATE
+> Task :contexts:meowo-shadowbox:processResources NO-SOURCE
+> Task :contexts:meowo-shadowbox:classes UP-TO-DATE
+> Task :contexts:meowo-shadowbox:jar UP-TO-DATE
+> Task :contexts:meowo-shop:processResources NO-SOURCE
+> Task :contexts:meowo-shop:classes UP-TO-DATE
+> Task :contexts:meowo-shop:jar UP-TO-DATE
+> Task :contexts:meowo-sit:processResources NO-SOURCE
+> Task :contexts:meowo-sit:classes UP-TO-DATE
+> Task :contexts:meowo-sit:jar UP-TO-DATE
+> Task :contexts:meowo-spawn:processResources NO-SOURCE
+> Task :contexts:meowo-spawn:classes UP-TO-DATE
+> Task :contexts:meowo-spawn:jar UP-TO-DATE
+> Task :contexts:meowo-teleport:processResources NO-SOURCE
+> Task :contexts:meowo-teleport:classes UP-TO-DATE
+> Task :contexts:meowo-teleport:jar UP-TO-DATE
+> Task :contexts:meowo-webapi:processResources NO-SOURCE
+> Task :contexts:meowo-webapi:classes UP-TO-DATE
+> Task :contexts:meowo-webapi:jar UP-TO-DATE
+> Task :contexts:meowo-economy:domain:processResources NO-SOURCE
+> Task :contexts:meowo-economy:domain:classes UP-TO-DATE
+> Task :contexts:meowo-economy:domain:jar UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :core:compileTestKotlin UP-TO-DATE
 > Task :core:compileTestJava NO-SOURCE
+> Task :core:processTestResources NO-SOURCE
 > Task :core:testClasses UP-TO-DATE
 WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
 WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
 WARNING: A restricted method in java.lang.System has been called
-WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
 > Task :core:test
+> Task :platform:compileTestKotlin UP-TO-DATE
+> Task :platform:compileTestJava NO-SOURCE
+> Task :platform:processTestResources NO-SOURCE
+> Task :platform:testClasses UP-TO-DATE
+> Task :core:jacocoTestReport
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :platform:test
+> Task :shared:compileTestKotlin UP-TO-DATE
+> Task :shared:compileTestJava NO-SOURCE
+> Task :shared:processTestResources NO-SOURCE
+> Task :shared:testClasses UP-TO-DATE
+> Task :platform:jacocoTestReport
+> Task :shared:test
+> Task :ui:compileTestKotlin UP-TO-DATE
+> Task :ui:compileTestJava NO-SOURCE
+> Task :ui:processTestResources NO-SOURCE
+> Task :ui:testClasses UP-TO-DATE
+> Task :shared:jacocoTestReport
+> Task :ui:test
+> Task :contexts:meowo-agents:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-agents:compileTestJava NO-SOURCE
+> Task :contexts:meowo-agents:processTestResources NO-SOURCE
+> Task :contexts:meowo-agents:testClasses UP-TO-DATE
+> Task :ui:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-agents:test
+> Task :contexts:meowo-avatar:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-avatar:compileTestJava NO-SOURCE
+> Task :contexts:meowo-avatar:processTestResources UP-TO-DATE
+> Task :contexts:meowo-avatar:testClasses UP-TO-DATE
+> Task :contexts:meowo-agents:jacocoTestReport
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :contexts:meowo-avatar:test
+> Task :contexts:meowo-chat:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-chat:compileTestJava NO-SOURCE
+> Task :contexts:meowo-chat:processTestResources NO-SOURCE
+> Task :contexts:meowo-chat:testClasses UP-TO-DATE
+> Task :contexts:meowo-avatar:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-chat:test
+> Task :contexts:meowo-economy:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-economy:compileTestJava NO-SOURCE
+> Task :contexts:meowo-economy:processTestResources NO-SOURCE
+> Task :contexts:meowo-economy:testClasses UP-TO-DATE
+> Task :contexts:meowo-chat:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-economy:test
+> Task :contexts:meowo-hat:compileTestKotlin NO-SOURCE
+> Task :contexts:meowo-hat:compileTestJava NO-SOURCE
+> Task :contexts:meowo-hat:processTestResources NO-SOURCE
+> Task :contexts:meowo-hat:testClasses UP-TO-DATE
+> Task :contexts:meowo-hat:test NO-SOURCE
+> Task :contexts:meowo-hat:jacocoTestReport SKIPPED
+> Task :contexts:meowo-home:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-home:compileTestJava NO-SOURCE
+> Task :contexts:meowo-home:processTestResources NO-SOURCE
+> Task :contexts:meowo-home:testClasses UP-TO-DATE
+> Task :contexts:meowo-economy:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-home:test
+> Task :contexts:meowo-invsee:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-invsee:compileTestJava NO-SOURCE
+> Task :contexts:meowo-invsee:processTestResources NO-SOURCE
+> Task :contexts:meowo-invsee:testClasses UP-TO-DATE
+> Task :contexts:meowo-home:jacocoTestReport
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+> Task :contexts:meowo-invsee:test
+> Task :contexts:meowo-menu:compileTestKotlin NO-SOURCE
+> Task :contexts:meowo-menu:compileTestJava NO-SOURCE
+> Task :contexts:meowo-menu:processTestResources NO-SOURCE
+> Task :contexts:meowo-menu:testClasses UP-TO-DATE
+> Task :contexts:meowo-menu:test NO-SOURCE
+> Task :contexts:meowo-menu:jacocoTestReport SKIPPED
+> Task :contexts:meowo-mine:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-mine:compileTestJava NO-SOURCE
+> Task :contexts:meowo-mine:processTestResources NO-SOURCE
+> Task :contexts:meowo-mine:testClasses UP-TO-DATE
+> Task :contexts:meowo-invsee:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-mine:test
+> Task :contexts:meowo-nametag:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-nametag:compileTestJava NO-SOURCE
+> Task :contexts:meowo-nametag:processTestResources NO-SOURCE
+> Task :contexts:meowo-nametag:testClasses UP-TO-DATE
+> Task :contexts:meowo-mine:jacocoTestReport
+> Task :contexts:meowo-nametag:test
+> Task :contexts:meowo-pomodoro:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-pomodoro:compileTestJava NO-SOURCE
+> Task :contexts:meowo-pomodoro:processTestResources NO-SOURCE
+> Task :contexts:meowo-pomodoro:testClasses UP-TO-DATE
+> Task :contexts:meowo-nametag:jacocoTestReport
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/Meowo/.gradle-home/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :contexts:meowo-pomodoro:test
+> Task :contexts:meowo-render:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-render:compileTestJava NO-SOURCE
+> Task :contexts:meowo-render:processTestResources NO-SOURCE
+> Task :contexts:meowo-render:testClasses UP-TO-DATE
+> Task :contexts:meowo-pomodoro:jacocoTestReport
+> Task :contexts:meowo-render:test
+> Task :contexts:meowo-shadowbox:compileTestKotlin NO-SOURCE
+> Task :contexts:meowo-shadowbox:compileTestJava NO-SOURCE
+> Task :contexts:meowo-shadowbox:processTestResources NO-SOURCE
+> Task :contexts:meowo-shadowbox:testClasses UP-TO-DATE
+> Task :contexts:meowo-shadowbox:test NO-SOURCE
+> Task :contexts:meowo-shadowbox:jacocoTestReport SKIPPED
+> Task :contexts:meowo-shop:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-shop:compileTestJava NO-SOURCE
+> Task :contexts:meowo-shop:processTestResources NO-SOURCE
+> Task :contexts:meowo-shop:testClasses UP-TO-DATE
+> Task :contexts:meowo-render:jacocoTestReport
+> Task :contexts:meowo-shop:test
+> Task :contexts:meowo-sit:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-sit:compileTestJava NO-SOURCE
+> Task :contexts:meowo-sit:processTestResources NO-SOURCE
+> Task :contexts:meowo-sit:testClasses UP-TO-DATE
+> Task :contexts:meowo-shop:jacocoTestReport
+> Task :contexts:meowo-sit:test
+> Task :contexts:meowo-spawn:compileTestKotlin NO-SOURCE
+> Task :contexts:meowo-spawn:compileTestJava NO-SOURCE
+> Task :contexts:meowo-spawn:processTestResources NO-SOURCE
+> Task :contexts:meowo-spawn:testClasses UP-TO-DATE
+> Task :contexts:meowo-spawn:test NO-SOURCE
+> Task :contexts:meowo-spawn:jacocoTestReport SKIPPED
+> Task :contexts:meowo-teleport:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-teleport:compileTestJava NO-SOURCE
+> Task :contexts:meowo-teleport:processTestResources NO-SOURCE
+> Task :contexts:meowo-teleport:testClasses UP-TO-DATE
+> Task :contexts:meowo-sit:jacocoTestReport
+> Task :contexts:meowo-teleport:test
+> Task :contexts:meowo-webapi:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-webapi:compileTestJava NO-SOURCE
+> Task :contexts:meowo-webapi:processTestResources NO-SOURCE
+> Task :contexts:meowo-webapi:testClasses UP-TO-DATE
+> Task :contexts:meowo-teleport:jacocoTestReport
+> Task :contexts:meowo-webapi:test
+> Task :contexts:meowo-economy:domain:compileTestKotlin UP-TO-DATE
+> Task :contexts:meowo-economy:domain:compileTestJava NO-SOURCE
+> Task :contexts:meowo-economy:domain:processTestResources NO-SOURCE
+> Task :contexts:meowo-economy:domain:testClasses UP-TO-DATE
+> Task :contexts:meowo-webapi:jacocoTestReport
+> Task :contexts:meowo-economy:domain:test
+> Task :core:assemble UP-TO-DATE
 > Task :core:check
 > Task :core:build
-> Task :core:jacocoTestReport
+> Task :contexts:meowo-economy:domain:jacocoTestReport
+> Task :verifyArchitecture
 > Task :coverageReport
 
 > Task :verifyCoverage
-Line coverage: total=83.93%, domain=100.00%
+Line coverage: total=82.52%, domain=94.74%
+  core                               75.86%
+  platform                           44.47%
+  shared                             94.59%
+  ui                                 45.81%
+  meowo-agents                       80.11%
+  meowo-avatar                       93.39%
+  meowo-chat                         43.85%
+  meowo-economy                      57.11%
+  meowo-home                         14.88%
+  meowo-invsee                       83.06%
+  meowo-mine                         49.32%
+  meowo-nametag                      55.56%
+  meowo-pomodoro                     38.52%
+  meowo-render                       42.25%
+  meowo-shop                         22.99%
+  meowo-sit                          13.85%
+  meowo-teleport                     13.02%
+  meowo-webapi                       72.04%
+  domain                             94.74%
 
-[Incubating] Problems report is available at: file:///Users/saraki/Library/Mobile%20Documents/com~apple~CloudDocs/Meowo/build/reports/problems/problems-report.html
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -144,5 +420,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 49s
-37 actionable tasks: 14 executed, 23 up-to-date
+BUILD SUCCESSFUL in 2m 18s
+138 actionable tasks: 60 executed, 78 up-to-date

@@ -76,6 +76,7 @@ contexts/meowo-render/        领域模型 / RenderService / PacketEvents 适配
 contexts/meowo-shadowbox/     潜影盒：Shift 右键 / 潜行右键直接开箱
 contexts/meowo-pomodoro/     番茄钟：状态机 / 预设 / BossBar·Title·TextDisplay / SQLite
 contexts/meowo-shop/         喵达 ModaCat 商店：矿石价目表 / /sell 回收 / 钱包结算
+contexts/meowo-webapi/       只读 HTTP 接口：给 Wofuf 的 Cloudflare Worker 拉取服务器数据
 contexts/meowo-avatar/       不睡不刷幻翼 + 调整体型：每个玩家自己的一份（见 docs/minimax/17）
 contexts/meowo-chat/          后续扩展示例文档
 scripts/                     服务端、客户端、联调启动
@@ -84,6 +85,31 @@ scripts/                     服务端、客户端、联调启动
 依赖方向为 `interfaces → application → domain`，基础设施实现领域端口，由 context 装配。完整的 economy 领域被拆为**真正独立的 Gradle 模块**，而非仅按文件夹声称隔离。menu/render 按功能复杂度简化，避免空壳 Repository 或机械的一方法 UseCase。
 
 `verifyArchitecture` 检查纯模块平台引用与 context 之间直接导入。跨 context 只允许 `api` 中契约与事件，具体实现只由 core 装配。
+
+## 只读 HTTP 接口（meowo-webapi）
+
+`contexts.webapi` 默认**关闭**（它会开一个端口）。打开后插件在本机 `127.0.0.1:8080` 提供：
+
+| 端点 | 说明 |
+|---|---|
+| `GET /health` | 存活检查，不需要密钥 |
+| `GET /api/v1/snapshot` | 一次拿到全部：服务器状态 + 每个玩家的统计/成就/皮肤 URL |
+| `GET /api/v1/players` | 在线玩家列表 |
+| `GET /api/v1/server/status` | 服务器状态 |
+| `GET /api/v1/statistics/{uuid}` | 某玩家的统计 |
+| `GET /api/v1/advancements/{uuid}` | 某玩家的成就 |
+| `GET /api/v1/skins/{uuid}` | 某玩家的皮肤（URL，不是图片） |
+
+除 `/health` 外都要带请求头 `X-Meow-Secret`，值等于 `config.yml` 的 `webapi.secret`；
+`webapi.secret` 留空时该 context **拒绝启动**——一个没人能鉴权的端口比没有端口更糟。
+另有 `webapi.allowed-ips` 白名单；方法只有 GET / HEAD。
+
+它服务的是**快照**而不是实时读：Bukkit API 不是线程安全的，主线程每
+`webapi.snapshot-interval-seconds` 秒构建一次不可变快照，HTTP 线程只读已发布的值。
+皮肤只给 URL，下载在消费方（Worker）那边做，不占主线程。
+
+外部访问请在同机跑 Cloudflare Tunnel（Worker 在公网边缘，访问不到 `127.0.0.1`），
+**不要**把这个端口直接暴露到公网。
 
 ## 命令与权限
 
@@ -199,6 +225,27 @@ render:
 > **菜单不在 `config.yml` 里。** 菜单的每一格写在 `ui.yml` 的 `screens.<界面>.buttons` 下，
 > `config.yml` 里已经没有 `menu.items` 这一段——留着它只会让人以为改了就能生效。
 
+> **密钥可以走环境变量。** `agents.api-key` 与 `webapi.secret` 除了写在文件里，也可以用
+> `MEOWO_AGENTS_API_KEY` / `MEOWO_WEBAPI_SECRET` 提供。**环境变量优先**，且启动日志会说明用的是
+> 哪一个——不然「改了文件却没生效」会变成一桩无头案。密钥该待在机器上，不该躺在一个可能被备份、
+> `world/` 目录或 git 仓库捡走的文件里。
+
+> **配置文件和读它的代码不许各走各的。** `core/src/test/kotlin/com/meowo/core/ConfigSchemaTest.kt`
+> 是一道门禁（跟着 `test` 跑，不需要单独记住）：它检查 `config.yml` 的 `contexts:` 块、
+> `settings.gradle.kts` 的模块、运行时装配启用的 context、以及代码实际读取的配置键，四者必须对得上。
+> 一份「有注释、随包分发、却没有任何代码读」的配置项，和一个写错的配置项，在服主眼里长得一模一样——
+> 前者要等服主调了很久才会被发现。这道门禁的清单全部是**推导**出来的，不是写下来的。
+
+> **`config-version` 是全局的版本号。** 它管着两份服主可以改的文件：`config.yml`（选项）和
+> `ui.yml`（菜单布局）。启动与 `/meowo reload` 时，凡是版本落后的文件都会被补上 jar 里新增的键，
+> 并带上原注释——**只补没有的，已有的一律不动**。以前版本号只管 `config.yml`，插件加了菜单按钮、
+> 版本号不动，服主的 `ui.yml` 就永远不会被补；而布局是「服主那份整个说了算」，新按钮于是不见了，
+> 日志里一个字也没有。改配置的**任何一部分**（选项或布局）都要 +1。
+>
+> 语言包**不**参与这次合并：它装的是文案而不是设置，jar 里的那份本来就会补齐服主文件缺的每一个键；
+> 把文案合并进服主文件只会把它**冻住**，以后版本里改好的措辞就再也到不了这台服。
+> 服主没做过的 `ui.yml` 插件也**不会**替他创建——随包那份必须继续当默认，否则以后的布局改动就冻住了。
+
 ### 可配置的菜单
 
 `/meowo menu` 的每一格都写在 `ui.yml` 的 `screens.<界面>.buttons` 下，没有写死的地方：
@@ -298,7 +345,46 @@ economy.deposit(player.uniqueId, BigDecimal("10.00")).whenComplete { balance, er
 
 领域测试不启动 MockBukkit；持久化测试使用临时 SQLite，覆盖重启、回滚、两连接并发更新；core 中 MockBukkit 测试覆盖命令、权限、菜单、语言和模块重载。报告位于 `build/reports/jacoco/coverageReport/html/index.html` 及各模块的 `build/reports/tests/test/index.html`。`verifyCoverage` 要求总体行覆盖率 ≥70%、economy domain ≥90%。
 
+第三道门禁是**配置门禁**（`ConfigSchemaTest`），跟着 `test` 跑，不需要单独记住：它检查 `config.yml` 的 `contexts:` 块、`settings.gradle.kts` 的模块、`MeowoRuntime` 启用的 context，以及代码实际读取的配置键，四者必须对得上——见下面「配置与生命周期」一节。
+
 实际验证结果和人工客户端待验项见 [docs/acceptance.md](docs/acceptance.md)。不能用服务端 `list` 验证实体数（它统计玩家）；客户端假实体应结合实际画面、包行为和世界实体数量确认。
+
+## 发布
+
+**tag 就是版本。** 推一个 `v` 开头的 tag，GitHub Actions 会构建这个版本并发布一个 Release：
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+产物：`Meowo-1.2.3.jar` 与 `Meowo-1.2.3.jar.sha256`（SHA-256 校验文件，文件名与它校验的 jar 一致，
+下载到同一个目录后 `sha256sum -c` 即可）。Release 说明由**两次 tag 之间的提交**自动生成，按
+`feat` / `fix` / `build` / `docs` 等类型分组——手写的更新日志是一句「有人记得」的承诺，而提交
+本身就是更新日志：它已经被写过、已经被审过，而且不可能和实际发布的东西对不上。
+
+发布流程跑在 `.github/workflows/release.yml`，做四件事：
+
+| 步骤 | 内容 |
+|---|---|
+| 读版本 | 从 tag 取版本号，格式不是 `v1.2.3` 就直接失败——版本号错一次，产物就永远对不上 |
+| 构建 | `./gradlew clean` 与 `./gradlew build` 分两步跑（Gradle 不给跨模块的 `clean` 排序），**测试与三道门禁都在 `build` 里**（`check` 挂在 `build` 上），发布一个没验证过的 jar 等于没发布 |
+| 校验 | jar 内部 `plugin.yml` 的版本必须和 tag 一致；算 SHA-256，并用 `sha256sum -c` 自查一遍 |
+| 发布 | 建 Release，附 jar 与校验文件；jar 同时作为工作流产物留存 |
+
+版本号**不写在 `build.gradle.kts` 里**：那里只有一个本地开发用的兜底值，发布时由 workflow 用
+`-PreleaseVersion=` 传进去。一份写在构建文件里的版本号和一份写在 tag 里的版本号是两个可以互相
+矛盾的事实，而矛盾的结果是「jar 叫 `Meowo-1.0.0.jar`，Release 却叫 `v1.2.0`」——服主没法核对
+自己装的是哪一版。
+
+工作流里的第三方 action 全部**钉在 40 位 commit SHA** 上（版本号写在行尾注释里）。tag 是可以被人
+挪走的名字，钉 SHA 才是钉住：谁动了那个名字，谁就等于决定了这个发布流程会跑什么。
+
+> 仓库目前还没有配置远端（`git remote -v` 为空），也没有 `gh` 命令行工具。发布前需要先
+> `git remote add origin <仓库地址>`，并把仓库推上去。
+
+CI（`.github/workflows/ci.yml`）在每次 push 与 PR 上跑同一套验证，并把 jar 作为工作流产物存下来——
+一个只能看到绿勾的构建没法拿去真服上试。
 
 ## 转账、传送税与每日补助
 
@@ -374,3 +460,7 @@ pomodoro:
 旧配置未填的项自动使用上述默认值，不覆盖自定义值。语言文件新键有内置回退，已有 help/eco-usage 自定义文字会保留，可自行更新。普通玩家默认具有 pay/daily/teleport 权限；税收池查询默认 OP。详细结算与恢复语义见 [economy](contexts/meowo-economy/README.md) 和 [teleport](contexts/meowo-teleport/README.md)。
 
 支付税按支付本金向上取整到 0.01（例如 pay 2.50，税 0.03）。付款人必须有本金与税额的总余额，收款人收到完整本金；税收入 eco 登录补助池。传送等待特效为贴身快速环绕的白色符文串，成功时脚下出现按群系柔和配色、缓慢旋转的六芒星阵。反胃与黑暗覆盖等待时长及抵达后 1 秒。移动或跳跃会取消倒计时，转头不会取消；垫付时两种预扣税都退回垫付者。
+
+## 许可
+
+[MIT](LICENSE)。

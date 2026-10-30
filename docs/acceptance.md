@@ -2,7 +2,7 @@
 
 > ⚠️ **本页是 2026-10-04 的历史快照，已过期。**
 > 下面的 28 tests / 83.93% 停留在加入 `teleport` 之前。
-> **当前基线见 [minimax/README.md 的「当前基线」一节](minimax/README.md#当前基线2026-10-23-实测)** ——
+> **当前基线见 [minimax/README.md 的「当前基线」一节](minimax/README.md#当前基线)** ——
 > 测试数与覆盖率只在那里写一次，免得这里留一份会自己过期的数字。
 > 保留本页是为了对照「当时验证过什么」，不要拿它判断现状。
 
@@ -134,4 +134,4 @@ economy domain **94.74%**；`verifyArchitecture` 与 `verifyCoverage` 通过；�
 
 > 本节是 2026-10-08 那一轮的历史记录，随 `/fly` 一起作废：`FlyContextTest` 与它那份
 > `evidence/fly-mana-hysteresis-verification.json` 都已随 `meowo-fly` 模块删除。**当前基线见
-> [minimax/README](minimax/README.md#当前基线2026-10-23-实测)**。
+> [minimax/README](minimax/README.md#当前基线)**。

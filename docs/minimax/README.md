@@ -49,23 +49,24 @@
 
 ---
 
-## 当前基线（2026-10-25 实测）
+## 当前基线（2026-10-30 实测）
 
-在干净工作区执行 `./gradlew check build --no-daemon`（两道门禁 `verifyArchitecture` 与
-`verifyCoverage` 已经挂在 `check` 里，见 [06 §7](06-测试与验证.md)）：
+在干净工作区执行 `./gradlew check build --no-daemon`（三道门禁 `verifyArchitecture`、
+`verifyCoverage` 与配置门禁 `ConfigSchemaTest` 已经挂在 `check` 里，见 [06 §7](06-测试与验证.md)）：
 
 | 项目 | 实测值 |
 |---|---|
-| 测试 | **1430 个**，0 failure / 0 error，**0 skipped**（128 个测试类） |
-| 总体行覆盖率 | **83.46%**（门禁 ≥ 70%） |
+| 测试 | **1480 个**，0 failure / 0 error，**0 skipped**（136 个测试类） |
+| 总体行覆盖率 | **82.52%**（门禁 ≥ 70%） |
 | economy domain 行覆盖率 | **94.74%**（门禁 ≥ 90%） |
-| 语言键 | 中英各 **626** 键（顶层键，不含 `help-header` 块标量里的命令行），键名与占位符完全对齐 |
+| 语言键 | 中英各 **662** 键（顶层键，不含 `help-header` 块标量里的命令行），键名与占位符完全对齐 |
 | 构建 | `BUILD SUCCESSFUL` |
-| 产物 | `core/build/libs/Meowo-1.0.0.jar`（单 jar，含全部 context，约 3.2 MB） |
+| 产物 | `core/build/libs/Meowo-1.0.0.jar`（单 jar，含全部 context，约 3.3 MB） |
 
-分模块（同一次运行）：`agents` 467 · `core` 295 · `chat` 168 · **`platform` 122** ·
-`pomodoro` 78 · `ui` 52 · `nametag` 40 · **`invsee` 37** · `mine` 35 · `economy` 29+13 ·
-**`avatar` 26** · `teleport` 23 · `sit` 11 · `shop` 10 · `home` 9 · `shared` 8 · `render` 2。
+分模块（同一次运行）：`agents` 471 · `core` 322 · `chat` 169 · **`platform` 123** ·
+`pomodoro` 80 · `ui` 52 · `economy` 42 · `nametag` 40 · **`invsee` 37** · `mine` 36 ·
+**`avatar` 26** · `teleport` 23 · `webapi` 19 · `sit` 11 · `shop` 10 · `home` 9 ·
+`shared` 8 · `render` 2。
 
 > **`avatar`（不睡不刷幻翼 + 调整体型）是 2026-10-19 新接的 context**，26 个测试，见
 > [17-avatar](17-avatar.md)。它顶掉了被删掉的 `fly`（`/fly` 与 `meowo.fly.use` 一并移除，
@@ -81,7 +82,13 @@
 > 全量构建亦绿**；冷却戳改由 `Cooldowns` 统一管理之后，这条用例不再有共享状态的写法。原来的成因
 > 没有被定位，所以它仍按「可疑用例」看待，只是不再被当作已知的偶发失败记着。
 
-> **`docs/acceptance.md` 已过期。** 它记录的 28 tests / 83.93% / domain 100% 是加入 `teleport` context 之前的历史快照。**以本表的 1425 tests / 83.25% / 94.74% 为准**；改动基线时请同步更新这里和 `docs/acceptance.md`。
+> **`CatSinkTest`「a failure on the worker is reported and the player is not left waiting」是竞态，不是逻辑错**
+> （2026-10-30 记录）。用例只等 `onFailure` 的 latch，而 sink 是**先报失败、再递道歉**的，所以主线程
+> 醒来时 worker 常常还没递完，`turns` 还是空的 —— 断言量的是时序，不是行为。现在多等一个答案的
+> latch，列表换成 `CopyOnWriteArrayList`（worker 写、主线程读，原来那个 `mutableListOf` 也没有
+> 可见性保证）。**成因已定位并修掉，不再按可疑用例看待。**
+
+> **`docs/acceptance.md` 已过期。** 它记录的 28 tests / 83.93% / domain 100% 是加入 `teleport` context 之前的历史快照。**以本表的 1480 tests / 82.52% / 94.74% 为准**；改动基线时请同步更新这里和 `docs/acceptance.md`。
 >
 > **2026-10-08 新增的 `meowo-invsee`**（`/invsee`）先以「145 行、零测试」接进 `settings.gradle.kts` /
 > `build.gradle.kts`，把总体覆盖率从 84.78% 拉到 82.88%；补齐 37 个测试（`InvseeLayoutTest` 7 /
@@ -104,6 +111,23 @@ GRADLE_USER_HOME="$PWD/.gradle-home" ./gradlew test :core:build verifyArchitectu
 ```
 
 `.gradle-home/` 是构建缓存，不是产物，不该提交。
+
+> **同一个 commit 上，覆盖率必须是同一个数。** 这件事曾经不成立，而且是在两个方向上同时不成立。
+>
+> JaCoCo 把执行数据写进 `build/jacoco/test.exec`。Gradle 8.14 **写死了 `append=true`**（`JacocoTaskExtension`
+> 的字节码里自己拼上这个标志，而它没有暴露任何关掉它的方法），所以 agent 退出时是**追加**写的。
+> `cleanTest` 只清测试结果、不清这个文件，于是每跑一次数字就往上叠一点：同一份代码连跑三次，
+> 读到 82.52%、82.55%、82.56%——**代码一个字没改**。
+>
+> 更糟的是另一半：这个文件**本来不是**测试任务的受管输出。把它删掉，并不会让测试任务变成
+> out-of-date——任务仍然是 UP-TO-DATE、不重跑，而那个模块的覆盖率就**整块从聚合里消失了**。
+> 所以同一份代码会读到 82.52%、82.53%、82.55%，取决于**哪些模块碰巧重跑了**。
+>
+> 修法是把这个文件**声明成测试任务的输出**（`outputs.file`）。声明之后，Gradle 自己在任务执行前
+> 删掉过期文件、再写一个新的，数字回到「本次跑的覆盖率」；而测试没重跑的模块，因为输出文件还在、
+> 代码也没变，它那份数据依然成立，增量依然成立。
+>
+> **判断覆盖率是不是「变了」：先看是不是代码变了。** 数字变了但代码没变，是这个坑，不是回归。
 
 > **看到测试报"某个类找不到"，先看那个模块的 jar 是不是空的**（`unzip -l …/build/libs/*.jar`）。
 > 空 jar = 上一次构建被杀，不是代码问题；`./gradlew --stop && ./gradlew clean` 后重来。
@@ -128,25 +152,25 @@ EOF
 > 这是 iCloud 在构建过程中搬运/加锁 `build/test-results/`。判断方法：直接读 XML 统计，
 > 失败数若为 0，就是环境而非代码；重跑一次同样的命令通常就过。
 
-按测试类分布（共 122 个类，下表是最大的 16 个；`meowo-agents` 一个 context 占了 36 个类、444 个测试）：
+按测试类分布（共 136 个类，下表是最大的 16 个；`meowo-agents` 一个 context 占了 38 个类、471 个测试）：
 
 ```
- 131  com.meowo.core.MeowoRuntimeTest
+ 132  com.meowo.core.MeowoRuntimeTest
   47  com.meowo.core.PomodoroIntegrationTest
   46  com.meowo.agents.domain.PromptBuilderTest
   26  com.meowo.platform.ChatLineTest
+  26  com.meowo.agents.application.AgentRuntimeTest
   25  com.meowo.chat.domain.EmojiParserTest
-  24  com.meowo.agents.application.AgentRuntimeTest
-  24  com.meowo.agents.application.ImpressionServiceTest
   24  com.meowo.core.HomeIntegrationTest
+  24  com.meowo.agents.application.ImpressionServiceTest
+  22  com.meowo.agents.infrastructure.PlayerProfileStoreTest
+  22  com.meowo.agents.application.CatSinkTest
   21  com.meowo.invsee.InvseeContextTest
+  20  com.meowo.chat.infrastructure.ChatLogStoreTest
   20  com.meowo.chat.domain.ThreadLogTest
   20  com.meowo.agents.domain.GuardTest
-  20  com.meowo.agents.infrastructure.PlayerProfileStoreTest
+  19  com.meowo.ui.UIRulesTest
   19  com.meowo.pomodoro.application.SessionServiceTest
-  18  com.meowo.ui.UILoaderTest
-  18  com.meowo.chat.infrastructure.ChatLogStoreTest
-  18  com.meowo.agents.application.CatToolsTest
 ```
 
 另有 `ModerationFeedbackTest`（被拦截必须出声 / 禁言在公屏与私信都生效）与
@@ -225,7 +249,7 @@ EOF
 | [18-invsee](18-invsee.md) | `/invsee`：**窗口是镜像、每次点击自己搬运并取消事件**（否则每点一次复制一次）、槽位表单一来源、拖拽与不支持的点击一律拒绝、权限每次重校验 |
 
 > **玩家消息**（`§` 颜色码、`\n` 换行、控制台去色、占位符约定）见
-> [05 §4](05-改造手册.md#4-新增一条文案) 与 `platform/.../Messages.kt` 的类注释。
+> [05 §4](05-改造手册.md#4-新增-修改一条文案) 与 `platform/.../Messages.kt` 的类注释。
 
 ---
 

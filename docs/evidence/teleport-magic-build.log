@@ -94,9 +94,9 @@ Build was configured to prefer settings repositories over project repositories b
 > Task :shared:jacocoTestReport
 
 > Task :contexts:meowo-menu:compileKotlin
-w: file:///Users/saraki/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:36:42 'static fun createInventory(p0: InventoryHolder?, p1: Int, p2: String): Inventory' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:57:47 'fun setDisplayName(p0: String?): Unit' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:57:115 'var lore: (Mutable)List<String!>?' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:36:42 'static fun createInventory(p0: InventoryHolder?, p1: Int, p2: String): Inventory' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:57:47 'fun setDisplayName(p0: String?): Unit' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/meowo/menu/MenuContext.kt:57:115 'var lore: (Mutable)List<String!>?' is deprecated. Deprecated in Java.
 
 > Task :contexts:meowo-menu:compileJava NO-SOURCE
 > Task :contexts:meowo-menu:classes UP-TO-DATE
@@ -141,7 +141,7 @@ w: file:///Users/saraki/Documents/Meowo/contexts/meowo-menu/src/main/kotlin/com/
 > Task :contexts:meowo-render:jacocoTestReport
 
 > Task :core:compileKotlin
-w: file:///Users/saraki/Documents/Meowo/core/src/main/kotlin/com/meowo/core/MeowoRuntime.kt:39:46 'val description: PluginDescriptionFile' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/main/kotlin/com/meowo/core/MeowoRuntime.kt:39:46 'val description: PluginDescriptionFile' is deprecated. Deprecated in Java.
 
 > Task :core:compileJava NO-SOURCE
 > Task :core:classes
@@ -151,7 +151,7 @@ w: file:///Users/saraki/Documents/Meowo/core/src/main/kotlin/com/meowo/core/Meow
 > Task :contexts:meowo-teleport:test
 > Task :contexts:meowo-teleport:jacocoTestReport
 WARNING: A restricted method in java.lang.System has been called
-WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
@@ -165,20 +165,20 @@ WARNING: Restricted methods will be blocked in a future release unless native ac
 > Task :core:assemble
 
 > Task :core:compileTestKotlin
-w: file:///Users/saraki/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:51:16 'val description: PluginDescriptionFile' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:104:41 'var title: String' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:117:41 'var title: String' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:120:41 'var title: String' is deprecated. Deprecated in Java.
-w: file:///Users/saraki/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:644:44 'constructor(p0: Entity, p1: EntityDamageEvent.DamageCause, p2: Double): EntityDamageEvent' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:51:16 'val description: PluginDescriptionFile' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:104:41 'var title: String' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:117:41 'var title: String' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:120:41 'var title: String' is deprecated. Deprecated in Java.
+w: file://$HOME/Documents/Meowo/core/src/test/kotlin/com/meowo/core/MeowoRuntimeTest.kt:644:44 'constructor(p0: Entity, p1: EntityDamageEvent.DamageCause, p2: Double): EntityDamageEvent' is deprecated. Deprecated in Java.
 
 > Task :core:compileTestJava NO-SOURCE
 > Task :core:testClasses UP-TO-DATE
 WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
-WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:$HOME/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.11/8fcc3779ff85fae5164cd1b977798ca1af388e06/byte-buddy-1.18.11.jar)
 WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
 WARNING: A restricted method in java.lang.System has been called
-WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/Users/saraki/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:$HOME/.gradle/caches/modules-2/files-2.1/org.xerial/sqlite-jdbc/3.50.3.0/220f0cdfe9c5b97926a417fa11848ce8817d2135/sqlite-jdbc-3.50.3.0.jar)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
@@ -191,7 +191,7 @@ WARNING: Restricted methods will be blocked in a future release unless native ac
 > Task :verifyCoverage
 Line coverage: total=90.43%, domain=94.74%
 
-[Incubating] Problems report is available at: file:///Users/saraki/Documents/Meowo/build/reports/problems/problems-report.html
+[Incubating] Problems report is available at: file://$HOME/Documents/Meowo/build/reports/problems/problems-report.html
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
