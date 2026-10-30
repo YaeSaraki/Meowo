@@ -16,6 +16,12 @@ sealed interface CatTurn {
      */
     data class Delegate(val cat: String, val reason: String) : CatTurn
 
-    /** The question is legitimate but not this cat's to answer, and not delegable either. */
-    data class Refuse(val text: String) : CatTurn
+    /**
+     * The question is legitimate but not this cat's to answer, and not delegable either.
+     *
+     * A **reason**, not a sentence: the refusal reaches the player verbatim — the prompt tells the
+     * model to repeat one as it is — so a Chinese sentence here is a Chinese sentence in an English
+     * player's chat. The wording is rendered from the language pack; see [Refusal].
+     */
+    data class Refuse(val reason: Refusal, val args: List<Any> = emptyList()) : CatTurn
 }

@@ -1,6 +1,7 @@
 package com.meowo.agents.application
 
 import com.google.gson.JsonObject
+import com.meowo.agents.domain.Apology
 import com.meowo.agents.domain.CatRegistry
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.ChatMessage
@@ -9,9 +10,11 @@ import com.meowo.agents.domain.ConversationMemory
 import com.meowo.agents.domain.LlmClient
 import com.meowo.agents.domain.PromptBuilder
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RedactionRefusal
 import com.meowo.agents.domain.Speaker
 import com.meowo.agents.domain.ToolCall
 import com.meowo.agents.domain.ToolAnswer
+import com.meowo.agents.domain.ToolRefusal
 import com.meowo.agents.domain.ToolSpec
 import com.meowo.agents.domain.plain
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -61,7 +64,7 @@ class AgentRuntimeTest {
             readTool("economy.balance", "查余额", params()) { _, _ -> plain("100 块") },
             readTool("economy.treasury", "查国库", params()) { _, ctx ->
                 when (val v = ctx.disclose(ctx.asker)) {
-                    is Redaction.Verdict.Refused -> ToolAnswer.Refused(v.message)
+                    is Redaction.Verdict.Refused -> ToolAnswer.Refused(v.reason)
                     is Redaction.Verdict.Allowed -> plain("国库 5000 块")
                 }
             },
@@ -175,7 +178,7 @@ class AgentRuntimeTest {
 
     @Test fun `a provider failure becomes a short apology, not a hang`() {
         val turn = runtime(Scripted(listOf(Completion.Unusable))).ask(q())
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), turn)
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), turn)
     }
 
     @Test fun `a provider failure after a tool call keeps the refusal it already had`() {
@@ -186,10 +189,10 @@ class AgentRuntimeTest {
             ),
         )
         val turn = runtime(client).ask(
-            Question(asker = alice, cat = econ, text = "国库多少", disclose = { Redaction.Verdict.Refused(Redaction.PRIVATE_REFUSAL) }),
+            Question(asker = alice, cat = econ, text = "国库多少", disclose = { Redaction.Verdict.Refused(RedactionRefusal.PRIVATE) }),
         )
         // The tool already refused; repeating that beats a generic "I lost my train of thought".
-        assertEquals(CatTurn.Refuse(Redaction.PRIVATE_REFUSAL), turn)
+        assertEquals(CatTurn.Refuse(RedactionRefusal.PRIVATE), turn)
     }
 
     /**
@@ -212,19 +215,19 @@ class AgentRuntimeTest {
     @Test fun `a temporary failure is not retried when there is no allowance left`() {
         val client = Scripted(listOf(Completion.Unavailable("http 503"), Completion.Text("喵")))
         val turn = runtime(client).ask(q().copy(mayCallAgain = { false }))
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), turn)
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), turn)
         assertEquals(1, client.rounds, "the provider was asked once")
     }
 
     @Test fun `a reply that is too long or echoes the prompt is not sent`() {
         assertTrue(runtime(Scripted(listOf(Completion.Text("字".repeat(900))))).ask(q()) is CatTurn.Refuse)
         val echo = Scripted(listOf(Completion.Text("[question] 我还有多少钱？")))
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), runtime(echo).ask(q()))
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), runtime(echo).ask(q()))
     }
 
     @Test fun `a blank answer is an apology rather than an empty message`() {
         val turn = runtime(Scripted(listOf(Completion.Text("   ")))).ask(q())
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), turn)
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), turn)
     }
 
     // ── memory and isolation ─────────────────────────────────────────────────────────────────
@@ -367,12 +370,12 @@ class AgentRuntimeTest {
             ),
         )
         val question = q().copy(
-            disclose = { Redaction.Verdict.Refused(Redaction.NOT_ALLOWED_REFUSAL) },
+            disclose = { Redaction.Verdict.Refused(RedactionRefusal.NOT_ALLOWED) },
             mayCallAgain = { false },
         )
         val turn = runtime(client, rounds = 4).ask(question)
         assertEquals(1, client.rounds, "no request may happen once the budget says no")
-        assertEquals(CatTurn.Refuse(Redaction.NOT_ALLOWED_REFUSAL), turn)
+        assertEquals(CatTurn.Refuse(RedactionRefusal.NOT_ALLOWED), turn)
     }
 
     // ── resolving a typed name ──────────────────────────────────────────────────────────────
@@ -391,7 +394,7 @@ class AgentRuntimeTest {
                 readTool("economy.balance", "查余额", params()) { args, ctx ->
                     val name = args.get("player")?.asString
                     val who = ctx.lookupPlayer(name ?: "")
-                        ?: return@readTool ToolAnswer.Refused("我不认识这个人。")
+                        ?: return@readTool ToolAnswer.Refused(ToolRefusal.UNKNOWN_PLAYER)
                     plain(if (who == bob) "Bob 有 7 块" else "别人")
                 },
             ),
@@ -420,7 +423,7 @@ class AgentRuntimeTest {
             listOf(
                 readTool("economy.balance", "查余额", params()) { args, ctx ->
                     val who = ctx.lookupPlayer(args.get("player")?.asString ?: "")
-                        ?: return@readTool ToolAnswer.Refused("我不认识这个人。")
+                        ?: return@readTool ToolAnswer.Refused(ToolRefusal.UNKNOWN_PLAYER)
                     plain(who.toString())
                 },
             ),
@@ -433,9 +436,11 @@ class AgentRuntimeTest {
         )
         val runtime = AgentRuntime(
             client = client, tools = byName, model = "test-model", nameOf = { "someone" },
+            renderRefusal = { _, reason, _ -> "REFUSED:$reason" },
         )
         runtime.ask(q())
         val result = client.seen[1].filterIsInstance<ChatMessage.ToolResult>().single()
-        assertEquals("我不认识这个人。", result.content)
+        // The tool result carries the refusal, and the refusal is rendered — not a raw reason.
+        assertEquals("REFUSED:UNKNOWN_PLAYER", result.content)
     }
 }

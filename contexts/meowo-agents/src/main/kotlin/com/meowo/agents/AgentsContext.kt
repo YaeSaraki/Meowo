@@ -81,6 +81,15 @@ class AgentsContext(
     private val active = AtomicBoolean(false)
     private val resources = mutableListOf<AutoCloseable>()
 
+    /**
+     * The one place a refusal becomes a sentence.
+     *
+     * Built here rather than inside the runtime and the sink separately, so the copy the model
+     * reads and the copy the player reads are rendered by the same rule — and a refusal cannot end
+     * up in two languages.
+     */
+    private val refusals = AgentRefusals(host.messages)
+
     private lateinit var store: PlayerProfileStore
     private lateinit var memory: SqliteSessionJournal
 
@@ -181,6 +190,9 @@ class AgentsContext(
                 // The directory, not Bukkit: a 风纪 cat most often needs to look somebody up who is
                 // *not* here right now, and `getOfflinePlayer` would have been a blocking lookup.
                 lookupPlayer = ::resolveName,
+                // A refusal reaches the model as a tool result and the player as a line; both have
+                // to be in the player's language, so both are rendered here.
+                renderRefusal = refusals::render,
             )
 
             // Layer 2 of the memory, built before the sink because the sink reads from it. Paid for
@@ -221,6 +233,9 @@ class AgentsContext(
                 adminOf = ::isAdmin,
                 disclose = ::disclose,
                 impressions = impressions,
+                // The cat's excuse is a sentence, and the sentence is the server's wording rather
+                // than the cat's: the same renderer the runtime uses for the prompt's copy.
+                renderRefusal = refusals::render,
                 // A worker thread that throws has nowhere to go: the player gets nothing and the
                 // log says nothing either. The failure is reported instead.
                 onFailure = { message, error ->
@@ -415,12 +430,12 @@ class AgentsContext(
         val moderation = Bukkit.getServicesManager().load(ChatModerationAPI::class.java)
         if (moderation != null && moderation.isMuted(player)) {
             return com.meowo.agents.application.Admission.Refused(
-                com.meowo.agents.application.TurnedAway.NOT_ALLOWED,
+                com.meowo.agents.domain.TurnedAway.NOT_ALLOWED,
             )
         }
         if (text.isBlank()) {
             return com.meowo.agents.application.Admission.Refused(
-                com.meowo.agents.application.TurnedAway.NOT_ALLOWED,
+                com.meowo.agents.domain.TurnedAway.NOT_ALLOWED,
             )
         }
         return com.meowo.agents.application.Admission.Accepted(cat)
@@ -536,7 +551,9 @@ class AgentsContext(
     private fun deliver(turn: CatTurn, key: ConversationKey, cat: CatProfile) {
         val text = when (turn) {
             is CatTurn.Reply -> turn.text
-            is CatTurn.Refuse -> turn.text
+            // A refusal is a reason until it is rendered, and the rendering happens here — in the
+            // player's language, by the same rule the prompt's copy was rendered with.
+            is CatTurn.Refuse -> refusals.render(localeOf(key.player), turn.reason, turn.args)
             is CatTurn.Delegate -> "${turn.cat}：${turn.reason}"
         }
         // Through the rendering chat injected at claim time, **not** `Messages.say`.

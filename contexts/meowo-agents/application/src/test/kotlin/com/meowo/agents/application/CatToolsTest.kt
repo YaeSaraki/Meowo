@@ -3,8 +3,10 @@ package com.meowo.agents.application
 import com.meowo.agents.domain.CatRegistry
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RedactionRefusal
 import com.meowo.agents.domain.ToolAnswer
 import com.meowo.agents.domain.ToolContext
+import com.meowo.agents.domain.ToolRefusal
 import com.meowo.platform.BalanceReader
 import com.meowo.platform.HomeEntry
 import com.meowo.platform.HomeReader
@@ -69,7 +71,7 @@ class CatToolsTest {
 
     private fun ctx(allowed: Boolean = true) = ToolContext(
         asker = alice, cat = econ, askerIsAdmin = false,
-        disclose = { if (allowed) Redaction.Verdict.Allowed(Redaction.Scope.SELF) else Redaction.Verdict.Refused(Redaction.PRIVATE_REFUSAL) },
+        disclose = { if (allowed) Redaction.Verdict.Allowed(Redaction.Scope.SELF) else Redaction.Verdict.Refused(RedactionRefusal.PRIVATE) },
     )
 
     /** A context that resolves names, and a disclosure rule that only lets an admin look at others. */
@@ -85,7 +87,7 @@ class CatToolsTest {
             when {
                 subject == asker -> Redaction.Verdict.Allowed(Redaction.Scope.SELF)
                 askerIsAdmin -> Redaction.Verdict.Allowed(Redaction.Scope.FULL)
-                else -> Redaction.Verdict.Refused(Redaction.NOT_ALLOWED_REFUSAL)
+                else -> Redaction.Verdict.Refused(RedactionRefusal.NOT_ALLOWED)
             }
         },
         lookupPlayer = { name -> known[name] },
@@ -110,9 +112,15 @@ class CatToolsTest {
     private fun run(registry: ToolRegistry, cat: com.meowo.agents.domain.CatProfile, name: String, allowed: Boolean = true): CatTurn =
         registry.invoke(cat, com.meowo.agents.domain.ToolCall("c1", name), ctx(allowed))
 
+    /**
+     * The turn as a string.
+     *
+     * A refusal is a **reason**, so it reads as one here: the wording is the language pack's job
+     * and is rendered by the layer that knows the player.
+     */
     private fun text(turn: CatTurn): String = when (turn) {
         is CatTurn.Reply -> turn.text
-        is CatTurn.Refuse -> turn.text
+        is CatTurn.Refuse -> turn.reason.toString()
         is CatTurn.Delegate -> turn.reason
     }
 
@@ -139,7 +147,9 @@ class CatToolsTest {
         val registry = CatTools.economy(readers.balances, readers.settlements, money)
         val turn = run(registry, econ, "economy.dailyStatus")
         assertTrue(turn is CatTurn.Refuse, "claiming for a player must never be attempted: $turn")
-        assertTrue(text(turn).contains("/eco daily"), "the cat should point at the command instead")
+        // The refusal is a **reason**; the sentence that points at `/eco daily` is the language
+        // pack's, and the pack's version of this key is asserted in the language test.
+        assertEquals(ToolRefusal.DAILY_IS_YOURS, (turn as CatTurn.Refuse).reason)
     }
 
     // ── reading ──────────────────────────────────────────────────────────────────────────────
@@ -242,7 +252,7 @@ class CatToolsTest {
             disciplineCtx(alice, mapOf("Bob" to bob)),
         )
         assertTrue(turn is CatTurn.Refuse, "a risk score about a third party is refused: $turn")
-        assertEquals(Redaction.NOT_ALLOWED_REFUSAL, text(turn))
+        assertEquals(RedactionRefusal.NOT_ALLOWED, (turn as CatTurn.Refuse).reason)
     }
 
     @Test fun `an admin can ask for somebody else's risk score`() {

@@ -31,7 +31,15 @@ object PromptBuilder {
         /** [text] has already been reduced to what [scope] permits, and is prompt-safe. */
         data class Granted(val scope: Redaction.Scope, val text: String) : FactBlock
 
-        /** Refused. [message] is one of the [Redaction] constants — the cat may repeat it verbatim. */
+        /**
+         * Refused. [message] is the **rendered** refusal — the sentence the player would read.
+         *
+         * A rendered sentence rather than a reason, because this goes into the prompt and the
+         * prompt tells the model to repeat a refusal as it is: a reason here would reach the player
+         * as whatever the model made of it, and a hard-coded Chinese sentence here would reach an
+         * English player as Chinese. The wording belongs to the language pack, so the caller that
+         * builds the block renders it there.
+         */
         data class Withheld(val message: String) : FactBlock
     }
 

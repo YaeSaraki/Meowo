@@ -13,7 +13,7 @@ class PromptBuilderTest {
     private val sit = CatRegistry.byId("sit")!!
 
     private fun granted(text: String) = PromptBuilder.FactBlock.Granted(Redaction.Scope.SELF, text)
-    private fun withheld() = PromptBuilder.FactBlock.Withheld(Redaction.OPTED_OUT_REFUSAL)
+    private fun withheld() = PromptBuilder.FactBlock.Withheld("对方关闭了资料共享，我看不到。")
 
     private fun request(
         cat: CatProfile = econ,
@@ -53,7 +53,7 @@ class PromptBuilderTest {
 
     @Test fun `a refused profile is replaced by the refusal, not by a gap`() {
         val prompt = PromptBuilder.build(request(facts = withheld()))
-        assertTrue(prompt.user.contains(Redaction.OPTED_OUT_REFUSAL), prompt.user)
+        assertTrue(prompt.user.contains("对方关闭了资料共享"), prompt.user)
         assertFalse(prompt.user.contains("句子不长"), "refused content must not survive")
     }
 
@@ -375,7 +375,7 @@ class PromptBuilderTest {
 
     @Test fun `a refused own-impression falls back to the refusal message`() {
         val prompt = PromptBuilder.build(request(own = withheld()))
-        assertTrue(prompt.user.contains(Redaction.OPTED_OUT_REFUSAL))
+        assertTrue(prompt.user.contains("对方关闭了资料共享"))
         assertFalse(prompt.user.contains("很实在"))
     }
 

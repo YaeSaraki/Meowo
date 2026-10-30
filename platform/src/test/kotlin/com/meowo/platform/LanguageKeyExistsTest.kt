@@ -35,9 +35,16 @@ class LanguageKeyExistsTest {
     // modules are one level up. `platform`'s own sources are below it.
     private val sourceRoots = listOf("../core", ".", "../contexts", "../api", "../shared")
 
-    /** send(sender, "key", …) and friends. Deliberately simple — see the class comment. */
+    /**
+     * send(sender, "key", …) and friends. Deliberately simple — see the class comment.
+     *
+     * `textFor` is here because it is the same shape with the client locale instead of a sender:
+     * the agents context renders a refusal on a worker thread, where there is no `CommandSender` to
+     * resolve a language from. It is listed **before** `text` so the alternation does not have to
+     * backtrack.
+     */
     private val callPattern =
-        Regex("""(?:send|sendText|actionBar|component|text|notifyBoth|action)\s*\([^,()]*,\s*"([a-z0-9][a-z0-9_-]*)"""")
+        Regex("""(?:send|sendText|actionBar|component|textFor|text|notifyBoth|action)\s*\([^,()]*,\s*"([a-z0-9][a-z0-9_-]*)"""")
 
     private fun referencedKeys(): Set<String> {
         val keys = mutableSetOf<String>()

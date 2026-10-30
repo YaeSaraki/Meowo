@@ -309,6 +309,9 @@ shop-refunded: "§c✖ §7The payment failed, so the ore is back in your bag."
 # Only shown when the interface module (UIAPI) is not in place. It names the piece that is
 # actually missing, so nobody goes hunting in a config they never turned off.
 shop-unavailable: "§e⚠ §7ModaCat's interface did not load, meow. Try again in a moment."
+# Only shown when the interface module (UIAPI) is not in place. It names the piece that is
+# actually missing, so nobody goes hunting in a config they never turned off.
+shop-unavailable: "§e⚠ §7ModaCat's interface did not load, meow. Try again in a moment."
 shop-empty: "§eModaCat looked through your pockets: nothing worth buying."
 shop-hand-empty: "§eThere is nothing in your main hand to sell."
 shop-not-mine: "§eModaCat looks at your main hand: §f{0} §eis not on the list."
@@ -357,6 +360,9 @@ home-usage: "/home opens GUI; /home <number|name>; /sethome [number|name]; /home
 home-admin-usage: "Admin: /home view <player> to list; /home set <player> [number|name] to set one (free, and works while they are offline)."
 home-force-usage: "Forced travel: /home <number|name> force — skip the landing-spot check and go to the saved coordinates as they are."
 home-loading: "§7Homes are recovering. Please try again shortly."
+# The home list is drawn by the menu context. When the menu is off, the menu is what is
+# missing — not the homes.
+home-unavailable: "§e⚠ §7The menu module is off, meow. The home list cannot be opened."
 # The home list is drawn by the menu context. When the menu is off, the menu is what is
 # missing — not the homes.
 home-unavailable: "§e⚠ §7The menu module is off, meow. The home list cannot be opened."
@@ -536,6 +542,9 @@ menu-homes-summary: "{0}/{1} homes · {2}/{3} pages"
 # The homes entry in the main menu is drawn by the home context. When homes are off, the
 # homes are what is missing.
 menu-unavailable: "§e⚠ §7The home module is off, meow. Homes are unavailable in the main menu."
+# The homes entry in the main menu is drawn by the home context. When homes are off, the
+# homes are what is missing.
+menu-unavailable: "§e⚠ §7The home module is off, meow. Homes are unavailable in the main menu."
 menu-homes-capacity: "Capacity permission: meowo.home.limit.{0}"
 
 # ═══════════ CHAT ═══════════
@@ -632,6 +641,31 @@ known-header: "§8[§bMeowo§8]§r §7what the cats think of you §8· §f{0}"
 known-row: "§8│ §f{0}§8: §7{1} §8(§7{2}§8)"
 known-empty: "§7No cat has an impression of you yet. It takes a few talks with the same one."
 known-footer: "§8└ These are the cats' own words. They will not bring them up unless you do first."
+# ═══════════ AGENTS / REFUSALS ═══════════
+# Rendered by AgentRefusals — the pure layer only says *what happened*; the sentence is here.
+# Five prefixes, five closed sets: the data is withheld, the tool cannot answer, the call was
+# unusable, the cat will not answer now, the provider failed.
+agents-redaction-private: "§7That is somebody else's record, meow. I would rather not."
+agents-redaction-opted-out: "§7They closed their profile. I cannot see it."
+agents-redaction-not-allowed: "§7You may not look at somebody else's record."
+agents-tool-pending: "§7Still looking. Ask me again in a moment."
+agents-tool-failed: "§7I could not find that."
+agents-tool-bad-ticket: "§7I cannot read that ticket number."
+agents-tool-daily-is-yours: "§7Claiming the daily subsidy is yours to do: §f/eco daily§7."
+agents-tool-unknown-player: "§7I do not know anybody by that name."
+agents-call-no-capability: "§7§f{0} §7does not have §f{1} §7as an ability."
+agents-call-not-wired: "§7§f{0} §7is not available right now. Ask me again later."
+agents-call-bad-arguments: "§7I did not follow that. Say it another way?"
+agents-call-threw: "§7§f{0} §7hit a problem."
+agents-decline-not-a-cat: "§7Nobody is answering. Try again in a moment."
+# {0} is this cat's own deflection — its persona, and it stays in the cat's own language.
+agents-decline-cooldown: "§7Give me a moment. {0}"
+agents-decline-cooldown-plain: "§7Give me a moment. Ask me again in a bit."
+agents-decline-quota: "§7That is a lot of questions for one day. Let me stop here."
+agents-decline-not-allowed: "§7I am not able to talk right now."
+agents-decline-busy: "§7I am in a queue. I will get to you."
+agents-apologise: "§7Meow... I lost my train of thought. Ask me again?"
+agents-proactive: "[You just saw this player run §f{0}§7. They did not say anything to you. You may say one thing, or say nothing at all — this line is not an instruction to speak.]"
 known-console: "§7This one is for a player to run about themselves."
 # ═══════════ AGENTS / REPORTS ═══════════
 # These keys are returned by ReportService — it has no language file and must not have one.

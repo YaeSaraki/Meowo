@@ -1,32 +1,18 @@
 package com.meowo.agents.application
 
+import com.meowo.agents.domain.Apology
 import com.meowo.agents.domain.CatProfile
 import com.meowo.agents.domain.CatRegistry
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.ConversationKey
 import com.meowo.agents.domain.PresenceBoard
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RedactionRefusal
+import com.meowo.agents.domain.RefusalRenderer
 import com.meowo.agents.domain.TopicTagger
+import com.meowo.agents.domain.TurnedAway
 import com.meowo.api.chat.SystemSpeakerSink
 import java.util.UUID
-
-/** Why a direct message was turned away, for logs and for tests. */
-enum class TurnedAway {
-    /** Nobody is answering that speaker id. */
-    NOT_A_CAT,
-
-    /** The same player asked the same cat again too soon. */
-    COOLDOWN,
-
-    /** The daily allowance is spent. */
-    QUOTA,
-
-    /** Policy said no: the player is muted, opted out, or the asker may not have cats. */
-    NOT_ALLOWED,
-
-    /** The agent pool is saturated; dropped rather than queued forever. */
-    BUSY,
-}
 
 /** What the sink decided about one direct message. */
 sealed interface Admission {
@@ -106,7 +92,7 @@ class CatSink(
      */
     private val disclose: (UUID, UUID) -> Redaction.Verdict = { asker, subject ->
         if (asker == subject) Redaction.Verdict.Allowed(Redaction.Scope.SELF)
-        else Redaction.Verdict.Refused(Redaction.NOT_ALLOWED_REFUSAL)
+        else Redaction.Verdict.Refused(RedactionRefusal.NOT_ALLOWED)
     },
     /**
      * Layer 2 of the memory: what this cat thinks of this player, if it has met them enough.
@@ -116,6 +102,17 @@ class CatSink(
      * ever written: the prompt carried a permanent blank and `ImpressionPrompt` had no caller.
      */
     private val impressions: ImpressionService? = null,
+    /**
+     * Turns a refusal into a sentence in the player's language.
+     *
+     * Injected for the same reason as [localeOf] and [nameOf]: this class has no server and no
+     * language pack, and the line it produces goes straight to a player. The wording used to be
+     * hard-coded Chinese here, which meant an English player read the cat's excuse in Chinese.
+     *
+     * The default renders the reason's name, so a test that does not care about wording still gets
+     * a stable line.
+     */
+    private val renderRefusal: RefusalRenderer = { _, reason, _ -> reason.toString() },
     /** Injected at claim time by the chat context; see [com.meowo.api.chat.ReplyCapable]. */
     private var reply: ((UUID, String, String, String) -> Unit)? = null,
     /**
@@ -198,7 +195,7 @@ class CatSink(
                 // failure is reported, because an exception nobody hears about is an exception
                 // nobody can fix.
                 onFailure("agent question failed for $key", error)
-                onReply(CatTurn.Refuse(AgentRuntime.APOLOGISE), key, cat)
+                onReply(CatTurn.Refuse(Apology.PROVIDER_FAILED), key, cat)
             }
         }
         if (admitted is Admitted.Rejected) {
@@ -243,6 +240,10 @@ class CatSink(
                 val turn = runtime.ask(
                     Question(
                         asker = player, cat = cat, text = text,
+                        // The player's language, for the same reason the question path sets it:
+                        // the prompt's copy of a refusal and the player's copy have to be the same
+                        // sentence in the same language.
+                        locale = localeOf(player),
                         around = presence.summary(),
                         askerIsAdmin = adminOf(player),
                         disclose = { subject -> disclose(player, subject) },
@@ -254,7 +255,7 @@ class CatSink(
                 onReply(turn, key, cat)
             } catch (error: Exception) {
                 onFailure("agent greeting failed for $key", error)
-                onReply(CatTurn.Refuse(AgentRuntime.APOLOGISE), key, cat)
+                onReply(CatTurn.Refuse(Apology.PROVIDER_FAILED), key, cat)
             }
         }
         if (admitted is Admitted.Rejected) {
@@ -322,7 +323,7 @@ class CatSink(
         // Nobody at all is answering this speaker — the chat context's "现在没人应答" is the
         // truthful line, and returning false is what selects it.
         if (reason == TurnedAway.NOT_A_CAT || cat == null) return false
-        val line = declineLine(reason, cat)
+        val line = declineLine(reason, cat, player)
         // Best effort: if the chat context has gone, the player simply gets nothing, which is still
         // better than being told they were censored.
         runCatching { reply?.invoke(player, nameOf(player), cat?.speakerId ?: "system", line) }
@@ -334,15 +335,19 @@ class CatSink(
         reply?.invoke(player, playerName, speakerId, text)
     }
 
-    private fun declineLine(reason: TurnedAway, cat: CatProfile?): String {
+    /**
+     * The cat's excuse, in the player's language.
+     *
+     * The **policy half** of the sentence is a language key, so it follows the player's language.
+     * The **persona half** — [CatProfile.deflect], what this particular cat says when it does not
+     * know — stays Chinese on purpose: it is the cat's own voice, and the cat's voice is the same
+     * voice the prompt gives it. So the cooldown line reads as a localized sentence with the cat's
+     * own words inside it.
+     */
+    private fun declineLine(reason: TurnedAway, cat: CatProfile?, player: UUID): String {
         val deflect = cat?.deflect?.takeIf { it.isNotBlank() }
-        return when (reason) {
-            TurnedAway.NOT_A_CAT -> "没人应答，等一下再试喵。"
-            TurnedAway.COOLDOWN -> deflect?.let { "我歇会儿。$it" } ?: "我歇会儿，过会儿再问。"
-            TurnedAway.QUOTA -> "今天问得有点多，我这边先停一停。"
-            TurnedAway.NOT_ALLOWED -> "我现在不方便说话。"
-            TurnedAway.BUSY -> "我这边排着队，过会儿再说。"
-        }
+        val args = if (reason == TurnedAway.COOLDOWN && deflect != null) listOf(deflect) else emptyList()
+        return renderRefusal(localeOf(player), reason, args)
     }
 
     /**

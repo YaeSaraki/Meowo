@@ -17,6 +17,8 @@ import com.meowo.agents.domain.plain
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.PromptBuilder
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RedactionRefusal
+import com.meowo.agents.domain.CallRefusal
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -243,7 +245,7 @@ class ToolRegistryTest {
     )
 
     private fun treasury(ctx: ToolContext) = when (val v = ctx.disclose(alice)) {
-        is Redaction.Verdict.Refused -> ToolAnswer.Refused(v.message)
+        is Redaction.Verdict.Refused -> ToolAnswer.Refused(v.reason)
         is Redaction.Verdict.Allowed -> plain("国库 5000 块（范围 ${v.scope}）")
     }
 
@@ -253,7 +255,7 @@ class ToolRegistryTest {
         allowed: Boolean = false,
     ) = ToolContext(
         asker = alice, cat = cat, askerIsAdmin = admin,
-        disclose = { if (allowed) Redaction.Verdict.Allowed(Redaction.Scope.SUMMARY) else Redaction.Verdict.Refused(Redaction.PRIVATE_REFUSAL) },
+        disclose = { if (allowed) Redaction.Verdict.Allowed(Redaction.Scope.SUMMARY) else Redaction.Verdict.Refused(RedactionRefusal.PRIVATE) },
     )
 
     private fun call(name: String, args: String = "{}") = ToolCall("c1", name, args)
@@ -272,14 +274,15 @@ class ToolRegistryTest {
         val spy = ToolRegistry(listOf(readTool("economy.setBalance", "改余额", params()) { _, _ -> plain("改了") }))
         val turn = spy.invoke(econ, call("economy.setBalance"), ctx())
         assertTrue(turn is CatTurn.Refuse)
-        assertFalse((turn as CatTurn.Refuse).text.contains("改了"), "the tool body must not have run")
+        assertEquals(CallRefusal.NO_CAPABILITY, (turn as CatTurn.Refuse).reason,
+            "the tool body must not have run")
     }
 
     @Test fun `a tool the cat owns but the registry lacks says so instead of throwing`() {
         val empty = ToolRegistry()
         val turn = empty.invoke(econ, call("economy.balance"), ctx())
         assertTrue(turn is CatTurn.Refuse)
-        assertTrue((turn as CatTurn.Refuse).text.contains("不可用"))
+        assertEquals(CallRefusal.NOT_WIRED, (turn as CatTurn.Refuse).reason)
     }
 
     @Test fun `broken arguments are refused rather than read as an empty request`() {
@@ -291,14 +294,15 @@ class ToolRegistryTest {
         val boom = ToolRegistry(listOf(readTool("economy.balance", "查余额", params()) { _, _ -> error("kaboom") }))
         val turn = boom.invoke(econ, call("economy.balance"), ctx())
         assertTrue(turn is CatTurn.Refuse)
-        assertFalse((turn as CatTurn.Refuse).text.contains("kaboom"), "a stack trace is not a chat message")
+        assertEquals(CallRefusal.THREW, (turn as CatTurn.Refuse).reason,
+            "a stack trace is not a chat message")
     }
 
     @Test fun `a refused disclosure returns the refusal text, never the data`() {
         val reg = registry()
         val refused = reg.invoke(econ, call("economy.treasury"), ctx())
         assertTrue(refused is CatTurn.Refuse, "a policy refusal must stay a refusal, not become an answer: $refused")
-        assertEquals(Redaction.PRIVATE_REFUSAL, (refused as CatTurn.Refuse).text)
+        assertEquals(RedactionRefusal.PRIVATE, (refused as CatTurn.Refuse).reason)
         val allowed = reg.invoke(econ, call("economy.treasury"), ctx(allowed = true)) as CatTurn.Reply
         assertTrue(allowed.text.contains("国库"), allowed.text)
     }

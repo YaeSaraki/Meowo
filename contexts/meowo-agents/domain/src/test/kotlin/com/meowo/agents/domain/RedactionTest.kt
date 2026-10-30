@@ -52,14 +52,14 @@ class RedactionTest {
      */
     @Test fun `opting out removes even your own record`() {
         val v = verdict(asker = alice, subject = alice, profiling = false)
-        assertEquals(Redaction.Verdict.Refused(Redaction.OPTED_OUT_REFUSAL), v)
+        assertEquals(Redaction.Verdict.Refused(RedactionRefusal.OPTED_OUT), v)
     }
 
     // ── somebody else ────────────────────────────────────────────────────────────────────────
 
     @Test fun `the opt-out is absolute even for an admin`() {
         assertEquals(
-            Redaction.Verdict.Refused(Redaction.OPTED_OUT_REFUSAL),
+            Redaction.Verdict.Refused(RedactionRefusal.OPTED_OUT),
             verdict(admin = true, profiling = false),
             "an admin must not be able to read a player who said no",
         )
@@ -67,7 +67,7 @@ class RedactionTest {
 
     @Test fun `sharing off means somebody else is refused`() {
         val v = verdict(asker = bob, subject = alice, admin = false, sharing = Guard.Sharing.OFF)
-        assertEquals(Redaction.Verdict.Refused(Redaction.NOT_ALLOWED_REFUSAL), v)
+        assertEquals(Redaction.Verdict.Refused(RedactionRefusal.NOT_ALLOWED), v)
     }
 
     /** With sharing off an admin still gets in — the server has to be able to run a discipline case. */

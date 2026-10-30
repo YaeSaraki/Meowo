@@ -1,5 +1,6 @@
 package com.meowo.agents.application
 
+import com.meowo.agents.domain.Apology
 import com.meowo.agents.domain.CatProfile
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.ChatMessage
@@ -12,6 +13,7 @@ import com.meowo.agents.domain.LlmClient
 import com.meowo.agents.domain.PromptBuilder
 import com.meowo.agents.domain.PresenceBoard
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RefusalRenderer
 import com.meowo.agents.domain.Speaker
 import com.meowo.agents.domain.ToolContext
 import com.meowo.agents.domain.Turn
@@ -89,6 +91,19 @@ class AgentRuntime(
      * but still known — the people a 风纪 cat most often needs to look up.
      */
     private val lookupPlayer: (String) -> UUID? = { null },
+    /**
+     * Turns a refusal into a sentence in the player's language.
+     *
+     * Needed here because a refusal reaches the player **twice**: once as the tool result the model
+     * reads, and once as the line the player gets when the model says nothing back. Both copies
+     * have to be in the player's language — a Chinese refusal in the prompt, next to "answer in
+     * English", leaves the model between "repeat it as it is" and "use English", and the player
+     * gets whichever the model picks.
+     *
+     * Injected because this class has no language pack, and it runs on a worker thread where there
+     * is no `CommandSender` to resolve one from.
+     */
+    private val renderRefusal: RefusalRenderer = { _, reason, _ -> reason.toString() },
 ) {
     init {
         require(maxToolRounds > 0) { "maxToolRounds must be positive" }
@@ -143,7 +158,7 @@ class AgentRuntime(
             when (val completion = client.complete(model, messages, specs)) {
                 is Completion.Text -> {
                     val reply = PromptBuilder.acceptReply(completion.content)
-                        ?: return lastRefusal ?: CatTurn.Refuse(APOLOGISE)
+                        ?: return lastRefusal ?: CatTurn.Refuse(Apology.PROVIDER_FAILED)
                     memory.append(key, Turn(Speaker.PLAYER, question.text))
                     memory.append(key, Turn(Speaker.CAT, reply))
                     return CatTurn.Reply(reply)
@@ -152,7 +167,7 @@ class AgentRuntime(
                     messages += ChatMessage.Assistant(content = null, toolCalls = completion.calls)
                     for (call in completion.calls) {
                         val turn = tools.invoke(cat, call, ctx)
-                        messages += ChatMessage.ToolResult(toolCallId = call.id, content = textOf(turn))
+                        messages += ChatMessage.ToolResult(toolCallId = call.id, content = textOf(turn, question.locale))
                         when (turn) {
                             is CatTurn.Reply -> lastSpoken = turn.text
                             is CatTurn.Refuse -> lastRefusal = turn
@@ -161,7 +176,7 @@ class AgentRuntime(
                     }
                 }
                 // The provider failed: nothing to retry with, and no partial answer worth showing.
-                Completion.Unusable -> return lastRefusal ?: CatTurn.Refuse(APOLOGISE)
+                Completion.Unusable -> return lastRefusal ?: CatTurn.Refuse(Apology.PROVIDER_FAILED)
                 // The provider failed in a way that may pass. The next round tries again — and the
                 // round above it has already asked `mayCallAgain`, so the retry is **paid for**
                 // like any other request. The cap counts requests, not attempts-that-look-free.
@@ -185,7 +200,7 @@ class AgentRuntime(
         val spoken = lastSpoken?.let { PromptBuilder.acceptReply(it) }
         return when {
             spoken != null -> CatTurn.Reply(spoken)
-            else -> lastRefusal ?: CatTurn.Refuse(APOLOGISE)
+            else -> lastRefusal ?: CatTurn.Refuse(Apology.PROVIDER_FAILED)
         }
     }
 
@@ -199,9 +214,17 @@ class AgentRuntime(
     fun submit(question: Question, scheduler: AgentScheduler, lane: Lane = Lane.QUESTION): Admitted =
         scheduler.submit(lane) { ask(question) }
 
-    private fun textOf(turn: CatTurn): String = when (turn) {
+    /**
+     * The turn as the model sees it.
+     *
+     * A refusal is **rendered here**, in the asker's language, rather than carried as a reason:
+     * this string goes into the prompt, and the prompt tells the model to repeat a refusal as it
+     * is. A reason would reach the model as a name, and the sentence the model repeats would be
+     * one it wrote — which is the opposite of "as it is".
+     */
+    private fun textOf(turn: CatTurn, locale: String): String = when (turn) {
         is CatTurn.Reply -> turn.text
-        is CatTurn.Refuse -> turn.text
+        is CatTurn.Refuse -> renderRefusal(locale, turn.reason, turn.args)
         is CatTurn.Delegate -> "${turn.cat}：${turn.reason}"
     }
 
@@ -218,8 +241,6 @@ class AgentRuntime(
         memory.recent(ConversationKey(player, cat), limit)
 
     companion object {
-        const val APOLOGISE = "喵……刚才走神了，再问一次？"
-
         /** Delegation depth, mirroring the domain cap. */
         const val MAX_DELEGATIONS = Guard.MAX_DELEGATIONS
     }

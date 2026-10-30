@@ -7,12 +7,20 @@ import java.util.UUID
  *
  * [Refused] is kept distinct all the way to the player, because a refusal shown as an answer reads
  * as data: the model would confidently repeat "这属于对方的资料" as though it were a finding.
+ *
+ * A refusal carries a **reason**, never a sentence. The wording belongs to the language pack, and
+ * the layer that knows the player renders it — see [Refusal].
  */
 sealed interface ToolAnswer {
     data class Data(val text: String) : ToolAnswer
 
-    /** [message] is a [Redaction] constant or a [CatTurn.Refuse] line, never data. */
-    data class Refused(val message: String) : ToolAnswer
+    /**
+     * [reason] is why the tool would not answer, and [args] are the values its sentence takes.
+     *
+     * Never text: a tool that carries its own wording is a tool whose wording no operator can
+     * change and no English player can read.
+     */
+    data class Refused(val reason: Refusal, val args: List<Any> = emptyList()) : ToolAnswer
 }
 
 /** Everything a tool needs to decide what it may return. */

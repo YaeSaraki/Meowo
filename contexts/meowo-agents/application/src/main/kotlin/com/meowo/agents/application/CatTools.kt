@@ -6,6 +6,7 @@ import com.meowo.api.chat.ParticipantInfo
 import com.meowo.agents.domain.Redaction
 import com.meowo.agents.domain.ToolAnswer
 import com.meowo.agents.domain.ToolContext
+import com.meowo.agents.domain.ToolRefusal
 import com.meowo.agents.domain.plain
 import com.meowo.platform.BalanceReader
 import com.meowo.platform.HomeReader
@@ -43,8 +44,6 @@ object CatTools {
     /** Long enough for a wallet read, short enough that a stuck database cannot pile up threads. */
     const val WAIT_MILLIS = 2_000L
 
-    private const val PENDING = "还在查，稍后再问一次。"
-    private const val NO_PERMISSION = Redaction.NOT_ALLOWED_REFUSAL
 
     /**
      * A string argument, or null when it is absent or empty.
@@ -78,9 +77,9 @@ object CatTools {
         val done = future.toCompletableFuture().get(WAIT_MILLIS, TimeUnit.MILLISECONDS)
         plain(money(done))
     } catch (timeout: java.util.concurrent.TimeoutException) {
-        ToolAnswer.Refused(PENDING)
+        ToolAnswer.Refused(ToolRefusal.PENDING)
     } catch (failure: Exception) {
-        ToolAnswer.Refused("没查出来。")
+        ToolAnswer.Refused(ToolRefusal.FAILED)
     }
 
     // ── economy ──────────────────────────────────────────────────────────────────────────────
@@ -94,8 +93,8 @@ object CatTools {
         readTool("economy.treasury", "查国库总额。只读。", objectSchema()) { _, ctx ->
             // The treasury is a fact about the server rather than about a person, so there is no
             // subject to disclose — but the gate is still consulted rather than assumed away.
-            when (ctx.disclose(ctx.asker)) {
-                is Redaction.Verdict.Refused -> ToolAnswer.Refused(NO_PERMISSION)
+            when (val verdict = ctx.disclose(ctx.asker)) {
+                is Redaction.Verdict.Refused -> ToolAnswer.Refused(verdict.reason)
                 is Redaction.Verdict.Allowed -> render(reader.treasury()) { money.render(it) }
             }
         }
@@ -115,7 +114,7 @@ object CatTools {
     fun chargeStatus(reader: SettlementReader, money: Money): ReadTool =
         readTool("economy.chargeStatus", "查一张票的扣费状态。只读。", objectSchema("ticket")) { args, _ ->
             val ticket = runCatching { UUID.fromString(args.get("ticket")?.asString ?: "") }.getOrNull()
-                ?: return@readTool ToolAnswer.Refused("票号看不懂。")
+                ?: return@readTool ToolAnswer.Refused(ToolRefusal.BAD_TICKET)
             render(reader.chargeStatus(ticket)) { charge ->
                 if (charge == null) "这张票已经不在了。" else "这张票扣了 ${money.render(charge.fee)}，状态 ${charge.state}。"
             }
@@ -132,7 +131,7 @@ object CatTools {
         "economy.dailyStatus",
         "查询签到状态。**不能代替玩家领取**——领取只能玩家自己执行。",
         objectSchema(),
-    ) { _, _ -> ToolAnswer.Refused("签到得你自己打 /eco daily，我这里只能提醒你。") }
+    ) { _, _ -> ToolAnswer.Refused(ToolRefusal.DAILY_IS_YOURS) }
 
     // ── 风纪委员（MeowCat）────────────────────────────────────────────────────────────────────
 
@@ -165,10 +164,10 @@ object CatTools {
         readTool("moderation.risk", "查一个玩家的风纪风险分。只读。", objectSchema("player")) { args, ctx ->
             val name = args.string("player")
             val target = resolve(name, ctx)
-                ?: return@readTool ToolAnswer.Refused("我不认识这个人。")
+                ?: return@readTool ToolAnswer.Refused(ToolRefusal.UNKNOWN_PLAYER)
             // Self is always allowed, so this only ever refuses a *third* party.
             when (val verdict = ctx.disclose(target)) {
-                is Redaction.Verdict.Refused -> ToolAnswer.Refused(verdict.message)
+                is Redaction.Verdict.Refused -> ToolAnswer.Refused(verdict.reason)
                 is Redaction.Verdict.Allowed -> plain("风纪风险分：${risk(target)}（满分 100，只是一个记分，不是判决）")
             }
         },
@@ -182,7 +181,7 @@ object CatTools {
             // No name means "my own", and that path has no gate: it is the asker's own history.
             if (name != null) {
                 when (val verdict = ctx.disclose(target ?: ctx.asker)) {
-                    is Redaction.Verdict.Refused -> return@readTool ToolAnswer.Refused(verdict.message)
+                    is Redaction.Verdict.Refused -> return@readTool ToolAnswer.Refused(verdict.reason)
                     is Redaction.Verdict.Allowed -> Unit
                 }
             }

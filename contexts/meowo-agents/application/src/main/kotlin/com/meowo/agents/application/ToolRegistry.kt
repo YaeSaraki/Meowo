@@ -2,6 +2,7 @@ package com.meowo.agents.application
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.meowo.agents.domain.CallRefusal
 import com.meowo.agents.domain.CatProfile
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.ToolAnswer
@@ -92,20 +93,20 @@ class ToolRegistry(tools: List<ReadTool> = emptyList()) {
      */
     fun invoke(cat: CatProfile, call: ToolCall, ctx: ToolContext): CatTurn {
         if (call.name !in cat.tools) {
-            return CatTurn.Refuse("${cat.displayName} 没有 ${call.name} 这个能力。")
+            return CatTurn.Refuse(CallRefusal.NO_CAPABILITY, listOf(cat.displayName, call.name))
         }
         val tool = byName[call.name]
-            ?: return CatTurn.Refuse("${call.name} 现在不可用，回头再问一次吧。")
+            ?: return CatTurn.Refuse(CallRefusal.NOT_WIRED, listOf(call.name))
         val args = runCatching { JsonParser.parseString(call.arguments) }.getOrNull()
-        if (args !is JsonObject) return CatTurn.Refuse("参数没看明白，换个说法？")
+        if (args !is JsonObject) return CatTurn.Refuse(CallRefusal.BAD_ARGUMENTS)
         // A tool that throws is a *failure*, not an answer. Returning it as a Reply would let the
         // runtime pass an internal error off to a player as though a cat had said it.
         return when (val answer = runCatching { tool.call(args, ctx) }
-            .getOrElse { return CatTurn.Refuse("${call.name} 出了点问题。") }) {
+            .getOrElse { return CatTurn.Refuse(CallRefusal.THREW, listOf(call.name)) }) {
             is ToolAnswer.Data -> CatTurn.Reply(answer.text)
             // The refusal keeps its own identity all the way out, so the runtime can prefer it over
             // a generic apology when the provider fails mid-conversation.
-            is ToolAnswer.Refused -> CatTurn.Refuse(answer.message)
+            is ToolAnswer.Refused -> CatTurn.Refuse(answer.reason, answer.args)
         }
     }
 

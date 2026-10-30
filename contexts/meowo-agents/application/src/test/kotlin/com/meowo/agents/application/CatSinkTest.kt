@@ -1,12 +1,15 @@
 package com.meowo.agents.application
 
+import com.meowo.agents.domain.Apology
 import com.meowo.agents.domain.CatRegistry
 import com.meowo.agents.domain.CatTurn
 import com.meowo.agents.domain.Completion
 import com.meowo.agents.domain.ConversationMemory
 import com.meowo.agents.domain.LlmClient
 import com.meowo.agents.domain.Redaction
+import com.meowo.agents.domain.RedactionRefusal
 import com.meowo.agents.domain.ToolSpec
+import com.meowo.agents.domain.TurnedAway
 import com.google.gson.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -16,6 +19,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -88,7 +92,7 @@ class CatSinkTest {
         impressions: ImpressionService? = null,
         disclose: (UUID, UUID) -> Redaction.Verdict = { asker, subject ->
             if (asker == subject) Redaction.Verdict.Allowed(Redaction.Scope.SELF)
-            else Redaction.Verdict.Refused(Redaction.NOT_ALLOWED_REFUSAL)
+            else Redaction.Verdict.Refused(RedactionRefusal.NOT_ALLOWED)
         },
         onFailure: (String, Throwable) -> Unit = { _, _ -> },
     ): CatSink {
@@ -253,7 +257,7 @@ class CatSinkTest {
         s.onReply = { turn, _, _ -> got = turn; delivered.countDown() }
         assertTrue(s.onDirectMessage(alice, "economy", "在吗"))
         assertTrue(delivered.await(5, TimeUnit.SECONDS), "a failure must still close the loop")
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), got)
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), got)
     }
 
     /**
@@ -279,7 +283,9 @@ class CatSinkTest {
         s.onDirectMessage(alice, "economy", "第一次")
         clock = T0 + 1
         s.onDirectMessage(alice, "economy", "第二次")
-        assertTrue(replies.any { it.contains("歇") }, "the cat should say it is taking a break: $replies")
+        // The default renderer names the reason, so the player is told *which* excuse this
+        // was — the sentence itself is the language pack's business.
+        assertTrue(replies.any { it.contains("COOLDOWN") }, "the cat should say it is taking a break: $replies")
     }
 
     /**
@@ -298,13 +304,18 @@ class CatSinkTest {
         val reported = CountDownLatch(1)
         val errors = mutableListOf<Throwable>()
         val s = sink(failing, onFailure = { _, error -> errors += error; reported.countDown() })
-        val turns = mutableListOf<CatTurn>()
-        s.onReply = { turn, _, _ -> turns += turn }
+        // A latch of its own for the answer, because the failure is reported **before** the
+        // apology is delivered: waiting only for the report and then reading the list raced the
+        // worker, and the test failed on a timing nobody could see.
+        val answered = CountDownLatch(1)
+        val turns = CopyOnWriteArrayList<CatTurn>()
+        s.onReply = { turn, _, _ -> turns += turn; answered.countDown() }
         assertTrue(s.onDirectMessage(alice, "economy", "在吗"))
         assertTrue(reported.await(5, TimeUnit.SECONDS), "the failure was swallowed")
+        assertTrue(answered.await(5, TimeUnit.SECONDS), "the player must not be left waiting for an answer that is not coming")
         assertTrue(errors.contains(boom), "the failure must be reported as it was: $errors")
         assertEquals(1, turns.size, "the player must not be left waiting for an answer that is not coming")
-        assertEquals(CatTurn.Refuse(AgentRuntime.APOLOGISE), turns.single())
+        assertEquals(CatTurn.Refuse(Apology.PROVIDER_FAILED), turns.single())
     }
 
     /**

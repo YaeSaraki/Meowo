@@ -18,10 +18,13 @@ object Redaction {
         data class Allowed(val scope: Scope) : Verdict
 
         /**
-         * Refused. [message] must distinguish *"we don't have it"* from *"we won't tell you"* —
+         * Refused. [reason] must distinguish *"we don't have it"* from *"we won't tell you"* —
          * claiming ignorance when the real reason is privacy teaches players to keep asking.
+         *
+         * A reason, not a sentence: the wording is rendered from the language pack by the layer
+         * that knows the player. See [Refusal].
          */
-        data class Refused(val message: String) : Verdict
+        data class Refused(val reason: RedactionRefusal) : Verdict
     }
 
     enum class Scope {
@@ -35,12 +38,8 @@ object Redaction {
         FULL,
     }
 
-    const val PRIVATE_REFUSAL = "这属于对方的资料，我不方便说。"
-    const val OPTED_OUT_REFUSAL = "对方关闭了资料共享，我看不到。"
-    const val NOT_ALLOWED_REFUSAL = "你没有查看他人资料的权限。"
-
     /**
-     * @param admin grants `Scope.FULL`; without it nobody but the subject ever sees detail.
+     * @param askerIsAdmin grants `Scope.FULL`; without it nobody but the subject ever sees detail.
      */
     fun verdict(
         asker: UUID,
@@ -51,12 +50,14 @@ object Redaction {
     ): Verdict {
         if (subject == asker) {
             return if (subjectProfilingEnabled) Verdict.Allowed(Scope.SELF)
-            else Verdict.Refused(OPTED_OUT_REFUSAL)
+            else Verdict.Refused(RedactionRefusal.OPTED_OUT)
         }
         // The subject's opt-out is absolute and checked before permission, so an admin cannot
         // override a player who said no.
-        if (!subjectProfilingEnabled) return Verdict.Refused(OPTED_OUT_REFUSAL)
-        if (!askerIsAdmin && sharing == Guard.Sharing.OFF) return Verdict.Refused(NOT_ALLOWED_REFUSAL)
+        if (!subjectProfilingEnabled) return Verdict.Refused(RedactionRefusal.OPTED_OUT)
+        if (!askerIsAdmin && sharing == Guard.Sharing.OFF) {
+            return Verdict.Refused(RedactionRefusal.NOT_ALLOWED)
+        }
         if (sharing == Guard.Sharing.CONSENT && !askerIsAdmin) return Verdict.Allowed(Scope.SUMMARY)
         return Verdict.Allowed(if (askerIsAdmin) Scope.FULL else Scope.SUMMARY)
     }
