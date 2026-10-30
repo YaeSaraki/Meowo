@@ -33,8 +33,11 @@ class ConfigVersionMergerTest {
 
     private fun operator(body: String): String = body.trimIndent()
 
+    /** The version the shipped `config.yml` declares. The one number for the whole configuration. */
+    private val version = 9
+
     private fun merge(file: File) =
-        ConfigVersionMerger.merge(file, shipped.byteInputStream())
+        ConfigVersionMerger.merge(file, shipped.byteInputStream(), version)
 
     private fun read(file: File) = org.bukkit.configuration.file.YamlConfiguration().apply { load(file) }
 
@@ -79,14 +82,99 @@ class ConfigVersionMergerTest {
         val result = merge(file)
 
         assertEquals(0, result.fromVersion, "a file with no version key reads as version 0")
-        assertEquals(ConfigVersionMerger.CURRENT_VERSION, read(file).getInt(ConfigVersionMerger.VERSION_KEY))
+        // The version comes from the shipped file, not from a constant beside the merger.
+        assertEquals(9, read(file).getInt(ConfigVersionMerger.VERSION_KEY))
+        assertEquals(9, result.toVersion)
+    }
+
+    @Test fun `the version the file is stamped with is the global one`(@TempDir dir: File) {
+        val file = File(dir, "config.yml")
+        file.writeText(operator("locale: zh_CN"))
+
+        val result = merge(file)
+
+        assertEquals(9, result.toVersion, "the global version is 9; every versioned file is stamped with it")
+    }
+
+    @Test fun `the global version is read from the shipped config file`(@TempDir dir: File) {
+        val file = File(dir, "config.yml")
+        file.writeText(operator("locale: zh_CN"))
+
+        val global = ConfigVersionMerger.globalVersion(shipped.byteInputStream())
+
+        assertEquals(9, global, "the shipped file declares the version of the whole configuration")
+    }
+
+    @Test fun `a shipped config file without a version is a build defect, not a silent no-op`(@TempDir dir: File) {
+        val broken = "locale: zh_CN\n".trimIndent()
+
+        val error = runCatching { ConfigVersionMerger.globalVersion(broken.byteInputStream()) }.exceptionOrNull()
+
+        assertTrue(error is IllegalStateException, "a shipped file with no version must fail loudly: $error")
+        assertTrue(
+            error?.message?.contains("config-version") == true,
+            "the failure must name the key that is missing: ${error?.message}",
+        )
+    }
+
+    /**
+     * The case the global version exists for: a file the operator has, which is behind, and which
+     * declares no version of its own — the shipped `ui.yml` does not, because there is only one
+     * number for the whole configuration.
+     */
+    @Test fun `a file with no version of its own is brought up to the global one`(@TempDir dir: File) {
+        val file = File(dir, "ui.yml")
+        val layout = """
+            screens:
+              menu:
+                title: "Meowo"
+                buttons:
+                  10: { icon: STONE, name: "mine", action: "mine" }
+        """.trimIndent()
+        file.writeText(layout)
+
+        val shippedLayout = """
+            screens:
+              menu:
+                title: "Meowo"
+                buttons:
+                  10: { icon: STONE, name: "mine", action: "mine" }
+                  11: { icon: PAPER, name: "shop", action: "sell" }
+        """.trimIndent()
+        val result = ConfigVersionMerger.merge(file, shippedLayout.byteInputStream(), version)
+
+        assertTrue(result.changed, "the file was behind and must be brought up to date")
+        assertEquals(
+            9, read(file).getInt(ConfigVersionMerger.VERSION_KEY),
+            "the file records the global version, so the next release knows it is behind",
+        )
+        assertEquals(
+            "sell", read(file).getString("screens.menu.buttons.11.action"),
+            "the new button must arrive",
+        )
+        assertEquals(
+            "mine", read(file).getString("screens.menu.buttons.10.action"),
+            "the operator's own button must survive",
+        )
+    }
+
+    @Test fun `the version number is not reported as a new option`(@TempDir dir: File) {
+        val file = File(dir, "config.yml")
+        file.writeText(operator("locale: zh_CN"))
+
+        val result = merge(file)
+
+        assertTrue(
+            result.added.none { it == ConfigVersionMerger.VERSION_KEY },
+            "the version is bookkeeping, not an option: ${result.added}",
+        )
     }
 
     @Test fun `a current file is left completely alone`(@TempDir dir: File) {
         val file = File(dir, "config.yml")
         // Current version, and deliberately missing a key: an operator who deleted a line to fall back to
         // the default must not have it added back on the next restart.
-        file.writeText(operator("config-version: ${ConfigVersionMerger.CURRENT_VERSION}\nlocale: zh_CN"))
+        file.writeText(operator("config-version: 9\nlocale: zh_CN"))
         val before = file.readText()
 
         val result = merge(file)

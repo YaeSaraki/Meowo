@@ -1,6 +1,7 @@
 package com.meowo.core
 
 import com.meowo.api.event.PlayerJoined
+import com.meowo.core.config.ConfigCommand
 import com.meowo.core.config.ConfigVersionMerger
 import com.meowo.core.config.GlobalConfig
 import com.meowo.api.UIAPI
@@ -25,6 +26,7 @@ import com.meowo.mine.MineContext
 import com.meowo.nametag.NametagContext
 import com.meowo.shadowbox.ShadowBoxContext
 import com.meowo.shop.ShopContext
+import com.meowo.webapi.WebApiContext
 import com.meowo.platform.*
 import com.meowo.shared.event.EventBus
 import com.meowo.shared.lifecycle.ContextManager
@@ -33,6 +35,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.event.*
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
+import java.io.InputStream
 import java.util.logging.Level
 
 /** Composition root. Only this module knows concrete contexts. */
@@ -108,8 +112,9 @@ class MeowoRuntime(
         // After saveDefaultConfig, so the file exists on a fresh install before anything reads it, and
         // before GlobalConfig.read, so a key added by this release is already in the file the operator
         // will open. Only ever *adds* missing keys — see ConfigVersionMerger.
-        reportConfigMerge()
+        syncConfiguration()
         val initial = GlobalConfig.read(plugin.dataFolder.resolve("config.yml"))
+        reportConfigIssues(initial)
         messages.load(initial.locale, initial.languageMode)
         // The UI module: one menu code path for the whole plugin, laid out by `ui.yml`. The shipped file is
         // the fallback, the operator's copy overrides it per screen, so a new screen added here appears
@@ -143,12 +148,27 @@ class MeowoRuntime(
             override fun complete(sender: CommandSender, args: List<String>): List<String> =
                 if (args.size == 1) help.pageNumbers(sender) else emptyList()
         })
+        // The read-only configuration self-check. It exists because a config file has exactly
+        // one reader, and everything that reader did not understand used to stay invisible.
+        val configCommand = ConfigCommand(messages, plugin.dataFolder.resolve("config.yml")) { settings ?: initial }
+        routes += commands.register("config", "core", object : Route {
+            override val permission = "meowo.admin"
+            override fun execute(sender: CommandSender, args: List<String>) = configCommand.run(sender, args)
+            override fun complete(sender: CommandSender, args: List<String>) = configCommand.complete(sender, args)
+        })
         routes += commands.register("info", "core", route("meowo.use") {
             messages.send(it, "info", plugin.description.version, contexts.ids().joinToString(", "), events.subscriberCount)
         })
         routes += commands.register("reload", "core", route("meowo.admin") { sender ->
             try {
+                // The files are brought up to the shipped version before they are read, so a reload
+                // after a jar update behaves like a restart: the operator's files gain the new keys
+                // and the values the plugin reads come from the same place.
+                // The layout is the exception: the menu that is on screen was built from the old
+                // one, so a new `ui.yml` waits for a restart — hence the flag.
+                syncConfiguration(layoutNeedsRestart = true)
                 val next = GlobalConfig.read(plugin.dataFolder.resolve("config.yml"))
+                reportConfigIssues(next)
                 messages.load(next.locale, next.languageMode)
                 applySettings(next)
                 // `shop` joins the two that need a wallet, so turning economy off takes it down with them.
@@ -175,37 +195,105 @@ class MeowoRuntime(
     }
 
     /**
-     * Folds the shipped config's new keys into the operator's file, and says so.
+     * Brings every versioned configuration file up to the shipped version, and says so.
      *
-     * Silent on purpose when nothing was written: a server that is already current should not see a line on
-     * every start. When something *was* added it is named, because an option that appears in a file without
+     * ### Why this covers more than `config.yml`
+     *
+     * The plugin ships two files the operator can edit: `config.yml` (the options) and `ui.yml` (the menu
+     * layouts). Both are configuration, so both are governed by the same version — the one the shipped
+     * `config.yml` declares, read through [ConfigVersionMerger.globalVersion].
+     *
+     * Only `config.yml` used to be. A release that added a button to a screen changed the plugin's
+     * configuration without changing the version that governs it, so the button never reached a server
+     * with its own `ui.yml`: the loader lets the operator's screen win outright, so the new button was
+     * simply not there. Nothing failed and nothing was logged. The version was one file's version
+     * wearing a global name.
+     *
+     * The language bundles are **not** merged, on purpose — see [ConfigVersionMerger]. They hold wording
+     * rather than settings, and the jar's copy already fills every key the operator's file lacks.
+     *
+     * Silent when nothing was written: a server that is already current should not see a line on every
+     * start. When something *was* added it is named, because an option that appears in a file without
      * anybody being told is the same invisible-default problem the merge exists to solve.
      */
-    private fun reportConfigMerge() {
-        val shipped = javaClass.getResourceAsStream("/config.yml") ?: return
-        val result = shipped.use { ConfigVersionMerger.merge(plugin.dataFolder.resolve("config.yml"), it) }
-        if (!result.changed) return
+    private fun syncConfiguration(layoutNeedsRestart: Boolean = false) {
+        val version = javaClass.getResourceAsStream("/config.yml")
+            ?.use { ConfigVersionMerger.globalVersion(it) }
+            ?: return
+        // The options. The operator's file exists by now — `saveDefaultConfig` created it.
+        javaClass.getResourceAsStream("/config.yml")?.use {
+            mergeInto("config.yml", plugin.dataFolder.resolve("config.yml"), it, version)
+        }
+        // The layouts. Merged only into a file the operator actually has: the shipped copy stays the
+        // fallback, and writing a copy of it would freeze every future layout change for that server.
+        javaClass.getResourceAsStream("/ui.yml")?.use {
+            if (mergeInto("ui.yml", plugin.dataFolder.resolve("ui.yml"), it, version) && layoutNeedsRestart) {
+                // The file is up to date now, but the menu that is on screen was built from the old
+                // one. Swapping the UI service would split the menus that are already open, so the
+                // new layout waits for a restart — and the operator is told so, because a log that
+                // says "upgraded" and a menu that did not change is how this looks like a bug.
+                //
+                // At start-up there is nothing to wait for: the layout is loaded right after this,
+                // so the note would be wrong there.
+                plugin.logger.info("ui.yml: the new layout takes effect after a restart of the server or the plugin.")
+            }
+        }
+    }
+
+    /**
+     * Merges one shipped file into the operator's copy and reports what happened.
+     *
+     * A file that is already current, or that the operator never made, produces no output at all: the
+     * first is the normal case and the second is not a change.
+     *
+     * Returns whether anything was written.
+     */
+    private fun mergeInto(label: String, file: File, shipped: InputStream, version: Int): Boolean {
+        val result = ConfigVersionMerger.merge(file, shipped, version)
+        if (!result.changed) return false
         if (result.added.isNotEmpty()) {
             plugin.logger.info(
-                "config.yml upgraded ${result.fromVersion} → ${ConfigVersionMerger.CURRENT_VERSION}; " +
+                "$label upgraded ${result.fromVersion} → ${result.toVersion}; " +
                     "added ${result.added.size} new key(s), existing values untouched: " +
                     result.added.take(8).joinToString(", ") + (if (result.added.size > 8) " …" else ""),
             )
         } else {
-            plugin.logger.info("config.yml upgraded ${result.fromVersion} → ${ConfigVersionMerger.CURRENT_VERSION}; no new keys.")
+            plugin.logger.info("$label upgraded ${result.fromVersion} → ${result.toVersion}; no new keys.")
         }
         // A shape mismatch is a warning, not an info: the operator has a scalar where the shipped file has a
         // block, so the new nested keys under it could not be added. Their value was preserved, which is the
         // right call, but somebody has to decide what that key is now.
         if (result.skipped.isNotEmpty()) {
             plugin.logger.warning(
-                "config.yml: ${result.skipped.size} key(s) have a different shape than the shipped file and " +
+                "$label: ${result.skipped.size} key(s) have a different shape than the shipped file and " +
                     "were left exactly as they are, so their new sub-keys were not added: " +
                     result.skipped.take(8).joinToString(", ") + (if (result.skipped.size > 8) " …" else "") +
-                    ". Compare them with the shipped config.yml.",
+                    ". Compare them with the shipped $label.",
             )
         }
+        return true
     }
+    /**
+     * Says what the plugin did not understand about the operator's file.
+     *
+     * A wrong value is repaired rather than fatal, so the operator has to be **told** that it was
+     * repaired — otherwise the repair is invisible and the setting they wrote is quietly not in
+     * effect. The line is in the log at start-up and after every reload, and `/meowo config
+     * warnings` lists the same things.
+     */
+    private fun reportConfigIssues(config: GlobalConfig) {
+        if (config.issues.isEmpty()) {
+            if (config.debug) plugin.logger.info("config.yml: no issues.")
+            return
+        }
+        plugin.logger.warning("config.yml: ${config.issues.size} issue(s) found. The plugin started with the defaults for these.")
+        config.issues.forEach { plugin.logger.warning("  - ${it.describe()}") }
+        if (config.debug) {
+            plugin.logger.info("config.yml: effective configuration follows")
+            config.effective.forEach { (key, value) -> plugin.logger.info("  $key = $value") }
+        }
+    }
+
     private fun applySettings(next: GlobalConfig) {
         economyPolicy = next.economy
         host.currency = next.currency
@@ -228,6 +316,7 @@ class MeowoRuntime(
         if (settings?.invsee != next.invsee) contexts.disable("invsee")
         if (settings?.pomodoro != next.pomodoro) contexts.disable("pomodoro")
         if (settings?.shop != next.shop) contexts.disable("shop")
+        if (settings?.webapi != next.webapi) contexts.disable("webapi")
         contexts.ids().filter { it !in next.contexts }.reversed().forEach(contexts::disable)
         if ("economy" in next.contexts && !contexts.isEnabled("economy")) contexts.enable(EconomyContext(host) { economyPolicy })
         if ("menu" in next.contexts && !contexts.isEnabled("menu")) contexts.enable(MenuContext(host))
@@ -249,6 +338,8 @@ class MeowoRuntime(
         if ("pomodoro" in next.contexts && !contexts.isEnabled("pomodoro")) contexts.enable(PomodoroContext(host, next.pomodoro))
         // After economy: the shop pays out of a wallet, and a shop with no wallet is a dead button.
         if ("shop" in next.contexts && contexts.isEnabled("economy") && !contexts.isEnabled("shop")) contexts.enable(ShopContext(host, next.shop))
+        // Independent of everything else: it only reads the server and serves it over HTTP.
+        if ("webapi" in next.contexts && !contexts.isEnabled("webapi")) contexts.enable(WebApiContext(host, next.webapi))
         settings = next
     }
     @EventHandler fun join(event: PlayerJoinEvent) { events.publish(PlayerJoined(event.player.uniqueId)) }

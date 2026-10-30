@@ -38,6 +38,22 @@ reload-failed: |-
   §8[§bMeowo§8]§r §c✖ §7重载被拒绝：配置校验未通过，已保留当前运行状态。
 
 # ═══════════ 通用 ═══════════
+# ═══════════ 通用 ═══════════
+# ═══════════ 配置自查 (/meowo config) ═══════════
+# 这个命令只读不改：它回答「插件到底读懂了我的文件没有」。
+# 拼错的键、类型不对的值、已废弃的键，都会在这里出现，并写进启动日志。
+config-usage: |-
+config-summary: |-
+config-clean: "§8[§bMeowo§8]§r §a✔ §7配置没有问题：没有拼错的键，也没有格式不对的值。§r"
+config-issues-found: "§8[§bMeowo§8]§r §e⚠ §7配置里有 §f{0} §7处需要注意："
+config-issue-line: "  §8│ §e{0}§r"
+config-issues-more: "  §8│ §7……还有 {0} 条，用 §f/meowo config warnings§r 看全部。"
+config-get: "§8[§bMeowo§8]§r §7{0} §8= §f{1}§r"
+config-unknown-key: "§8[§bMeowo§8]§r §c✖ §7没有这个配置项：§f{0}§r"
+config-key-ambiguous: "§8[§bMeowo§8]§r §e⚠ §7没有完全匹配的 §f{0}§r §7，下面是最接近的："
+config-list-header: "§8[§bMeowo§8]§r §7{0} §8│ §7共 §f{1} §7项："
+config-list-line: "  §8│ §7{0} §8= §f{1}§r"
+config-unknown-section: "§8[§bMeowo§8]§r §c✖ §7没有这个配置段：§f{0}§r"
 no-permission: "§c✖ §f你没有权限执行该操作。§r"
 unknown-command: |-
   §c✖ §f未知命令，或对应模块当前未启用。
@@ -309,6 +325,9 @@ shop-unavailable: "§e⚠ §7喵达店的界面加载不出来喵，稍后再试
 # 界面渲染模块（UIAPI）没就位时才会看到这条。名字写清楚缺的是哪一块，
 # 免得运维按着上一条「经济模块未启用」去翻一个根本没关的配置。
 shop-unavailable: "§e⚠ §7喵达店的界面加载不出来喵，稍后再试试。"
+# 界面渲染模块（UIAPI）没就位时才会看到这条。名字写清楚缺的是哪一块，
+# 免得运维按着上一条「经济模块未启用」去翻一个根本没关的配置。
+shop-unavailable: "§e⚠ §7喵达店的界面加载不出来喵，稍后再试试。"
 shop-empty: "§e喵达翻了翻你的口袋：没有能回收的矿石喵。"
 shop-hand-empty: "§e主手上没有东西可卖喵。"
 shop-not-mine: "§e喵达看了看主手：§f{0} §e这个不收喵。"
@@ -356,6 +375,8 @@ home-usage: "/home 打开 GUI；/home <编号或名称> 回家；/sethome [编�
 home-admin-usage: "管理员：/home view <玩家> 查看；/home set <玩家> [编号或名称] 设置（不收费，玩家离线也可以）。"
 home-force-usage: "强制传送：/home <编号或名称> force —— 忽略落点安全检查，直接回到保存的原坐标。"
 home-loading: "§7家园正在恢复，请稍后重试。"
+# 家园列表要靠菜单 context 才能画出来。菜单被关掉时，缺的是菜单，不是家园。
+home-unavailable: "§e⚠ §7菜单模块没开喵，家园列表暂时打不开。"
 # 家园列表要靠菜单 context 才能画出来。菜单被关掉时，缺的是菜单，不是家园。
 home-unavailable: "§e⚠ §7菜单模块没开喵，家园列表暂时打不开。"
 # 家园列表要靠菜单 context 才能画出来。菜单被关掉时，缺的是菜单，不是家园。
@@ -536,6 +557,8 @@ menu-homes-summary: "{0}/{1} 个家 · {2}/{3} 页"
 menu-unavailable: "§e⚠ §7家园模块没开喵，总菜单里的家园用不了。"
 # 总菜单里的家园入口要靠家园 context。家园被关掉时，缺的是家园。
 menu-unavailable: "§e⚠ §7家园模块没开喵，总菜单里的家园用不了。"
+# 总菜单里的家园入口要靠家园 context。家园被关掉时，缺的是家园。
+menu-unavailable: "§e⚠ §7家园模块没开喵，总菜单里的家园用不了。"
 menu-homes-capacity: "容量权限：meowo.home.limit.{0}"
 
 # ═══════════ CHAT ═══════════
@@ -632,6 +655,30 @@ known-header: "§8[§bMeowo§8]§r §7猫对你的印象 §8· §f{0} §7条"
 known-row: "§8│ §f{0}§8: §7{1} §8（§7{2}§8）"
 known-empty: "§7还没有哪只猫对你有印象。同一只猫聊够几次之后才会有。"
 known-footer: "§8└ 这些是猫自己写的。除非你先提起，它们不会主动说。"
+# ═══════════ AGENTS / 拒绝 ═══════════
+# 这些键由 AgentRefusals 渲染 —— 纯层只给出「发生了什么」，句子在这里。
+# 五组前缀对应五个封闭集合：数据不给看、工具答不出、调用不可用、猫现在不答、供应商挂了。
+agents-redaction-private: "§7这属于对方的资料，我不方便说。"
+agents-redaction-opted-out: "§7对方关闭了资料共享，我看不到。"
+agents-redaction-not-allowed: "§7你没有查看他人资料的权限。"
+agents-tool-pending: "§7还在查，稍后再问一次。"
+agents-tool-failed: "§7没查出来。"
+agents-tool-bad-ticket: "§7票号看不懂。"
+agents-tool-daily-is-yours: "§7签到得你自己打 §f/eco daily§7，我这里只能提醒你。"
+agents-tool-unknown-player: "§7我不认识这个人。"
+agents-call-no-capability: "§7§f{0} §7没有 §f{1} §7这个能力。"
+agents-call-not-wired: "§7§f{0} §7现在不可用，回头再问一次吧。"
+agents-call-bad-arguments: "§7参数没看明白，换个说法？"
+agents-call-threw: "§7§f{0} §7出了点问题。"
+agents-decline-not-a-cat: "§7没人应答，等一下再试喵。"
+# {0} 是这只猫自己的人格台词，留在它自己的语言里。
+agents-decline-cooldown: "§7我歇会儿。{0}"
+agents-decline-cooldown-plain: "§7我歇会儿，过会儿再问。"
+agents-decline-quota: "§7今天问得有点多，我这边先停一停。"
+agents-decline-not-allowed: "§7我现在不方便说话。"
+agents-decline-busy: "§7我这边排着队，过会儿再说。"
+agents-apologise: "§7喵……刚才走神了，再问一次？"
+agents-proactive: "[你刚刚看到这位玩家执行了 §f{0}§7。他没有对你说话。你可以搭一句话，也可以什么都不说 —— 这一行没有要求你开口。]"
 # ═══════════ AGENTS / 拒绝 ═══════════
 # 这些键由 AgentRefusals 渲染 —— 纯层只给出「发生了什么」，句子在这里。
 # 五组前缀对应五个封闭集合：数据不给看、工具答不出、调用不可用、猫现在不答、供应商挂了。

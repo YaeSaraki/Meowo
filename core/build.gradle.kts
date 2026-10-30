@@ -1,7 +1,7 @@
 import io.izzel.taboolib.gradle.*
 
 plugins { alias(libs.plugins.taboolib) }
-listOf(":api", ":shared", ":platform", ":ui", ":contexts:meowo-economy:domain", ":contexts:meowo-economy", ":contexts:meowo-menu", ":contexts:meowo-render", ":contexts:meowo-teleport", ":contexts:meowo-spawn", ":contexts:meowo-sit", ":contexts:meowo-hat", ":contexts:meowo-shadowbox", ":contexts:meowo-nametag", ":contexts:meowo-home", ":contexts:meowo-mine", ":contexts:meowo-chat", ":contexts:meowo-agents", ":contexts:meowo-avatar", ":contexts:meowo-invsee", ":contexts:meowo-pomodoro", ":contexts:meowo-shop").forEach { evaluationDependsOn(it) }
+listOf(":api", ":shared", ":platform", ":ui", ":contexts:meowo-economy:domain", ":contexts:meowo-economy", ":contexts:meowo-menu", ":contexts:meowo-render", ":contexts:meowo-teleport", ":contexts:meowo-spawn", ":contexts:meowo-sit", ":contexts:meowo-hat", ":contexts:meowo-shadowbox", ":contexts:meowo-nametag", ":contexts:meowo-home", ":contexts:meowo-mine", ":contexts:meowo-chat", ":contexts:meowo-agents", ":contexts:meowo-avatar", ":contexts:meowo-invsee", ":contexts:meowo-pomodoro", ":contexts:meowo-shop", ":contexts:meowo-webapi").forEach { evaluationDependsOn(it) }
 taboolib {
     env {
         install(Basic, Bukkit, I18n, BukkitUI)
@@ -35,6 +35,7 @@ dependencies {
     "taboo"(project(":contexts:meowo-hat"))
     "taboo"(project(":contexts:meowo-nametag"))
     "taboo"(project(":contexts:meowo-agents"))
+    "taboo"(project(":contexts:meowo-webapi"))
     "taboo"(project(":contexts:meowo-mine"))
     "taboo"(project(":contexts:meowo-chat"))
     "taboo"(project(":contexts:meowo-avatar"))

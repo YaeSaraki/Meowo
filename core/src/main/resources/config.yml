@@ -5,11 +5,25 @@
 language-mode: player
 locale: zh_CN
 
-# 本文件的结构版本。每次**新增**配置项时 +1，插件启动时会把 jar 里新增的键补进本文件，
-# 并带上原注释。已经存在的键一律不读、不比、不改 —— 你改过的值不会被覆盖。
+# 排错开关。打开后，插件启动时会把**实际生效**的配置和所有配置问题（拼错的键、
+# 类型不对的值、已废弃的键）打进控制台。正常运营不需要开。
+debug: false
+
+# 本文件的结构版本 —— 也是**整个插件配置**的版本。
+#
+# 它管着两份服主可以改的文件：这份 `config.yml`（选项）和 `ui.yml`（菜单布局）。
+# 启动时，凡是版本落后的文件，都会被补上 jar 里新增的键，并带上原注释。
+# 已经存在的键一律不读、不比、不改 —— 你改过的值不会被覆盖。
 # 想让某个键回到默认值：删掉那一行，重启后会自动补回默认值。
-# 不需要手动改这个数字。
-config-version: 4
+#
+# 以前版本号只管 `config.yml`：插件加了菜单按钮，版本号不用动，服主的 `ui.yml` 也永远
+# 不会补——而布局是「服主那份整个说了算」，于是新按钮就那么不见了，日志里一个字都没有。
+# 一个版本号既然叫全局的，就得真的全局：**改了配置的任何一部分（选项或布局）就 +1。**
+#
+# 这个数字**只有这一处**：插件从本文件读出它，代码里没有第二份副本。（曾经有过一份，
+# 于是「加了键、只改了这里」会让插件以为每个文件都是最新的，新键从此谁也没收到，且不报错。）
+# 服主不需要手动改这个数字 —— 只有插件作者改动配置时才需要 +1。
+config-version: 5
 contexts:
   economy: true
   menu: true
@@ -33,24 +47,53 @@ contexts:
   pomodoro: true
   # 喵达 ModaCat 商店：/sell 把矿石换成钱。没有 economy 钱包时自动停用。
   shop: true
+  # 只读 HTTP 接口：给 Wofuf 的 Cloudflare Worker 拉取服务器数据。会开一个端口，默认关闭。
+  webapi: false
+# ===================== 只读 HTTP 接口（meowo-webapi） =====================
+# 供 Wofuf 的 Cloudflare Worker 拉取服务器状态与在线玩家数据。
+# 只有 GET / HEAD；除 /health 外都要带请求头 X-Meow-Secret。
+# 端口默认只监听本机，外部访问请在同机跑 Cloudflare Tunnel，不要直接暴露到公网。
+webapi:
+  # 监听地址。保持 127.0.0.1，外部走 Tunnel。
+  bind: "127.0.0.1"
+  # 监听端口。0 = 随机端口（一般不用）。
+  port: 8080
+  # 与 Worker 的 PLUGIN_API_SECRET 一致。留空则该 context 拒绝启动（没有密钥的端口更糟）。
+  # 也可以用环境变量 MEOWO_WEBAPI_SECRET 提供——环境变量优先于本文件，并且启动日志会说明
+  # 用的是哪一个，免得「改了文件却没生效」变成一桩无头案。密钥该待在机器上，不该躺在
+  # 一个可能被备份、world 目录或 git 仓库捡走的文件里。
+  secret: ""
+  # 快照刷新间隔（秒）。HTTP 请求不会实时读 Bukkit，而是返回最近一次快照。
+  snapshot-interval-seconds: 60
+  # 统计明细：full = 含物品/方块/实体分类（与旧 yawebapi 一致，较慢）；basic = 只含 UNTYPED（快）。
+  statistics-mode: full
+  # 单次快照最多包含多少玩家。
+  max-players: 100
+  # 允许访问的来源地址。留空表示不限制；走 Tunnel 时来源是 127.0.0.1。
+  allowed-ips:
+    - "127.0.0.1"
+
 render:
+  # 每个玩家当前最多能有多少个客户端假实体（只对自己可见）。1..1000。
   max-per-player: 200
 economy:
   currency:
     name: Meo
     symbol: "ฅ"
   teleport-tax:
-    # Fraction of the teleported player's balance before charging; 0.001 = 0.1%.
+    # 传送费：按被传送者余额的比例收取，0.001 = 0.1%。
     rate: "0.001"
+    # 单次传送费的上下限。费用 = 比例 × 余额，再夹到这两个数之间。
     minimum: "1.00"
     maximum: "233.00"
   pay-tax:
-    # Extra tax paid by the sender; sponsored teleport fees use the same rate.
+    # 转账时由**付款方**额外缴纳的税；代付传送费时用同一个比例。
     rate: "0.01"
   daily-subsidy:
     enabled: true
-    # Paid from eco treasury once per calendar day; an empty pool does not mint money.
+    # 每个自然日发一次，从税收池里出。池子是空的就不发——不会凭空印钱。
     amount: "1.00"
+    # 哪个时区的「一天」。跨时区服请改成服主所在时区。
     timezone: Asia/Shanghai
 spawn:
   # 空字符串表示「玩家当前所在世界」；多服可指定大厅世界名。
@@ -68,7 +111,7 @@ spawn:
   safe-search-range: 16
 teleport:
   request-seconds: 60
-  # Grace period between the fee being reserved and the actual move. 0 teleports on the next tick.
+  # 扣费与真正传送之间的等待秒数。0 = 下一个 tick 就走。
   countdown-seconds: 3
   particles: true
 sit:
@@ -140,6 +183,10 @@ home:
   locator: true
   # /home nav <编号> 或 GUI 选中后，用 BossBar 模拟方向；/home nav off 关闭。
   bossbar: true
+invsee:
+  # 是否记录管理员查看 / 取走他人物品的记录（写进 chat/mail 之外的审计日志）。
+  # 开着更安全；关掉只是不留记录，不影响 /invsee 本身能不能用。
+  audit: true
 mine:
   # 每次挖到稀有矿物都全服通报（显示本次数量，不显示玩家累计——
   # 原版 /minecraft:statistics 已经统计了每种方块的数量）。
@@ -166,6 +213,11 @@ chat:
   literal-filters: []
   # 正则过滤。禁止嵌套量词（会回溯卡死聊天线程）。
   regex-filters: []
+  # 自定义表情：左边写名字，右边写要显示的字符。插件自带的四十多个表情不受影响，
+  # 这里写的是一个**覆盖**：同名以这里为准。
+  # 取消下面一行的注释就是一个例子。
+  emoji:
+    # meow: "🐱"
   # true = 玩家名与发言者重名时优先发给玩家；false（默认）= 系统发言者优先，防冒名。
   player-first: false
   # 内置应答台：让 /msg <猫> 有人应答。风纪 AI 接上后会自动顶替它。
@@ -186,6 +238,8 @@ agents:
   # OpenAI 兼容端点。留空 = 不连任何模型，猫只会回一句简短的「走神了」——
   # 这比"启动了但每个问题都卡住"好得多。
   base-url: ""
+  # 也可以用环境变量 MEOWO_AGENTS_API_KEY 提供：环境变量优先于本文件，启动日志会说明
+  # 用的是哪一个。密钥该待在机器上，不该躺在一个可能被备份、world 目录或 git 仓库捡走的文件里。
   api-key: ""
   model: "MiniMax-M3"
   # 输出预算。推理模型的思考 token 从这里扣：实测 80 会把 MiniMax-M3 每次响应都截断，

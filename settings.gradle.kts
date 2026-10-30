@@ -20,3 +20,5 @@ include("contexts:meowo-teleport", "contexts:meowo-economy", "contexts:meowo-eco
 include("contexts:meowo-home", "contexts:meowo-agents", "contexts:meowo-avatar")
 include("contexts:meowo-invsee", "contexts:meowo-pomodoro")
 include("contexts:meowo-shop")
+// The read-only HTTP API the Wofuf Worker pulls from. Off by default: it opens a port.
+include("contexts:meowo-webapi")
