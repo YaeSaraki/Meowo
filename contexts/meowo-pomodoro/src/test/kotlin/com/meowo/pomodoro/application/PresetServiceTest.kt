@@ -95,6 +95,40 @@ class PresetServiceTest {
         assertEquals(2, service.list(owner).await().size)
     }
 
+    /**
+     * The cache must already be gone **when the write returns**, not merely by the time the write
+     * has been observed.
+     *
+     * The write used to invalidate the cache in a callback attached to the repository's future
+     * (`future.thenRun { cache.remove(owner) }`). A callback attached that way runs in a **later**
+     * stage of the chain, so it is not guaranteed to have run when the caller awaits the future it
+     * was handed. The caller then reads the cache and sees the row it just wrote missing — the
+     * write succeeded and the read disagrees with it.
+     *
+     * This test does not rely on that race happening. It uses a repository whose futures are
+     * **already complete** when they are handed over, so the invalidation callback is the only
+     * thing that can decide the outcome: with the old code the callback lands in the next stage of
+     * the chain, which has not run yet at this point, and the stale list is what comes back.
+     */
+    @Test fun `the cache is already invalid when a write returns`() {
+        val repo = FakePresetRepository()
+        val service = PresetService(repo) { settings() }
+        assertEquals(1, service.list(owner).await().size) // cached: one built-in
+        service.save(owner, custom()).await()
+        // Straight after the write, with no waiting and no extra scheduling in between.
+        assertEquals(2, service.list(owner).await().size, "the write returned but the cache was still there")
+    }
+
+    /** The same invariant for the other write path. */
+    @Test fun `the cache is already invalid when a delete returns`() {
+        val repo = FakePresetRepository()
+        val service = PresetService(repo) { settings() }
+        val stored = service.save(owner, custom()).await()
+        assertEquals(2, service.list(owner).await().size)
+        service.delete(owner, stored.id).await()
+        assertEquals(1, service.list(owner).await().size, "the delete returned but the cache was still there")
+    }
+
     @Test fun `save refuses a builtin preset`() {
         val repo = FakePresetRepository()
         val service = PresetService(repo) { settings() }

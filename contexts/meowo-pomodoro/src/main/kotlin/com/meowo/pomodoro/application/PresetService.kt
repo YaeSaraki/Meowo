@@ -41,18 +41,34 @@ class PresetService(
     /** Inserts a new custom preset. The caller supplies a freshly-generated UUID. */
     fun save(owner: UUID, preset: Preset): CompletableFuture<Preset> {
         require(!preset.builtin) { "cannot save a builtin preset" }
-        val future = repository.save(owner, preset.asCustom(), settings().customPresetLimit)
-        future.thenRun { cache.remove(owner) }
-        return future
+        /**
+         * The cache is invalidated **inside** the returned future, not beside it.
+         *
+         * `repository.save(…).thenRun { cache.remove(owner) }` looks equivalent and is not: the
+         * callback of `thenRun` runs in a **later** stage of the chain, so it is not guaranteed to
+         * have run by the time the caller awaits the future it got back. The caller then reads the
+         * cache and sees the preset they just saved missing — the write succeeded and the read
+         * disagrees with it, which is the worst shape a cache bug can have.
+         *
+         * Invalidating inside `thenApply` puts the removal **before** the future completes, so
+         * awaiting the returned future means the cache is already gone.
+         */
+        return repository.save(owner, preset.asCustom(), settings().customPresetLimit)
+            .thenApply { saved ->
+                cache.remove(owner)
+                saved
+            }
     }
 
     /** Deletes a custom preset. Builtins are silently refused. */
     fun delete(owner: UUID, presetId: String): CompletableFuture<Boolean> {
         val builtin = settings().builtin(presetId)
         if (builtin != null) return CompletableFuture.completedFuture(false)
-        val future = repository.delete(owner, presetId)
-        future.thenRun { cache.remove(owner) }
-        return future
+        return repository.delete(owner, presetId)
+            .thenApply { deleted ->
+                cache.remove(owner)
+                deleted
+            }
     }
 
     override fun close() {
