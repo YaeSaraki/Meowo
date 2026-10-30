@@ -1,3 +1,4 @@
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -9,9 +10,24 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.taboolib) apply false
 }
+
+/**
+ * The version every module is built with.
+ *
+ * It is **not** written down here. The number lives in the release tag (`v1.2.3` → `1.2.3`), and
+ * the release workflow passes it in as `-PreleaseVersion=1.2.3`. A version written down in the build
+ * file and a version written down in the tag are two facts that can disagree, and the way they
+ * disagreed was quiet: the jar said `Meowo-1.0.0.jar` while the release was called `v1.2.0`, and
+ * the file a server downloaded had no version in its name that anyone could check it against.
+ *
+ * So the tag is the single source, and this fallback is what a local build with no tag uses. It is
+ * a **development** version, not a release: nothing publishes it.
+ */
+val releaseVersion: String = providers.gradleProperty("releaseVersion").orElse("1.0.0").get()
+
 subprojects {
     group = "com.meowo"
-    version = "1.0.0"
+    version = releaseVersion
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "jacoco")
@@ -36,6 +52,31 @@ subprojects {
         useJUnitPlatform()
         testLogging { events("failed", "skipped"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL }
         finalizedBy(tasks.named("jacocoTestReport"))
+        /**
+         * The coverage data of a run must be **this run's** coverage, not the union of this run and
+         * every run before it.
+         *
+         * JaCoCo writes the execution data to `build/jacoco/test.exec`. Gradle 8.14 hardcodes
+         * `append=true` for the agent (the `JacocoTaskExtension` bytecode appends that flag itself,
+         * and the version exposes no way to turn it off), so the file is opened for append when the
+         * test JVM exits. `cleanTest` does not delete that file — it only clears the test results —
+         * so the file survives, and the next run adds to it. The coverage number therefore only ever
+         * goes up: measured three times in a row on the same code, it read 82.52%, then 82.55%, then
+         * 82.56%, with no code change in between.
+         *
+         * Declaring the file as an **output** of the test task is what fixes it, and it fixes the
+         * worse half of the problem too. Without the declaration the file is not managed by Gradle
+         * at all, so deleting it does not make the test task out-of-date: the task stays
+         * UP-TO-DATE, does not re-run, and the module's coverage silently disappears from the
+         * aggregate — which is why the same code measured 82.52%, 82.53% and 82.55% depending on
+         * which modules happened to re-run. Declared as an output, Gradle deletes the stale file
+         * before the task executes and writes a fresh one, so the number means what it says.
+         *
+         * The agent still appends to whatever file it finds — but it now always finds a file that
+         * was just deleted, so there is nothing to append to.
+         */
+        val execFile = extensions.getByType(JacocoTaskExtension::class.java).destinationFile
+        if (execFile != null) outputs.file(execFile)
     }
     tasks.withType<JacocoReport>().configureEach { reports { xml.required.set(true); html.required.set(true) } }
 }
@@ -194,6 +235,25 @@ tasks.register("verifyCoverage") {
         val total = coverage(file("build/reports/jacoco/coverageReport/coverageReport.xml"))
         val domain = coverage(file("contexts/meowo-economy/domain/build/reports/jacoco/test/jacocoTestReport.xml"))
         logger.lifecycle("Line coverage: total=%.2f%%, domain=%.2f%%".format(total * 100, domain * 100))
+        /**
+         * Every module's **own** coverage, printed next to the total.
+         *
+         * The total counts a class as covered when *any* module's test touched it, so a module
+         * whose classes are only covered by other modules' integration tests looks fine in the
+         * total and is not covered at all by itself. That is not a hypothetical: four contexts
+         * (`teleport`, `sit`, `home`, `shop`) had **zero** coverage of their own `Context` class
+         * and were entirely at the mercy of core's integration tests. The total said 81% and
+         * nobody could see the hole.
+         *
+         * Nothing is checked here — this is a reading, not a gate. A gate would need a number per
+         * module, and a number per module is a number somebody has to keep updating by hand, which
+         * is the thing this project keeps refusing to do.
+         */
+        subprojects.forEach { project ->
+            val report = project.layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile
+            if (!report.exists()) return@forEach
+            logger.lifecycle("  %-34s %.2f%%".format(project.name, coverage(report) * 100))
+        }
         check(total >= 0.70) { "Total coverage below 70%" }
         check(domain >= 0.90) { "Domain coverage below 90%" }
     }

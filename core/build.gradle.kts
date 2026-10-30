@@ -35,7 +35,6 @@ dependencies {
     "taboo"(project(":contexts:meowo-hat"))
     "taboo"(project(":contexts:meowo-nametag"))
     "taboo"(project(":contexts:meowo-agents"))
-    "taboo"(project(":contexts:meowo-webapi"))
     "taboo"(project(":contexts:meowo-mine"))
     "taboo"(project(":contexts:meowo-chat"))
     "taboo"(project(":contexts:meowo-avatar"))
@@ -44,6 +43,7 @@ dependencies {
     "taboo"(project(":contexts:meowo-invsee"))
     "taboo"(project(":contexts:meowo-pomodoro"))
     "taboo"(project(":contexts:meowo-shop"))
+    "taboo"(project(":contexts:meowo-webapi"))
     compileOnly(libs.paper.api)
     // The `taboo` bucket is what gets shaded into the plugin jar; the tests build a real MeowoRuntime, which
     // reads the shipped ui.yml off the classpath, so the module has to be on the test classpath as well.
@@ -54,7 +54,25 @@ dependencies {
     // wallets and escrows, so the driver has to be present on the test classpath too.
     testImplementation(libs.sqlite)
 }
-tasks.processResources { filesMatching("plugin.yml") { expand("version" to project.version) } }
+/**
+ * `plugin.yml` is the one file in the jar that carries the version, so the server can say which
+ * build it is running.
+ *
+ * The expanded value has to be declared as a task **input**. Without that, `processResources` does
+ * not know the version is part of what it produces, so it stays UP-TO-DATE when only the version
+ * changes — and the jar gets built with the *previous* version inside it. That is not a cosmetic
+ * problem: a jar called `Meowo-1.2.3.jar` that reports `1.0.0` is a jar nobody can tell apart from
+ * the one before it, and the release workflow refuses to publish one (which is the check working,
+ * but the fix belongs here, where the staleness is created).
+ *
+ * Declaring the input makes the task re-run when the version changes, so the jar and its name
+ * always agree.
+ */
+tasks.processResources {
+    val pluginVersion = project.version.toString()
+    inputs.property("version", pluginVersion)
+    filesMatching("plugin.yml") { expand("version" to pluginVersion) }
+}
 tasks.jar {
     archiveBaseName.set("Meowo")
     dependsOn(configurations.named("taboo"))

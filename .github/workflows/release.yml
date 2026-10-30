@@ -1,0 +1,168 @@
+name: Release
+
+# The tag is the release: `git push origin v1.2.3` builds that version and publishes it.
+#
+# There is deliberately no manual trigger. A release that can be started from a web page can also be
+# started by accident, and the tag already says which version it is — cutting a release is a
+# deliberate act, and it leaves a permanent mark in the history either way.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Creating a release writes to the repository. It needs nothing else: no packages, no deployments,
+# no write to the workflows themselves. The narrowest permission that does the job.
+permissions:
+  contents: write
+
+concurrency:
+  # One release at a time. `cancel-in-progress: false` because a release that is halfway through
+  # publishing must not be killed half way by a second push of the same tag.
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish the jar
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to a commit, not to a tag. A tag is a name that can be moved to a different commit
+      # later, and whoever moves it decides what the release is built with — that is not a decision
+      # a release pipeline should leave to somebody else's push. The version is in the comment.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # The release notes are written from the commit history, and the previous tag has to be
+          # reachable — a shallow clone does not have it.
+          fetch-depth: 0
+
+      # Two JDKs, because the build needs two of them.
+      #
+      # JDK 21 runs the Gradle daemon: `gradle/gradle-daemon-jvm.properties` asks for Java 21, and
+      # Gradle 8.14 cannot run its daemon on Java 25 at all — it fails with a bare "25.0.2" when it
+      # tries to read the version.
+      #
+      # JDK 25 does the compiling and the testing: `jvmToolchain(25)` and the resolvable
+      # configurations are stamped `TARGET_JVM_VERSION = 25`. The bytecode target is 21, so the
+      # result still runs on a Java 21 server.
+      #
+      # `cache: gradle` is deliberately absent. `gradle/actions/setup-gradle` already manages the
+      # Gradle User Home, and the two of them writing the same directory is the documented way to
+      # end up with a cache nobody can reason about.
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Remember where JDK 21 landed
+        run: echo "JDK21=$JAVA_HOME" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Remember where JDK 25 landed
+        run: echo "JDK25=$JAVA_HOME" >> "$GITHUB_ENV"
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      # Both JDKs have to be visible to Gradle, not just to the shell. The daemon looks for Java 21
+      # and the toolchain looks for Java 25; `setup-java` puts them in separate directories and
+      # Gradle does not look there on its own. The paths are recorded as they are installed rather
+      # than read from the runner image, so the release does not depend on which JDKs the image
+      # happens to ship.
+      - name: Point Gradle at both JDKs
+        run: ./gradlew --version -Dorg.gradle.java.installations.paths="$JDK21,$JDK25"
+
+      - name: Work out the version from the tag
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::The tag '$TAG' is not a version tag. Expected something like v1.2.3."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # `build` runs the tests and the gates on the way: `check` depends on `verifyArchitecture`,
+      # `verifyCoverage` and every module's own `check`, and `build` depends on `check`. A release
+      # that skipped them would publish a jar nobody verified.
+      #
+      # `clean` is a step of its own on purpose. Gradle does not order `clean` against `build`
+      # across projects when both are asked for in one invocation, so `./gradlew clean build` can
+      # delete a directory another project is still writing into. Two invocations cannot interleave.
+      - name: Clean
+        run: ./gradlew clean --stacktrace -Dorg.gradle.java.installations.paths="$JDK21,$JDK25"
+
+      - name: Build and verify
+        run: ./gradlew build -PreleaseVersion=${{ steps.version.outputs.version }} --stacktrace -Dorg.gradle.java.installations.paths="$JDK21,$JDK25"
+
+      - name: Collect the artifact
+        id: artifact
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          jar="core/build/libs/Meowo-${VERSION}.jar"
+          if [[ ! -f "$jar" ]]; then
+            echo "::error::The build did not produce $jar. What is in core/build/libs:"
+            ls -l core/build/libs/ || true
+            exit 1
+          fi
+          # The version inside the jar is what the server reads. A jar whose internal version does
+          # not match its file name is a jar nobody can tell apart from the one before it.
+          internal="$(unzip -p "$jar" plugin.yml | grep -E '^version:' | head -1 | cut -d: -f2- | tr -d "\"' \r")"
+          if [[ "$internal" != "$VERSION" ]]; then
+            echo "::error::The jar reports version '$internal' but the tag says '$VERSION'."
+            exit 1
+          fi
+          # The checksum names the jar it belongs to, so `sha256sum -c` works in the directory the
+          # two files were downloaded into.
+          ( cd core/build/libs && sha256sum "Meowo-${VERSION}.jar" > "Meowo-${VERSION}.jar.sha256" )
+          # Checked the way the server admin will check it: the file has to be usable as-is, in the
+          # directory the two files land in.
+          ( cd core/build/libs && sha256sum -c "Meowo-${VERSION}.jar.sha256" )
+          cat "${jar}.sha256"
+
+      # Kept as a workflow artifact as well: the jar stays downloadable from the run even if the
+      # release below fails, and the release is not the only way to get at a build.
+      - name: Keep the build as a workflow artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Meowo-${{ steps.version.outputs.version }}
+          path: |
+            core/build/libs/Meowo-${{ steps.version.outputs.version }}.jar
+            core/build/libs/Meowo-${{ steps.version.outputs.version }}.jar.sha256
+          if-no-files-found: error
+
+      - name: Work out the previous release
+        id: previous
+        run: |
+          set -euo pipefail
+          # The tag before this one. An empty result means this is the first release, and the notes
+          # then cover the whole history.
+          previous="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
+          echo "tag=$previous" >> "$GITHUB_OUTPUT"
+
+      - name: Write the release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          PREVIOUS: ${{ steps.previous.outputs.tag }}
+        run: |
+          set -euo pipefail
+          ./scripts/release-notes.sh "$VERSION" "$PREVIOUS" > release-notes.md
+          cat release-notes.md
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --verify-tag \
+            --title "Meowo $VERSION" \
+            --notes-file release-notes.md \
+            "core/build/libs/Meowo-${VERSION}.jar" \
+            "core/build/libs/Meowo-${VERSION}.jar.sha256"
