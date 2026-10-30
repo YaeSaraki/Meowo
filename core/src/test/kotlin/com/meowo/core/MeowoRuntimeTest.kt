@@ -611,8 +611,12 @@ class MeowoRuntimeTest {
             "balance" to "EconCat", "treasury" to "EconCat",
             "daily-paid" to "EconCat", "daily-empty" to "EconCat",
             "pay-sent" to "EconCat", "pay-received" to "EconCat",
-            "unavailable" to "MenuCat", "menu-title" to "MenuCat",
+            // The shared `unavailable` key is gone. Each context owns a key of its own now,
+            // because "one key, three contexts" could only ever name one of the three reasons.
+            "shop-unavailable" to "ShopCat", "home-unavailable" to "NestCat",
+            "menu-title" to "MenuCat",
             "menu-balance" to "MenuCat", "menu-refresh" to "MenuCat",
+            "menu-unavailable" to "MenuCat",
             "eco-usage" to "EconCat", "error-invalid_amount" to "EconCat",
             "render-spawned" to "RendCat",
             "spawn-warmup" to "WarpCat", "spawn-unsafe" to "WarpCat",

@@ -789,7 +789,7 @@ class HomeContext(private val host: PlatformHost, private val settings: HomeSett
 
     private fun listMenu(player: Player) {
         val menu=Bukkit.getServicesManager().load(MenuAPI::class.java)
-        if(menu==null) host.messages.send(player,"unavailable") else menu.openHomes(player.uniqueId)
+        if(menu==null) host.messages.send(player,"home-unavailable") else menu.openHomes(player.uniqueId)
     }
 
     /** The home itself, as the cell that shows it: the one piece of a detail page the config cannot write. */

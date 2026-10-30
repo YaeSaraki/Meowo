@@ -114,7 +114,7 @@ class ShopContext(
      * intentions, and forcing both through one of them makes the other wrong.
      */
     private fun openShop(player: Player) {
-        if (ui() == null) { host.messages.send(player, "unavailable"); return }
+        if (ui() == null) { host.messages.send(player, "shop-unavailable"); return }
         viewing.add(player.uniqueId)
         val elements = settings.catalogue().map { (ore, price) ->
             val held = held(player, ore)
@@ -169,7 +169,7 @@ class ShopContext(
     private fun confirmSellAll(player: Player) {
         val quote = quote(player, null)
         if (quote.isEmpty) { host.messages.send(player, "shop-empty"); return }
-        if (ui() == null) { host.messages.send(player, "unavailable"); return }
+        if (ui() == null) { host.messages.send(player, "shop-unavailable"); return }
         ui()?.confirm(
             player.uniqueId,
             title = text(player, "shop-confirm-title"),

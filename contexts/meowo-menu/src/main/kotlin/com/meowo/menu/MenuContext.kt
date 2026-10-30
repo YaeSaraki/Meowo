@@ -150,7 +150,7 @@ class MenuContext(private val host: PlatformHost) : Context, Listener, MenuAPI {
             return
         }
         val service = Bukkit.getServicesManager().load(HomeMenuAPI::class.java)
-            ?: run { host.messages.send(player, "unavailable"); return }
+            ?: run { host.messages.send(player, "menu-unavailable"); return }
         val entries = service.entries(owner).associateBy { it.slot }
         val capacity = service.capacity(owner)
         val count = maxOf(capacity, entries.keys.maxOrNull() ?: 0)

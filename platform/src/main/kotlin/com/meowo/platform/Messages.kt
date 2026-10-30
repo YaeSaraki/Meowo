@@ -105,19 +105,87 @@ class Messages(private val plugin: JavaPlugin) {
      * Maps a Minecraft client language onto one of our bundles. Delegates to [LocaleResolver] so
      * the rules are unit testable without a plugin instance.
      */
-    private fun resolve(sender: CommandSender?): Map<String, String> {
+    private fun resolve(sender: CommandSender?): Map<String, String> =
         // `locale()` is called explicitly: Player also exposes getLocale(), and Kotlin would
         // otherwise synthesise a String property that shadows the Locale accessor.
-        val client = if (perPlayer && sender is Player) LocaleResolver.tagOf(sender.locale()) else null
+        bundleFor(if (sender is Player) LocaleResolver.tagOf(sender.locale()) else null)
+
+    /**
+     * The same resolution, for a client language that is already a tag.
+     *
+     * The language mode is applied **here** rather than at the call site, so every caller obeys it
+     * the same way: under `server` the client language is ignored and everyone gets
+     * [defaultLocale].
+     */
+    private fun bundleFor(clientLocale: String?): Map<String, String> {
+        val client = if (perPlayer) clientLocale else null
         val match = LocaleResolver.pick(client)
         return bundles[match] ?: bundles[defaultLocale] ?: bundles.values.first()
     }
 
-    /** Text in the sender's own language. Console and command blocks get [defaultLocale]. */
-    fun text(sender: CommandSender?, key: String, vararg args: Any): String {
-        var result = resolve(sender)[key] ?: bundles[defaultLocale]?.get(key) ?: key
-        args.forEachIndexed { index, value -> result = result.replace("{$index}", value.toString()) }
-        return result
+    /**
+     * Renders one key out of one bundle, with the fallback chain the whole message layer shares.
+     *
+     * The chain lives here so no caller has to remember it: the resolved bundle first, then the
+     * server's default, then the raw key. A key that exists in neither is shown as itself — never
+     * as an exception — which is why the language gate exists at all.
+     */
+    private fun render(bundle: Map<String, String>, key: String, args: Array<out Any>): String =
+        fill(bundle[key] ?: bundles[defaultLocale]?.get(key) ?: key, args)
+
+    /**
+     * Text in the sender's own language. Console and command blocks get [defaultLocale].
+     *
+     * ### The substitution is one pass, and it is one pass on purpose
+     *
+     * A placeholder is filled from the **template**, never from the string the previous fill
+     * produced. Doing it the obvious way — `result = result.replace("{0}", …)` in a loop — lets a
+     * substituted value be scanned again, and the values are not all trusted.
+     *
+     * A home name is player-supplied and reaches a message as `{0}`. A player who named their home
+     * `{1}` had that name substituted into the name slot, and the **next** iteration then replaced
+     * the `{1}` that had just been put there — with the price. The player read their own home's
+     * name as a fee.
+     *
+     * So the template is matched once, and each placeholder is filled from [args] by index. A value
+     * that happens to look like a placeholder is left as the player wrote it.
+     */
+    fun text(sender: CommandSender?, key: String, vararg args: Any): String =
+        render(resolve(sender), key, args)
+
+    /**
+     * Text in the language of a player whose client reports [clientLocale].
+     *
+     * ## Why this exists
+     *
+     * [text] resolves the language from the sender itself, which means the caller has to **have** a
+     * sender. One caller cannot: the line a cat hands back when it will not answer is rendered on
+     * the agent pool's worker thread, where there is no `CommandSender` — only the client locale the
+     * question already carries.
+     *
+     * So this is the same resolution with the client language handed in directly. The language mode
+     * still decides: under `server` the client language is ignored and everybody gets
+     * [defaultLocale], exactly as [text] would have done for the same player.
+     *
+     * @param clientLocale a client language tag (`en_us`) or a shipped locale (`en_US`).
+     */
+    fun textFor(clientLocale: String, key: String, vararg args: Any): String =
+        render(bundleFor(clientLocale), key, args)
+
+    /**
+     * Fills `{0}`, `{1}`, … in [template] from [args], in a single pass over the template.
+     *
+     * A placeholder with no argument is left alone rather than blanked: a message that says
+     * "you have {0} homes" is more useful than one that says "you have  homes", and the missing
+     * argument is a bug in the caller rather than in the sentence.
+     */
+    private fun fill(template: String, args: Array<out Any>): String {
+        if (args.isEmpty()) return template
+        return PLACEHOLDER.replace(template) { match ->
+            // `{12}` is placeholder twelve, not placeholder one followed by "2".
+            val index = match.groupValues[1].toIntOrNull()
+            args.getOrNull(index ?: -1)?.toString() ?: match.value
+        }
     }
 
     /** Text in [defaultLocale]. Use only where no recipient exists, such as log lines. */
@@ -156,11 +224,25 @@ class Messages(private val plugin: JavaPlugin) {
      */
     @Volatile var stamper: LineStamper? = null
 
-    /** One-line description of a speaker, from `speaker-summary-<id>`. Empty when unset. */
-    fun speakerSummary(sender: CommandSender?, id: String): String = text(sender, "speaker-summary-$id")
+    /**
+     * One-line description of a speaker, from `speaker-summary-<id>`. **Empty when unset.**
+     *
+     * The key is built, so no scan of the source can see it: a speaker id added to
+     * [DEFAULT_SPEAKERS] without a matching `speaker-summary-<id>` in the language files would
+     * otherwise put the literal text `speaker-summary-foo` in front of a player.
+     *
+     * So this does not fall back to the key the way [text] does. A summary that is missing is a
+     * sentence nobody wrote, and the directory already knows how to render an absent one — the
+     * chat context shows the speaker's id instead when the summary is blank.
+     */
+    fun speakerSummary(sender: CommandSender?, id: String): String {
+        val key = "speaker-summary-$id"
+        val bundle = resolve(sender)
+        return bundle[key] ?: bundles[defaultLocale]?.get(key) ?: ""
+    }
 
-    /** One-line description of a speaker, from `speaker-summary-<id>`. Empty when unset. */
-    fun speakerSummary(id: String): String = text(null, "speaker-summary-$id")
+    /** One-line description of a speaker, from `speaker-summary-<id>`. **Empty when unset.** */
+    fun speakerSummary(id: String): String = speakerSummary(null, id)
 
     /**
      * Resolves which cat speaks a message: exact key first, then key prefix, then the system cat.
@@ -424,8 +506,13 @@ class Messages(private val plugin: JavaPlugin) {
     private companion object {
         val LEGACY_COLOR = Regex("§[0-9A-FK-ORa-fk-orxX]")
 
-        /** `{0}`, `{1}`, … — the shape a language value will fill in. */
-        val PLACEHOLDER = Regex("""\{\d+}""")
+        /**
+         * `{0}`, `{1}`, … — the shape a language value will fill in.
+         *
+         * The digits are **captured**, because the fill has to know which argument each placeholder
+         * wants: `{12}` is placeholder twelve, not placeholder one followed by a `2`. See [fill].
+         */
+        val PLACEHOLDER = Regex("""\{(\d+)}""")
         val LEGACY = LegacyComponentSerializer.legacySection()
         const val ACTION_SEPARATOR = "action-separator"
         const val BADGE = "mail-badge"
@@ -450,8 +537,6 @@ class Messages(private val plugin: JavaPlugin) {
             "balance" to "economy", "treasury" to "economy",
             "daily-paid" to "economy", "daily-empty" to "economy",
             "pay-sent" to "economy", "pay-received" to "economy",
-            "unavailable" to "menu", "menu-title" to "menu",
-            "menu-balance" to "menu", "menu-refresh" to "menu",
         )
         /** Longest/most specific first; `action-` is only produced by the teleport context today. */
         val SPEAKER_PREFIXES = listOf(
@@ -462,6 +547,11 @@ class Messages(private val plugin: JavaPlugin) {
             "invsee-" to "invsee",
             "shop-" to "shop",
             "pomodoro-" to "pomodoro",
+            // The menu's own keys. They used to be absent, so every `menu-*` key fell to the system
+            // cat — and the three exact entries that used to cover them (`menu-title`,
+            // `menu-balance`, `menu-refresh`) named keys that nothing ever sent. A prefix says the
+            // rule once instead of listing the keys that happen to exist today.
+            "menu-" to "menu",
         )
     }
 }

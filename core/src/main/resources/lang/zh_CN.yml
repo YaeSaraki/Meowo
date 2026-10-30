@@ -76,7 +76,6 @@ error-unavailable: "§c✖ §7经济服务繁忙或已停用，请稍后重试�
 menu-title: "Meowo §8· §e钱包"
 menu-balance: "§7余额 §e{0}"
 menu-refresh: "§8点击金币刷新"
-unavailable: "§8§o经济模块未启用"
 
 # ═══════════ 客户端渲染 ═══════════
 render-usage: |-
@@ -304,6 +303,9 @@ shop-confirm-detail: "§7卖掉背包里 §f{0} §7个矿石，换 §a{1}"
 shop-sold: "§a✔ §7喵达收走 §f{0} §7个矿石，付你 §e{1} §8· §7余额 §e{2}"
 shop-sold-line: "§8· §7{0} §8×§f{1} §8= §e{2}"
 shop-refunded: "§c✖ §7钱没付成，矿石已经原样放回你背包了喵。"
+# 界面渲染模块（UIAPI）没就位时才会看到这条。名字写清楚缺的是哪一块，
+# 免得运维按着上一条「经济模块未启用」去翻一个根本没关的配置。
+shop-unavailable: "§e⚠ §7喵达店的界面加载不出来喵，稍后再试试。"
 shop-empty: "§e喵达翻了翻你的口袋：没有能回收的矿石喵。"
 shop-hand-empty: "§e主手上没有东西可卖喵。"
 shop-not-mine: "§e喵达看了看主手：§f{0} §e这个不收喵。"
@@ -351,6 +353,8 @@ home-usage: "/home 打开 GUI；/home <编号或名称> 回家；/sethome [编�
 home-admin-usage: "管理员：/home view <玩家> 查看；/home set <玩家> [编号或名称] 设置（不收费，玩家离线也可以）。"
 home-force-usage: "强制传送：/home <编号或名称> force —— 忽略落点安全检查，直接回到保存的原坐标。"
 home-loading: "§7家园正在恢复，请稍后重试。"
+# 家园列表要靠菜单 context 才能画出来。菜单被关掉时，缺的是菜单，不是家园。
+home-unavailable: "§e⚠ §7菜单模块没开喵，家园列表暂时打不开。"
 home-missing: "§c找不到这个家。"
 home-limit: "§c最多可以设置 {0} 个家。"
 home-invalid-name: "§c名称需为 1–24 个字符，不能重复或含控制/颜色字符。"
@@ -523,6 +527,8 @@ menu-homes-style-bowtie: "⋈ 蝴蝶结"
 menu-homes-style-default: "◆ 默认"
 menu-homes-lore-hint: "左键回家 · 右键设置"
 menu-homes-summary: "{0}/{1} 个家 · {2}/{3} 页"
+# 总菜单里的家园入口要靠家园 context。家园被关掉时，缺的是家园。
+menu-unavailable: "§e⚠ §7家园模块没开喵，总菜单里的家园用不了。"
 menu-homes-capacity: "容量权限：meowo.home.limit.{0}"
 
 # ═══════════ CHAT ═══════════

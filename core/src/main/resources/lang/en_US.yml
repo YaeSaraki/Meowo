@@ -77,7 +77,6 @@ error-unavailable: "§c✖ §7Economy is busy or disabled. Please try again shor
 menu-title: "Meowo §8· §eWallet"
 menu-balance: "§7Balance §e§l{0}"
 menu-refresh: "§8Click the nugget to refresh"
-unavailable: "§8§oEconomy is disabled"
 
 # ═══════════ CLIENT RENDERING ═══════════
 render-usage: |-
@@ -307,6 +306,9 @@ shop-confirm-detail: "§7Sell §f{0} §7ore from your bag for §a{1}"
 shop-sold: "§a✔ §7ModaCat took §f{0} §7ore and paid you §e{1} §8· §7balance §e{2}"
 shop-sold-line: "§8· §7{0} §8×§f{1} §8= §e{2}"
 shop-refunded: "§c✖ §7The payment failed, so the ore is back in your bag."
+# Only shown when the interface module (UIAPI) is not in place. It names the piece that is
+# actually missing, so nobody goes hunting in a config they never turned off.
+shop-unavailable: "§e⚠ §7ModaCat's interface did not load, meow. Try again in a moment."
 shop-empty: "§eModaCat looked through your pockets: nothing worth buying."
 shop-hand-empty: "§eThere is nothing in your main hand to sell."
 shop-not-mine: "§eModaCat looks at your main hand: §f{0} §eis not on the list."
@@ -355,6 +357,9 @@ home-usage: "/home opens GUI; /home <number|name>; /sethome [number|name]; /home
 home-admin-usage: "Admin: /home view <player> to list; /home set <player> [number|name] to set one (free, and works while they are offline)."
 home-force-usage: "Forced travel: /home <number|name> force — skip the landing-spot check and go to the saved coordinates as they are."
 home-loading: "§7Homes are recovering. Please try again shortly."
+# The home list is drawn by the menu context. When the menu is off, the menu is what is
+# missing — not the homes.
+home-unavailable: "§e⚠ §7The menu module is off, meow. The home list cannot be opened."
 home-missing: "§cHome not found."
 home-limit: "§cYou can set up to {0} homes."
 home-invalid-name: "§cUse 1–24 unique characters without control or formatting codes."
@@ -528,6 +533,9 @@ menu-homes-style-bowtie: "⋈ bowtie"
 menu-homes-style-default: "◆ default"
 menu-homes-lore-hint: "Left-click to travel · Right-click to edit"
 menu-homes-summary: "{0}/{1} homes · {2}/{3} pages"
+# The homes entry in the main menu is drawn by the home context. When homes are off, the
+# homes are what is missing.
+menu-unavailable: "§e⚠ §7The home module is off, meow. Homes are unavailable in the main menu."
 menu-homes-capacity: "Capacity permission: meowo.home.limit.{0}"
 
 # ═══════════ CHAT ═══════════
