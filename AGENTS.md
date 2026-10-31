@@ -59,13 +59,16 @@ MockBukkit 还需要可写的 `java.io.tmpdir`——测试进程不继承 daemon
 - 分支从 `main` 切出，不直接推 `main`
 - 提交信息用 conventional commits，带 scope：`feat(economy):`、`build(gate):`、`docs:`、`ci:`、`chore(repo):`；正文用中文
 - 发布靠 tag：`git push origin v1.2.3`，`release.yml` 会构建并发布
+- **版本号决定发布形态**：`0.x` 与带 `-rc` 一类后缀的版本发**预发布**（GitHub Pre-release 标记，不占 "Latest release"），`1.0.0` 起才是正式版。远端走 SSH（`git@github.com:YaeSaraki/Meowo.git`）：OAuth token 缺 `workflow` scope，HTTPS 推不动 `.github/workflows/` 里的文件
 - CI 跑 `./gradlew check build`，并把 jar 存为 workflow artifact
 
 ## Agent skills
 
 ### Issue tracker
 
-Issues 与 spec 存在 GitHub Issues 里，用 `gh` CLI 操作。仓库当前**没有配 git remote，也还没装 `gh`**——先 `gh auth login` 并 `git remote add origin <owner>/<repo>`，否则 tracker 操作无法进行。见 `docs/agents/issue-tracker.md`。
+Issues 与 spec 存在 GitHub Issues 里，用 `gh` CLI 操作。`gh` 已登录（账号 `YaeSaraki`，token scope
+`gist, read:org, repo`），远端是 `git@github.com:YaeSaraki/Meowo.git`。**token 缺 `workflow` scope**：
+改 `.github/workflows/` 里的文件只能走 SSH 推送，不能用 HTTPS 的 `gh` API 提交。见 `docs/agents/issue-tracker.md`。
 
 ### Triage labels
 

@@ -25,6 +25,13 @@ previous="${2:-}"
 # The slug is only used to link each commit, so the notes still make sense without it.
 repo="${GITHUB_REPOSITORY:-}"
 
+# The same rule the release workflow uses to decide between a pre-release and a stable one:
+# `0.x.y` is still finding its shape and `1.0.0-rc.1` names a pre-release outright.
+case "$version" in
+  0.*|*-*) prerelease=true ;;
+  *)       prerelease=false ;;
+esac
+
 if [ -n "$previous" ]; then
     range="$previous..HEAD"
 else
@@ -35,7 +42,7 @@ fi
 # The full hash, then the subject. Splitting on the first space is enough: a hash has no spaces
 # in it and a subject cannot contain a newline (`%s` is the first line of the message only).
 git log --no-merges --pretty=format:'%H %s' "$range" |
-awk -v repo="$repo" -v version="$version" -v first="$previous" '
+awk -v repo="$repo" -v version="$version" -v first="$previous" -v pre="$prerelease" '
     # The bucket a commit type belongs to.
     function bucket(t) {
         if (t == "feat")     return "新增功能"
@@ -66,6 +73,12 @@ awk -v repo="$repo" -v version="$version" -v first="$previous" '
     BEGIN {
         print "## Meowo " version
         print ""
+        # A pre-release says so here as well as in the GitHub badge: the notes get pasted into a
+        # forum post or a Discord message, and there the badge is gone.
+        if (pre == "true") {
+            print "> **预发布版本**：这一版还没定型，功能和数据都可能再变。升级前先备份 `plugins/Meowo/`。"
+            print ""
+        }
         print "**运行要求**：Paper 26.2（build 129）· Java 25 · PacketEvents 2.14.0（仅 render 需要，可不装）"
         print ""
         # The upgrade note, because the merge is permanent behaviour and not every operator knows

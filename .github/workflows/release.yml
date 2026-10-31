@@ -83,6 +83,15 @@ jobs:
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          # The version says whether this build is the real thing, so the release does not have to
+          # be told twice. `0.x.y` is still finding its shape and `1.0.0-rc.1` names a pre-release
+          # outright: both go out as a GitHub pre-release, which keeps the "Latest release" badge
+          # for a build an operator is meant to install. Everything else is stable.
+          if [[ "$version" == 0.* || "$version" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # `build` runs the tests and the gates on the way: `check` depends on `verifyArchitecture`,
       # `verifyCoverage` and every module's own `check`, and `build` depends on `check`. A release
@@ -158,11 +167,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
           VERSION: ${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
         run: |
           set -euo pipefail
-          gh release create "$TAG" \
-            --verify-tag \
-            --title "Meowo $VERSION" \
-            --notes-file release-notes.md \
-            "core/build/libs/Meowo-${VERSION}.jar" \
+          args=(
+            gh release create "$TAG"
+            --verify-tag
+            --title "Meowo $VERSION"
+            --notes-file release-notes.md
+          )
+          if [ "$PRERELEASE" = "true" ]; then
+            # `--prerelease` puts it under "Pre-releases" with its own badge. `--latest=false`
+            # says the same thing about the "Latest release" badge, which GitHub would otherwise
+            # hand to whatever release was published last — a pre-release is not that.
+            args+=(--prerelease --latest=false)
+          fi
+          args+=(
+            "core/build/libs/Meowo-${VERSION}.jar"
             "core/build/libs/Meowo-${VERSION}.jar.sha256"
+          )
+          "${args[@]}"
