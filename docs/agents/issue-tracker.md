@@ -4,12 +4,17 @@ Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all o
 
 ## Prerequisites
 
-This repo currently has **no git remote configured** and the `gh` CLI is **not installed**. Before any skill that touches the tracker can run:
+`gh` is installed and authenticated as `YaeSaraki` (token scopes: `gist, read:org, repo`), and the
+remote is `git@github.com:YaeSaraki/Meowo.git`. `gh` infers the repository from the clone, so no
+extra flags are needed.
 
-- `gh auth login`
-- `git remote add origin <owner>/<repo>` — the repo has GitHub Actions workflows (`.github/workflows/ci.yml`, `release.yml`), so it is hosted on GitHub; only the remote is missing.
+**The token has no `workflow` scope.** Changes under `.github/workflows/` must therefore be pushed
+over SSH (`git push origin <branch>`); a HTTPS push that touches a workflow file is rejected by
+GitHub. Everything else — issues, labels, PRs — works through the `gh` API as usual.
 
-Until both are in place, tracker operations fall back to creating the issue in `docs/agents/` notes and applying it later. Do not silently skip an issue: say that the tracker is unreachable and write the issue body to a file instead.
+If `gh` ever stops being authenticated, tracker operations fall back to creating the issue in
+`docs/agents/` notes and applying it later. Do not silently skip an issue: say that the tracker is
+unreachable and write the issue body to a file instead.
 
 ## Conventions
 

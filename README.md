@@ -358,6 +358,11 @@ git tag v1.2.3
 git push origin v1.2.3
 ```
 
+**版本号自己决定这个 Release 是不是预发布。** `0.x.y`（还没定型）和带后缀的 `1.0.0-rc.1`
+（明说了是候选版）发布为 GitHub **预发布**：进 "Pre-releases" 列表、带 "Pre-release" 标记，
+并且**不占用 "Latest release"**——"Latest" 留给服主真正会装的那一版。`1.0.0` 这样的稳定版才拿
+这个标记。判定在 `release.yml` 里按版本号做，发布时不用再传第二个开关。
+
 产物：`Meowo-1.2.3.jar` 与 `Meowo-1.2.3.jar.sha256`（SHA-256 校验文件，文件名与它校验的 jar 一致，
 下载到同一个目录后 `sha256sum -c` 即可）。Release 说明由**两次 tag 之间的提交**自动生成，按
 `feat` / `fix` / `build` / `docs` 等类型分组——手写的更新日志是一句「有人记得」的承诺，而提交
@@ -367,10 +372,10 @@ git push origin v1.2.3
 
 | 步骤 | 内容 |
 |---|---|
-| 读版本 | 从 tag 取版本号，格式不是 `v1.2.3` 就直接失败——版本号错一次，产物就永远对不上 |
+| 读版本 | 从 tag 取版本号，格式不是 `v1.2.3` 就直接失败——版本号错一次，产物就永远对不上；顺带按版本号判定这是预发布还是正式版 |
 | 构建 | `./gradlew clean` 与 `./gradlew build` 分两步跑（Gradle 不给跨模块的 `clean` 排序），**测试与三道门禁都在 `build` 里**（`check` 挂在 `build` 上），发布一个没验证过的 jar 等于没发布 |
 | 校验 | jar 内部 `plugin.yml` 的版本必须和 tag 一致；算 SHA-256，并用 `sha256sum -c` 自查一遍 |
-| 发布 | 建 Release，附 jar 与校验文件；jar 同时作为工作流产物留存 |
+| 发布 | 建 Release，附 jar 与校验文件；jar 同时作为工作流产物留存；预发布版本带 "Pre-release" 标记且不占 "Latest release" |
 
 版本号**不写在 `build.gradle.kts` 里**：那里只有一个本地开发用的兜底值，发布时由 workflow 用
 `-PreleaseVersion=` 传进去。一份写在构建文件里的版本号和一份写在 tag 里的版本号是两个可以互相
@@ -380,8 +385,8 @@ git push origin v1.2.3
 工作流里的第三方 action 全部**钉在 40 位 commit SHA** 上（版本号写在行尾注释里）。tag 是可以被人
 挪走的名字，钉 SHA 才是钉住：谁动了那个名字，谁就等于决定了这个发布流程会跑什么。
 
-> 仓库目前还没有配置远端（`git remote -v` 为空），也没有 `gh` 命令行工具。发布前需要先
-> `git remote add origin <仓库地址>`，并把仓库推上去。
+> 远端在 `git@github.com:YaeSaraki/Meowo.git`，**走 SSH 推**。OAuth token 没有 `workflow` scope，
+> 通过 HTTPS 推不动 `.github/workflows/` 里的文件，而 SSH 不受这个限制。
 
 CI（`.github/workflows/ci.yml`）在每次 push 与 PR 上跑同一套验证，并把 jar 作为工作流产物存下来——
 一个只能看到绿勾的构建没法拿去真服上试。
